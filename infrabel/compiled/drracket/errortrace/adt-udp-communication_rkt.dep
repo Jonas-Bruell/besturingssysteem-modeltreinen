@@ -1,1 +1,0 @@
-("8.6" ta6nt ("cfac51977bd7f102fb94e17440a7e55af32ba7eb" . "865115a2cf7aa051da4630348be1e7a211dd5ce3") #"C:\\Users\\jonas\\Documents\\1) Universiteit\\1) 2ba CW\\11) Programmeerproject 2\\Project\\infrabel\\..\\simulator\\interface.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
