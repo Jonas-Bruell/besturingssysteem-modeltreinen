@@ -14,17 +14,20 @@
 (provide start-infrabel   ; (/ -> /)
          )
 
-(define (start-infrabel socket)
-  (new infrabel% (connection socket))
+(define (start-infrabel socket version)
+  (new infrabel% (connection socket) (track-version version))
   )
 
 (define infrabel%
   (class railway%
     (init-field connection)
+    (init-field track-version)
     (super-new)
     (inherit setup-object)
     ; track
-    (define/override track 'track)
+    (define/override (track)
+      (dynamic-require
+       (string-append "infrabel/routes/" track-version ".rkt") 'TRACK))
     ; segments
     (define/override (segment-list segment%)
       (thunk (setup-object

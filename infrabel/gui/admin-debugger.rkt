@@ -13,10 +13,8 @@
          "elements.rkt")
 (provide make-adm&dbg)
 
-(define TRACK "")
+
 (define (make-adm&dbg sim system)
-  (set! TRACK
-        (dynamic-require (string-append "infrabel/routes/" sim ".rkt") 'TRACK))
   (make-object gui% system))
 
 (define gui%
@@ -123,7 +121,7 @@
                                                      set-switch-position!
                                                      (car l) 2))
                                       ))
-                              (cdr (assoc 'switch TRACK))))
+                              (cdr (assoc 'switch (send infrabel get-track)))))
                  (index 0))
         (new switch-panel%
              (parent (if (< index 8)
@@ -167,7 +165,10 @@
                                          set-switch-position!
                                          (caddr l) 2))
                                  ))
-                         (cdr (assoc 'threeway (cdr (assoc 'switch* TRACK)))))))
+                         (cdr (assoc 'threeway
+                                     (cdr (assoc
+                                           'switch*
+                                           (send infrabel get-track))))))))
         (new three-way-switch-panel%
              (parent switches*-panel)
              (name (symbol->string (caar (car switch))))
@@ -207,7 +208,10 @@
                                          set-switch-position!
                                          (caddr l) 2))
                                  ))
-                         (cdr (assoc 'cross (cdr (assoc 'switch* TRACK)))))))
+                         (cdr (assoc
+                               'cross
+                               (cdr
+                                (assoc 'switch* (send infrabel get-track))))))))
         (new cross-switch-panel%
              (parent switches*-panel)
              (name (symbol->string (caar (car switch))))
@@ -231,7 +235,10 @@
                                                 get-detection-block-state
                                                 (car l))))
                        ))
-               (cdr (assoc 'detection-block-1 (cdr (assoc 'block TRACK)))))))
+               (cdr (assoc 'detection-block-1
+                           (cdr
+                            (assoc 'block
+                                   (send infrabel get-track))))))))
         (let ((status (new status%
                            (parent blocks-panel-1)
                            (name (symbol->string (caaar block)))
@@ -251,7 +258,9 @@
                                                 get-detection-block-state
                                                 (car l))))
                        ))
-               (cdr (assoc 'detection-block-2 (cdr (assoc 'block TRACK)))))))
+               (cdr (assoc 'detection-block-2
+                           (cdr (assoc 'block
+                                       (send infrabel get-track))))))))
         (let ((status (new status%
                            (parent blocks-panel-2)
                            (name (symbol->string (caaar block)))
@@ -270,7 +279,9 @@
                                                       get-segment-state
                                                       (car l))))
                              ))
-                     (cdr (assoc 'segment (cdr (assoc 'block TRACK)))))))
+                     (cdr (assoc 'segment
+                                 (cdr (assoc 'block
+                                             (send infrabel get-track))))))))
         (new status%
              (parent blocks-panel-U)
              (name (symbol->string (caaar block)))

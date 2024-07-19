@@ -45,7 +45,7 @@
     (try
      ;##########################################################################
      (;(server:start-server host port) ; NOT CONNECTED TO INFRA!
-      (set! infra (infrabel:start-infrabel socket)))
+      (set! infra (infrabel:start-infrabel socket version)))
      (catch (exn:fail?
              (send
               status-callback insert

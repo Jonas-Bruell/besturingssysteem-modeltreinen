@@ -38,6 +38,8 @@
     
     ; track
     (abstract track)
+    (define/public (get-track)
+      (track))
     ; segments
     (abstract segment-list)
     (define segments (segment-list segment%))
@@ -79,7 +81,7 @@
       (send (search-object light (lights)) get-signal))
     (define/public (set-light-signal! light new-signal)
       (send (search-object light (lights)) set-signal! new-signal))
-    ; trains
+    ; trains ###################################################################
     (define trains '())
     (define/public (get-the-test-train-list connection)
       (list (cons 'test-train (new train%

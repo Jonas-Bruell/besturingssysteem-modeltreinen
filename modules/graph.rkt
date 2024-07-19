@@ -1,0 +1,167 @@
+#lang racket
+
+;-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+;-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+;-*-*                                                                 *-*-
+;-*-*       Unweighted Graphs (Adjacency List Representation)         *-*-
+;-*-*                                                                 *-*-
+;-*-*                       Wolfgang De Meuter                        *-*-
+;-*-*                   2009  Software Languages Lab                  *-*-
+;-*-*                    Vrije Universiteit Brussel                   *-*-
+;-*-*                                                                 *-*-
+;-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+;-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
+
+#|
+(define-library (unweighted-graph)
+  (export new unweighted-graph? order nr-of-edges directed? 
+          for-each-node for-each-edge
+          add-edge! delete-edge!
+          adjacent?)
+  (import (scheme base))
+  (begin
+|#
+
+; pairs are immutable by default in racket
+; https://stackoverflow.com/questions/9475366/set-car-set-cdr-unbound-in-racket
+(require rnrs/mutable-pairs-6)
+(require compatibility/mlist)
+
+(provide graph%)
+#|
+         new
+         unweighted-graph?
+         order
+         nr-of-edges
+         directed? 
+         for-each-node
+         for-each-edge
+         add-edge!
+         delete-edge!
+         adjacent?)
+
+(define-record-type unweighted-graph
+  (make d n s)
+  unweighted-graph?
+  (d directed?)
+  (n nr-of-edges nr-of-edges!)
+  (s storage))
+|#
+
+(define graph% ; undirected & unweighted
+  (class object%
+    (super-new)
+    (init-field order)
+
+    ;; intern
+    (define (make d n s)
+      (mlist 'graph d n s))
+    (define (unweighted-graph? s-expr)
+      (and (pair? s-expr) (eq? (mcar s-expr) 'graph)))
+    (define (directed? graph)
+      (mcar (mcdr graph)))
+    (define (nr-of-edges graph)
+      (mcar (mcdr (mcdr graph))))
+    (define (nr-of-edges! graph new-edge)
+      (set-mcar! (mcdr (mcdr graph)) new-edge))
+    (define (storage graph)
+      (mcar (mcdr (mcdr (mcdr graph)))))
+    (define graph (make #f 0 (make-vector order '())))
+
+    ;; extern
+
+    #|
+    (define/public (order)
+      (vector-length (storage graph)))
+    |#
+    
+    (define/public (for-each-node proc)
+      (define lists (storage graph))
+      (let iter-nodes
+        ((node 0))
+        (proc node)
+        (when (< (+ node 1) (vector-length lists))
+          (iter-nodes (+ node 1))))
+      )
+ 
+    (define/public (for-each-edge from proc)
+      (define row (vector-ref (storage graph) from))
+      (let iter-edges
+        ((edges row))
+        (when (not (null? edges))
+          (proc (mcar edges))
+          (iter-edges (mcdr edges))))
+      )
+ 
+    (define/public (add-edge! from to)
+      (define lists (storage graph))
+      (define (insert-sorted to prev next! next)
+        (cond 
+          ((or (null? next)
+               (> to (mcar next)))
+           (next! prev (mcons to next))
+           #t)
+          ((= to (mcar next))
+           #f)
+          (else
+           (insert-sorted to next set-mcdr! (mcdr next)))))
+      (define (head-setter head) 
+        (lambda (ignore next)
+          (vector-set! lists head next)))
+      (when (insert-sorted to '() (head-setter from) (vector-ref lists from))
+        (nr-of-edges! graph (+ 1 (nr-of-edges graph))))
+      (when (not (directed? graph))
+        (insert-sorted from '() (head-setter to) (vector-ref lists to)))
+      )
+ 
+    (define/public (delete-edge! from to)
+      (define lists (storage graph))
+      (define (delete-sorted to prev next! next)
+        (cond
+          ((or (null? next)
+               (> to (mcar next)))
+           #f)
+          ((= to (mcar next))
+           (next! prev (mcdr next))
+           #t)
+          (else
+           (delete-sorted to next set-mcdr! (mcdr next)))))
+      (define (head-setter head) 
+        (lambda (ignore next)
+          (vector-set! lists head next)))
+      (when (delete-sorted to '() (head-setter from) (vector-ref lists from))
+        (nr-of-edges! graph (- (nr-of-edges graph) 1)))
+      (when (not (directed? graph))
+        (delete-sorted from '() (head-setter to) (vector-ref lists to)))
+      )
+ 
+    (define/public (adjacent? from to)
+      (define lists (storage graph))
+      (let search-sorted
+        ((current (vector-ref lists from)))
+        (cond 
+          ((or (null? current)
+               (< (mcar current) to))
+           #f)
+          ((= (mcar current) to)
+           #t)
+          (else
+           (search-sorted (mcdr current))))))
+    ))
+
+#|
+(let ((g (new graph% (order 8))))
+        (send g add-edge! 0 2)
+        (send g add-edge! 0 7)
+        (send g add-edge! 0 5)
+        (send g add-edge! 2 6)
+        (send g add-edge! 1 7)
+        (send g add-edge! 5 3)
+        (send g add-edge! 5 4)
+        (send g add-edge! 3 4)
+        (send g add-edge! 4 6)
+        (send g add-edge! 4 7)
+        g))
+(send connected adjacent? 1 2)
+(send connected adjacent? 0 2)
+|#
