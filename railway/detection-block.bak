@@ -14,7 +14,7 @@
 (define detection-block%
   (class segment%
     (super-new)
-    (inherit-field connection id state)
-    (define/public (occupy)
-      (set! state 'occupied))
+    (inherit-field connection id reserved?)
+    (define/public (is-occupied?)
+      (not (not (member id (send connection get-occupied-detection-blocks)))))
     ))

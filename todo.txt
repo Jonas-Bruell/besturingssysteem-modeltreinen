@@ -1,0 +1,24 @@
+(1) Implement basic tcp server
+(2) Herstructureer code:
+	gui/ :: common gui-elements
+	railway/ :: abstractie van de spoorweglogica
+	infrabel/ :: instantie van railway, bovenop modeltrein project, is tcp server
+	INFRABEL.rkt :: startup van infrabel/
+	provider/ :: abstractie van instantie van railway, bovenop infrabel/, is tcp client
+	DB.rkt of NMBS.rkt :: instantie van provider/, startup van de instantie
+	quickstartup-testing.rkt :: automatic localhost server and client startup van INFRABEL en NMBS
+(3) Herwerken GUI-s
+	c&c: toestand spoor moet op elk moment gereflecteerd zijn in de gui (monitoren)
+	aparte panels/tabs voor treinen, wissels, blokken, etc
+	sliders voor snelheid trein
+	noodstop knop
+	drop-downs als keuzelijst treinen op detectieblokken toevoegen (textvelden vermijden!)
+(4) Documentatie
+	herwerken documentatie (zie feedback)
+(5) Unit tests maken
+(6) Wissels & fase 2 opbouwen -> ppt
+	wissl 2-3 en 5-6 "speciaal"
+	trajectberekeningen
+	veiligheid
+ 
+	

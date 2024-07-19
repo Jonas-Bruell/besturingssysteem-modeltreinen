@@ -8,10 +8,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require (prefix-in udp: "udp.rkt")
-         "../railway/main.rkt")
-(provide temp-startup   ; (/ -> /)
+(require (prefix-in udp: "../udp/socket.rkt")
+         "../../railway/main.rkt")
+
+(provide start-infrabel   ; (/ -> /)
          )
+
+(define (start-infrabel socket)
+  (new infrabel% (connection socket))
+  )
 
 (define infrabel%
   (class railway%
@@ -27,37 +32,40 @@
       (get-the-test-train-list connection))
     ; segments
     (define/override (segment-list segment%)
-      (thunk (setup-object segment%
-                           connection
-                           '(U-1 U-2 U-3 U-4 U-5 U-6 U-7)
-                           (λ (id) #f))))
+      (thunk (setup-object
+              segment%
+              connection
+              '(U-1 U-2 U-3 U-4 U-5 U-6 U-7)
+              (λ (id) 'free))))
     ; detection-blocks
     (define/override (detection-block-list detection-block%)
-      (thunk (setup-object detection-block%
-                           connection
-                           (send connection get-detection-block-ids)
-                           (λ (id) #f))))
+      (thunk (setup-object
+              detection-block%
+              connection
+              (send connection get-detection-block-ids)
+              (λ (id)
+                (if (member id (send connection get-occupied-detection-blocks))
+                    'occupied
+                    'free)))))
     ; switches
     (define/override (switch-list switch%)
-      (thunk (setup-object switch%
-                           connection
-                           (send connection get-switch-ids)
-                           (λ (id) (send connection get-switch-position id)))))
+      (thunk (setup-object
+              switch%
+              connection
+              (send connection get-switch-ids)
+              (λ (id) (send connection get-switch-position id)))))
     ; crossings
     (define/override (crossing-list crossing%)
-      (thunk (setup-object crossing%
-                           connection
-                           '(C-1 C-2)
-                           (λ (id) 1))))
+      (thunk (setup-object
+              crossing%
+              connection
+              '(C-1 C-2)
+              (λ (id) 1))))
     ; lights
     (define/override (light-list light%)
-      (thunk (setup-object light%
-                           connection
-                           '(L-1 L-2)
-                           (λ (id) 'Hp1))))
+      (thunk (setup-object
+              light%
+              connection
+              '(L-1 L-2)
+              (λ (id) 'Hp1))))
     ))
-
-(define (temp-startup)
-  (udp:config 'sim 'hardware)
-  (udp:start)
-  (new infrabel% (connection (new udp:udp%))))

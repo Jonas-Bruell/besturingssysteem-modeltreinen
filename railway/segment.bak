@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
-;;                         >>> detection-block.rkt <<<                        ;;
+;;                             >>> segment.rkt <<<                            ;;
 ;;                      programmeerproject 2,  2023-2024                      ;;
 ;;                      written by: Jonas Brüll, 0587194                      ;;
 ;;                                > version 1 <                               ;;
@@ -8,13 +8,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require "segment.rkt")
-(provide detection-block%) ; (object symbol boolean -> class)
+(provide segment%) ; (object symbol boolean -> class)
 
-(define detection-block%
-  (class segment%
+(define segment%
+  (class object%
     (super-new)
-    (inherit-field connection id state)
-    (define/public (occupy)
-      (set! state 'occupied))
+    (init-field connection id state reserved)
     ))

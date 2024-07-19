@@ -10,7 +10,7 @@
 #lang racket
 (require (prefix-in sim: "../../simulator/interface.rkt"))
 (provide config                        ; (symbol symbol -> /)
-         udp%                          ; (/ -> object)
+         socket%                       ; (/ -> object)
          start                         ; (/ -> /)
          stop                          ; (/ -> /)
          add-loco                      ; (symbol symbol symbol -> /)
@@ -37,7 +37,7 @@
     ('loop (sim:setup-loop))
     ('loop-and-switches (sim:setup-loop-and-switches))))
 
-(define udp%
+(define socket%
   (class object%
     (super-new)
 

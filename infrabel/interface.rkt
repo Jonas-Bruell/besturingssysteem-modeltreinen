@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
-;;                         >>> detection-block.rkt <<<                        ;;
+;;                          >>> infrabel/main.rkt <<<                         ;;
 ;;                      programmeerproject 2,  2023-2024                      ;;
 ;;                      written by: Jonas Brüll, 0587194                      ;;
 ;;                                > version 1 <                               ;;
@@ -8,13 +8,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require "segment.rkt")
-(provide detection-block%) ; (object symbol boolean -> class)
 
-(define detection-block%
-  (class segment%
-    (super-new)
-    (inherit-field connection id state)
-    (define/public (occupy)
-      (set! state 'occupied))
-    ))
+(require (prefix-in startup: "main/startup.rkt"))
+
+(provide startup
+         )
+
+; startup
+(define (startup)
+  (startup:startup)
+  )
