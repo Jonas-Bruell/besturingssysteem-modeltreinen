@@ -23,13 +23,8 @@
     (init-field connection)
     (super-new)
     (inherit setup-object)
-    (inherit add-a-train!)
-    (inherit get-the-test-train-list)
-    ;trains
-    (define/public (add-train! id previous-segment current-segment)
-      (add-a-train! connection id previous-segment current-segment))
-    (define/public (get-test-train-list)
-      (get-the-test-train-list connection))
+    ; track
+    (define/override track 'track)
     ; segments
     (define/override (segment-list segment%)
       (thunk (setup-object
@@ -68,4 +63,11 @@
               connection
               '(L-1 L-2)
               (λ (id) 'Hp1))))
+    ;trains
+    (inherit add-a-train!)
+    (inherit get-the-test-train-list)
+    (define/public (add-train! id previous-segment current-segment)
+      (add-a-train! connection id previous-segment current-segment))
+    (define/public (get-test-train-list)
+      (get-the-test-train-list connection))
     ))

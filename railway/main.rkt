@@ -35,27 +35,9 @@
     (define (search-object id object-list)
       (cdr (assoc id object-list)))
     
-    ; trains
-    (define trains '())
-    (define/public (get-the-test-train-list connection)
-      (list (cons 'test-train (new train%
-                                   (connection connection)
-                                   (id 'test-train)
-                                   (previous '1-5)
-                                   (current '1-4)))))
-    (define/public (add-a-train! connection id previous-segment current-segment)
-      (set! trains
-            (append trains (list (cons id
-                                       (new train%
-                                            (connection connection)
-                                            (id id)
-                                            (previous previous-segment)
-                                            (current current-segment)))))))
-    (define/public (set-train-speed! train new-speed)
-      (send (search-object train trains) set-train-speed! new-speed))
-    (define/public (test train)
-      (search-object train trains))
     
+    ; track
+    (abstract track)
     ; segments
     (abstract segment-list)
     (define segments (segment-list segment%))
@@ -97,4 +79,24 @@
       (send (search-object light (lights)) get-signal))
     (define/public (set-light-signal! light new-signal)
       (send (search-object light (lights)) set-signal! new-signal))
+    ; trains
+    (define trains '())
+    (define/public (get-the-test-train-list connection)
+      (list (cons 'test-train (new train%
+                                   (connection connection)
+                                   (id 'test-train)
+                                   (previous '1-5)
+                                   (current '1-4)))))
+    (define/public (add-a-train! connection id previous-segment current-segment)
+      (set! trains
+            (append trains (list (cons id
+                                       (new train%
+                                            (connection connection)
+                                            (id id)
+                                            (previous previous-segment)
+                                            (current current-segment)))))))
+    (define/public (set-train-speed! train new-speed)
+      (send (search-object train trains) set-train-speed! new-speed))
+    (define/public (test train)
+      (search-object train trains))    
     ))

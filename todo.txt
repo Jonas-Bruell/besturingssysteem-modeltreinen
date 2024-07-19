@@ -20,5 +20,3 @@
 	wissl 2-3 en 5-6 "speciaal"
 	trajectberekeningen
 	veiligheid
- 
-	

@@ -20,12 +20,13 @@
        (filter (λ (str) (string-contains? str ".rkt"))
                (map path->string (directory-list "infrabel/routes")))))
 (define startup-callback
-  (λ (type sim host port a&d?) (startup-server type sim host port a&d?)))
+  (λ (type version host port a&d?)
+    (startup-server type version host port a&d?)))
 (define status-callback
   (λ (callback) (set! status-callback callback)))
 
-(define (startup-server type sim host port a&d?)
-  (displayln sim)
+(define (startup-server type version host port a&d?)
+  (displayln version)
   (let/cc return
     ;; starting message
     (send status-callback insert
@@ -33,7 +34,7 @@
     ;; socket connection
     (send status-callback insert "Connecting to the modal railway ... : ")
     (try
-     ((send socket config 'sim 'hardware)
+     ((send socket config 'sim (string->symbol version))
       (send socket open-connection))
      (catch (exn:fail? (send status-callback insert
                              "\nERROR: could not connect to modal railway\n\n")
@@ -58,7 +59,7 @@
     (send status-callback insert "Setting up admin and debugger panel ... : ")
     (try
      ((when a&d?
-        (set! gui (adm&dbg:make-adm&dbg infra))
+        (set! gui (adm&dbg:make-adm&dbg version infra))
         (send gui show #t)))
      (catch (exn:fail?
              (send status-callback insert

@@ -100,7 +100,8 @@
           (new text-field%
                (label "")
                (parent horizontal-pane)
-               (callback (λ (t e) (set! hostname (send t get-value)))))))
+               (callback (λ (t e) (set! hostname (send t get-value)))))
+          ))
 
       ;; portnumber
       (let ((group-box-panel
@@ -122,7 +123,8 @@
           (new text-field%
                (label "")
                (parent horizontal-pane)
-               (callback (λ (t e) (set! portnumber (send t get-value)))))))
+               (callback (λ (t e) (set! portnumber (send t get-value)))))
+          ))
 
       ;; checkbox and start button
       (let ((vertical-pane

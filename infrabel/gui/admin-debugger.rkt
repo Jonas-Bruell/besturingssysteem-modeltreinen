@@ -10,13 +10,14 @@
 #lang racket/gui
 
 (require "../../config.rkt"
-         "../routes/hardware.rkt"
          "elements.rkt")
 (provide make-adm&dbg)
 
-(define (make-adm&dbg system)
-  (make-object gui% system)
-  )
+(define TRACK "")
+(define (make-adm&dbg sim system)
+  (set! TRACK
+        (dynamic-require (string-append "infrabel/routes/" sim ".rkt") 'TRACK))
+  (make-object gui% system))
 
 (define gui%
   (class frame%

@@ -8,7 +8,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require (prefix-in sim: "../../simulator/interface.rkt"))
+(require (prefix-in sim: "simulator/interface.rkt")
+         (prefix-in hw:  "hardware-library/interface.rkt"))
 (provide make-socket
          )
 
