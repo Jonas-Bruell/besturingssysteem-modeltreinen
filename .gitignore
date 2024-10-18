@@ -1,20 +1,3 @@
-*.bak
-
-infrabel/*.bak
-infrabel/gui/*.bak
-infrabel/main/*.bak
-infrabel/routes/*.bak
-infrabel/tcp/*.bak
-infrabel/udp/*.bak
-
-modules/*.bak
-
-provider/*.bak
-provider/gui/*.bak
-provider/main/*.bak
-
-railway/*.bak
-
-web/*.bak
+/**/*.bak
 
 TODO.txt
