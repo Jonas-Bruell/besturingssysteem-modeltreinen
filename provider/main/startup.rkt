@@ -1,5 +1,22 @@
 #lang racket
 
+(require (prefix-in gui: "../gui/startup.rkt")
+         )
+
+(provide startup
+         )
+
+(define (startup name bg-color txt-color)
+  (gui:startup name bg-color txt-color startup-callback status-callback)
+  )
+
+(define startup-callback
+  (λ (type version host port a&d?)
+    (void)))
+(define status-callback
+  (λ (callback) (set! status-callback callback)))
+
+#| ; infrabel startup
 (require try-catch
          "../../modules/string-contains.rkt"
          (prefix-in gui: "../gui/startup.rkt")
@@ -10,14 +27,6 @@
 
 (provide startup
          )
-
-(define (startup)
-  (gui:startup simulator-types startup-callback status-callback)
-  )
-
-
-
-
 
 (define socket (udp:make-socket))
 (define server (void))
@@ -81,3 +90,8 @@
           (string-append*
            `("\nStartup succesful, server on  >>> " ,host ":" ,port " <<<")))
     (send status-callback insert "\nYou may close this window now.\n\n")))
+
+(define (startup)
+  (gui:startup simulator-types startup-callback status-callback)
+  )
+|#

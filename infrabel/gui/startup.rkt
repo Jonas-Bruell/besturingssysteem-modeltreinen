@@ -16,19 +16,17 @@
     
     (super-new
      (label "INFRABEL startup manager")
-     (width SERVER_STARTUP_WIDTH)
-     (height SERVER_STARTUP_HEIGHT)
+     (width 0 #|elements stretch frame|#)
+     (height 0 #|elements stretch frame|#)
      (style '(no-resize-border #|float|#)))
 
     (let* ((global-pane (new horizontal-pane% (parent this)))
            (config-pane
             (new vertical-pane%
-                 (parent global-pane)
-                 (min-width (exact-floor (* SERVER_STARTUP_WIDTH .38)))))
+                 (parent global-pane)))
            (status-pane
             (new vertical-pane%
-                 (parent global-pane)
-                 (min-width (exact-floor (* SERVER_STARTUP_WIDTH .62)))))
+                 (parent global-pane)))
            (choice-pane (new object%))
            (type 0)
            (sim 0)
@@ -55,7 +53,7 @@
                   (alignment '(left center)))))
         (new radio-box%
              (label " ")
-             (choices '("   Simulator        " "    Hardware"))
+             (choices '("   simulator        " "    hardware"))
              (parent group-box-panel)
              (callback
               (λ (t e)
@@ -151,7 +149,8 @@
                    (editor text)
                    (style '(no-hscroll transparent no-focus))
                    (vert-margin 9)
-                   (horiz-margin 5))))
+                   (horiz-margin 5)
+                   (min-width 400))))
         (status-callback text))
       
       )))

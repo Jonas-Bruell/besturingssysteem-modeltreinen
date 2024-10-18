@@ -1,31 +1,50 @@
 #lang racket/gui
 
-(provide provider-gui)
+(require "../../config.rkt")
+(provide startup)
 
-(define (provider-gui name bg-color txt-color)
+(define (startup name bg-color txt-color startup-callback status-callback)
   (send
-   (make-object gui% name bg-color txt-color)
+   (make-object gui% name bg-color txt-color startup-callback status-callback)
    show #t))
 
 (define gui%
   (class frame%
     (init-field name
                 background-color
-                text-color)
+                text-color
+                startup-callback
+                status-callback)
     (super-new
-     (label (string-append name " command and control center"))
-     (width 1080)
-     (height 1920)
-     )
+     (label (string-append name " startup manager"))
+     (width 0 #|elements stretch frame|#)
+     (height 0 #|elements stretch frame|#)
+     (style '(no-resize-border #|float|#)))
 
-    (let* ((global-pane (new vertical-pane% (parent this)))
-           (header-pane
-            (new horizontal-pane%
+    (let* ((global-pane (new horizontal-pane% (parent this)))
+           (config-pane
+            (new vertical-pane%
                  (parent global-pane)))
-           (c&c-pane (new vertical-pane% (parent global-pane)))
-           )
+           (status-pane
+            (new vertical-pane%
+                 (parent global-pane)))
+           (choice-pane (new object%))
+           (type 0)
+           (sim 0)
+           (host 0)
+           (hostname "")
+           (port 0)
+           (portnumber "")
+           (admin&debugger? DEFAULT_A&D_CHECKBOX))
 
-      (λ () (void))
+      
+      ;; start server
+      (define (start-server)
+        (startup-callback
+         (if (zero? type) 'simulator 'hardware)
+         (if (zero? host) DEFAULT_HOST hostname)
+         (if (zero? port) DEFAULT_PORT portnumber)
+         admin&debugger?))
 
       #|
       ;; railway type
@@ -47,8 +66,8 @@
                            (set! sim 0)
                            (send choice-pane set-selection 0)))))
              (style '(horizontal))))
-
-      
+|#
+      #|
       ;; simulator type
       (let ((group-box-panel
              (new group-box-panel%
@@ -63,7 +82,7 @@
                    (stretchable-width #t)
                    (callback (λ (t e) (set! sim (send t get-selection))))
                    )))
-
+|#
       ;; hostname
       (let ((group-box-panel
              (new group-box-panel%
@@ -136,5 +155,5 @@
                    (horiz-margin 5)
                    (min-width 400))))
         (status-callback text))
-      |#
+      
       )))

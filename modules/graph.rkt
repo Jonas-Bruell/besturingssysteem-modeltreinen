@@ -68,12 +68,27 @@
       (mcar (mcdr (mcdr (mcdr graph)))))
     (define graph (make #f 0 (make-vector order '())))
 
+    (define dictionary '())
+    (define active-nodes 0)
+    (define (add-kvp key)
+      (set! dictionary (append dictionary (list (cons key active-nodes))))
+      (set! active-nodes (+ active-nodes 1)))
+    (define (get-value key)
+      (let ((kvp (assoc key dictionary)))
+        (if kvp
+            (cdr kvp)
+            (begin (add-kvp key) (get-value key)))))
+
     ;; extern
 
     #|
     (define/public (order)
       (vector-length (storage graph)))
     |#
+
+    (define/public (display)
+      (displayln graph)
+      (displayln dictionary))
     
     (define/public (for-each-node proc)
       (define lists (storage graph))
@@ -85,35 +100,39 @@
       )
  
     (define/public (for-each-edge from proc)
-      (define row (vector-ref (storage graph) from))
-      (let iter-edges
-        ((edges row))
-        (when (not (null? edges))
-          (proc (mcar edges))
-          (iter-edges (mcdr edges))))
-      )
+      (let ((from (get-value from)))
+        (define row (vector-ref (storage graph) from))
+        (let iter-edges
+          ((edges row))
+          (when (not (null? edges))
+            (proc (mcar edges))
+            (iter-edges (mcdr edges))))
+        ))
  
     (define/public (add-edge! from to)
-      (define lists (storage graph))
-      (define (insert-sorted to prev next! next)
-        (cond 
-          ((or (null? next)
-               (> to (mcar next)))
-           (next! prev (mcons to next))
-           #t)
-          ((= to (mcar next))
-           #f)
-          (else
-           (insert-sorted to next set-mcdr! (mcdr next)))))
-      (define (head-setter head) 
-        (lambda (ignore next)
-          (vector-set! lists head next)))
-      (when (insert-sorted to '() (head-setter from) (vector-ref lists from))
-        (nr-of-edges! graph (+ 1 (nr-of-edges graph))))
-      (when (not (directed? graph))
-        (insert-sorted from '() (head-setter to) (vector-ref lists to)))
-      )
- 
+      (let* ((from (get-value from))
+             (to   (get-value to)))
+        (define lists (storage graph))
+        (define (insert-sorted to prev next! next)
+          (cond 
+            ((or (null? next)
+                 (> to (mcar next)))
+             (next! prev (mcons to next))
+             #t)
+            ((= to (mcar next))
+             #f)
+            (else
+             (insert-sorted to next set-mcdr! (mcdr next)))))
+        (define (head-setter head) 
+          (lambda (ignore next)
+            (vector-set! lists head next)))
+        (when (insert-sorted to '() (head-setter from) (vector-ref lists from))
+          (nr-of-edges! graph (+ 1 (nr-of-edges graph))))
+        (when (not (directed? graph))
+          (insert-sorted from '() (head-setter to) (vector-ref lists to)))
+        ))
+
+    #|
     (define/public (delete-edge! from to)
       (define lists (storage graph))
       (define (delete-sorted to prev next! next)
@@ -134,19 +153,23 @@
       (when (not (directed? graph))
         (delete-sorted from '() (head-setter to) (vector-ref lists to)))
       )
+    |#
  
     (define/public (adjacent? from to)
-      (define lists (storage graph))
-      (let search-sorted
-        ((current (vector-ref lists from)))
-        (cond 
-          ((or (null? current)
-               (< (mcar current) to))
-           #f)
-          ((= (mcar current) to)
-           #t)
-          (else
-           (search-sorted (mcdr current))))))
+      (let* ((from (get-value from))
+             (to   (get-value to)))
+        (define lists (storage graph))
+        (let search-sorted
+          ((current (vector-ref lists from)))
+          (cond 
+            ((or (null? current)
+                 (< (mcar current) to))
+             #f)
+            ((= (mcar current) to)
+             #t)
+            (else
+             (search-sorted (mcdr current)))))
+        ))
     ))
 
 #|

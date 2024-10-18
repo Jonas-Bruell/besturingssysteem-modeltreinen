@@ -13,9 +13,12 @@
          "elements.rkt")
 (provide make-adm&dbg)
 
-
+(define gui (new object%))
 (define (make-adm&dbg sim system)
-  (make-object gui% system))
+  (set! gui (make-object gui% system))
+  gui)
+(define (update-adm&dbg!)
+  (send gui update!))
 
 (define gui%
   (class frame%
@@ -108,21 +111,17 @@
               (fill (cdr callbacks-all-objects))))))
 
       
-      ; filling panels with messages and buttons
-      (let fill ((switch (map (λ (l)
-                                (list l
-                                      (λ () (send infrabel
-                                                  get-switch-position
-                                                  (car l)))
-                                      (λ (t e) (send infrabel
-                                                     set-switch-position!
-                                                     (car l) 1))
-                                      (λ (t e) (send infrabel
-                                                     set-switch-position!
-                                                     (car l) 2))
-                                      ))
-                              (cdr (assoc 'switch (send infrabel get-track)))))
-                 (index 0))
+      ; FILL SWITCH
+      (let fill
+        ((switch
+          (map (λ (l) (list l
+                            (λ () (send infrabel get-switch-position (car l)))
+                            (λ (t e)
+                              (send infrabel set-switch-position! (car l) 1))
+                            (λ (t e)
+                              (send infrabel set-switch-position! (car l) 2))))
+               (cdr (assoc 'switch (send infrabel get-track)))))
+         (index 0))
         (new switch-panel%
              (parent (if (< index 8)
                          switches-panel-L
@@ -138,37 +137,23 @@
         (unless (null? (cdr switch))
           (fill (cdr switch) (+ index 1))))
 
-      (let ((switch (map (λ (l)
-                           (list l
-                                 (λ () (send infrabel
-                                             get-switch-position
-                                             (cadr l)))
-                                 (λ () (send infrabel
-                                             get-switch-position
-                                             (caddr l)))
-                                 (λ (t e)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (cadr l) 1))
-                                 (λ (t e)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (cadr l) 2)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (caddr l) 1))
-                                 (λ (t e)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (cadr l) 2)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (caddr l) 2))
-                                 ))
-                         (cdr (assoc 'threeway
-                                     (cdr (assoc
-                                           'switch*
-                                           (send infrabel get-track))))))))
+      ; FILL 3-WAY-SWITCH
+      (let ((switch
+             (map (λ (l)
+                    (list l
+                          (λ () (send infrabel get-switch-position (cadr l)))
+                          (λ () (send infrabel get-switch-position (caddr l)))
+                          (λ (t e)
+                            (send infrabel set-switch-position! (cadr l) 1))
+                          (λ (t e)
+                            (send infrabel set-switch-position! (cadr l) 2)
+                            (send infrabel set-switch-position! (caddr l) 1))
+                          (λ (t e)
+                            (send infrabel set-switch-position! (cadr l) 2)
+                            (send infrabel set-switch-position! (caddr l) 2))))
+                  (cdr (assoc 'threeway
+                              (cdr (assoc 'switch*
+                                          (send infrabel get-track))))))))
         (new three-way-switch-panel%
              (parent switches*-panel)
              (name (symbol->string (caar (car switch))))
@@ -183,35 +168,23 @@
              (out3 (symbol->string (cadddr (cdddar (car switch))))))
         )
 
-      (let ((switch (map (λ (l)
-                           (list l
-                                 (λ () (send infrabel
-                                             get-switch-position
-                                             (cadr l)))
-                                 (λ () (send infrabel
-                                             get-switch-position
-                                             (caddr l)))
-                                 (λ (t e)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (cadr l) 1))
-                                 (λ (t e)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (cadr l) 2))
-                                 (λ (t e)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (caddr l) 1))
-                                 (λ (t e)
-                                   (send infrabel
-                                         set-switch-position!
-                                         (caddr l) 2))
-                                 ))
-                         (cdr (assoc
-                               'cross
-                               (cdr
-                                (assoc 'switch* (send infrabel get-track))))))))
+      ; FILL 4-WAY-SWITCH
+      (let ((switch
+             (map (λ (l)
+                    (list l
+                          (λ () (send infrabel get-switch-position (cadr l)))
+                          (λ () (send infrabel get-switch-position (caddr l)))
+                          (λ (t e)
+                            (send infrabel set-switch-position! (cadr l) 1))
+                          (λ (t e)
+                            (send infrabel set-switch-position! (cadr l) 2))
+                          (λ (t e)
+                            (send infrabel set-switch-position! (caddr l) 1))
+                          (λ (t e)
+                            (send infrabel set-switch-position! (caddr l) 2))))
+                  (cdr (assoc 'cross
+                              (cdr (assoc 'switch*
+                                          (send infrabel get-track))))))))
         (new cross-switch-panel%
              (parent switches*-panel)
              (name (symbol->string (caar (car switch))))
@@ -224,61 +197,36 @@
              (button3 (cadddr (cddar switch)))
              (button4 (cadddr (cdddar switch)))
              (out1 (symbol->string (caddr (cdddar (car switch)))))
-             (out2 (symbol->string (cadddr (cdddar (car switch))))))
-        )
+             (out2 (symbol->string (cadddr (cdddar (car switch)))))))
 
+      ; FILL D-BLOCKS
       (let fill
         ((block
           (map (λ (l)
-                 (list l
-                       (λ () (format "~a" (send infrabel
-                                                get-detection-block-state
-                                                (car l))))
-                       ))
-               (cdr (assoc 'detection-block-1
-                           (cdr
-                            (assoc 'block
-                                   (send infrabel get-track))))))))
-        (let ((status (new status%
-                           (parent blocks-panel-1)
-                           (name (symbol->string (caaar block)))
-                           (callback (cadar block)))))
-          (set! callbacks-list
-                (append callbacks-list
-                        (list (cons status (cadar block))))))
-
-        (unless (null? (cdr block))
-          (fill (cdr block))))
-
-      (let fill
-        ((block
-          (map (λ (l)
-                 (list l
-                       (λ () (format "~a" (send infrabel
-                                                get-detection-block-state
-                                                (car l))))
-                       ))
-               (cdr (assoc 'detection-block-2
+                 (list l (λ () (format "~a" (send infrabel
+                                                  get-detection-block-state
+                                                  (car l))))))
+               (cdr (assoc 'detection-block
                            (cdr (assoc 'block
-                                       (send infrabel get-track))))))))
+                                       (send infrabel get-track)))))))
+         (index 0))
         (let ((status (new status%
-                           (parent blocks-panel-2)
+                           (parent (if (< index 8)
+                                       blocks-panel-1
+                                       blocks-panel-2))
                            (name (symbol->string (caaar block)))
                            (callback (cadar block)))))
           (set! callbacks-list
                 (append callbacks-list
                         (list (cons status (cadar block))))))
-
         (unless (null? (cdr block))
-          (fill (cdr block))))
+          (fill (cdr block) (+ index 1))))
 
+      ; FILL BLOCKS
       (let fill
-        ((block (map (λ (l)
-                       (list l
-                             (λ () (format "~a" (send infrabel
-                                                      get-segment-state
-                                                      (car l))))
-                             ))
+        ((block (map (λ (l) (list l (λ () (format "~a" (send infrabel
+                                                             get-segment-state
+                                                             (car l))))))
                      (cdr (assoc 'segment
                                  (cdr (assoc 'block
                                              (send infrabel get-track))))))))
@@ -286,17 +234,17 @@
              (parent blocks-panel-U)
              (name (symbol->string (caaar block)))
              (callback (cadar block)))
-
         (unless (null? (cdr block))
           (fill (cdr block))))
 
+      ; FILL CROSSINGS
       (fill-panel crossings-panel
                   (list
                    (list 'C-1 (cons "activate" (λ (t e) (void))))
                    (list 'C-2 (cons "activate" (λ (t e) (void))))
                    ))
 
-      
+      ; FILL LIGHTS
       (fill-panel lights-panel
                   (list
                    (list 'L-1

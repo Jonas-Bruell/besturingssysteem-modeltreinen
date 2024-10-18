@@ -4,7 +4,7 @@
 
 (define TRACK
   '((block
-     (detection-block-1
+     (detection-block
      ;(name cl-in cl-out)
       (1-1  S-28  S-10  )
       (1-2  S-27  S-9   )
@@ -14,9 +14,6 @@
       (1-6  S-5   1-7   )
       (1-7  1-6   S-28  )
       (1-8  S-25  Nil   )
-      )
-     (detection-block-2
-     ;(name cl-in cl-out)
       (2-1  S-1   Nil   )
       (2-2  Nil   S-2-3 )
       (2-3  S-12  S-5-6 )

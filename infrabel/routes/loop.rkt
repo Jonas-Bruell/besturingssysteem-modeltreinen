@@ -4,7 +4,7 @@
 
 (define TRACK
   '((block
-     (detection-block-1
+     (detection-block
      ;(name cl-in cl-out)
       (D1   T2    D2    )
       (D2   D1    D3    )
@@ -14,9 +14,6 @@
       (D6   T1    D7    )
       (D7   D6    D8    )
       (D8   D7    T2    )
-      )
-     (detection-block-2
-     ;(name cl-in cl-out)
       )
      (segment
      ;(name cl-in cl-out)

@@ -1,3 +1,3 @@
 #lang racket
-
-(require "provider/main.rkt")
+(require "provider/interface.rkt")
+(start-provider "NMBS" "blue" "white")

@@ -3,8 +3,6 @@
 (provide (all-defined-out))
 
 ;; SERVER STARTUP
-(define SERVER_STARTUP_WIDTH 660)
-(define SERVER_STARTUP_HEIGHT 270)
 (define DEFAULT_HOST "localhost")
 (define DEFAULT_PORT "2020")
 (define DEFAULT_A&D_CHECKBOX #t)

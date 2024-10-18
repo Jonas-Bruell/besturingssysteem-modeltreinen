@@ -11,10 +11,10 @@
 
 (require "main/startup.rkt")
 
-(provide start-infrabel
+(provide start-provider
          )
 
 ; startup
-(define (start-infrabel)
-  (startup)
+(define (start-provider name background-color text-color)
+  (startup name background-color text-color)
   )

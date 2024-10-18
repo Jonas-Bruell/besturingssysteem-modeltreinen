@@ -4,15 +4,12 @@
 
 (define TRACK
   '((block
-     (detection-block-1
+     (detection-block
      ;(name cl-in cl-out)
       (D1   NIL   D2    )
       (D2   D1    T     )
       (D3   T     D4    )
       (D4   D3    NIL   )
-      )
-     (detection-block-2
-     ;(name cl-in cl-out)
       )
      (segment
      ;(name cl-in cl-out)
