@@ -14,4 +14,4 @@ jobs:
           distribution: 'full'
           version: '8.2'
       - name: Run Tests
-        run: racket tests-github.rkt
+        run: raco test tests-github.rkt
