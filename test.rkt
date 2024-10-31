@@ -54,3 +54,6 @@
 (test/gui all-tests)
 
 ; Github actions: https://defn.io/2020/05/05/github-actions-for-racket-revised/
+(module+ github-tests
+  (require rackunit rackunit/text-ui)
+  (run-tests all-tests))
