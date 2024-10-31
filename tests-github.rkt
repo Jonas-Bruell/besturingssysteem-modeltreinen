@@ -9,5 +9,7 @@
 #lang racket
 
 ; Github actions: https://defn.io/2020/05/05/github-actions-for-racket-revised/
-(require rackunit/text-ui "tests.rkt")
-(run-tests all-tests)
+(module+ test
+  (require rackunit/text-ui "tests.rkt")
+  (run-tests all-tests)
+  )
