@@ -50,6 +50,7 @@
                           )
   ))
 
-; Github actions: https://defn.io/2020/05/05/github-actions-for-racket-revised/
 ; GUI test:
 (test/gui all-tests)
+
+; Github actions: https://defn.io/2020/05/05/github-actions-for-racket-revised/

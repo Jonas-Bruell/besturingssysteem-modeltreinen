@@ -14,4 +14,4 @@ jobs:
           distrubution: 'full'
           version: '8.2'
           name: Run Tests
-          run: raco test test.rkt
+          run: raco all-tests test.rkt
