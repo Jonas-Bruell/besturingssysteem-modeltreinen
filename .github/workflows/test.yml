@@ -14,6 +14,7 @@ jobs:
           distribution: 'full'
           variant: 'CS'
           version: '8.6'
-      - uses: coactions/setup-xvfb@v1.0.1
+      - name: Run Unit Tests with XVFB
+        uses: coactions/setup-xvfb@v1.0.1
         with:
-          run: raco test tests-github.rkt
+          run: raco test tests-github.rkts
