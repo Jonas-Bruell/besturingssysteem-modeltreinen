@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
-;;                          >>> segment.test.rkt <<<                          ;;
+;;                        >>> switch-cross.test.rkt <<<                       ;;
 ;;                      programmeerproject 2,  2024-2025                      ;;
 ;;                      written by: Jonas Brüll, 0587194                      ;;
 ;;                                > version 4 <                               ;;
@@ -9,8 +9,8 @@
 #lang racket
 (require rackunit
          rackunit/gui
-         "segment.rkt")
-(provide segment-test)
+         "switch-cross.rkt")
+(provide switch-cross-test)
 
 ;
 ; aliasses & abstrations
@@ -22,23 +22,23 @@
 
 (define connection (make-object connection%))
 
-(define segment
-  (make-object segment% connection 'test 'test))
+(define switch-cross
+  (make-object switch-cross% connection 'test 'test))
 
 ;
 ; individual test suites
 ;
 (define test-make-object
   (test-suite "testing make-object"
-              (test-case "check 'segment%' exists"
-                         (check-not-exn (λ () segment%)))
+              (test-case "check 'switch-cross%' exists"
+                         (check-not-exn (λ () switch-cross%)))
               (test-case "check constructor doesn't error"
-                         (check-not-exn (λ () segment)))))
+                         (check-not-exn (λ () switch-cross)))))
 
 ;
 ; running all test suites
 ;
-(define segment-test
-  (test-suite "All segment% operation tests"
+(define switch-cross-test
+  (test-suite "All switch-cross% operation tests"
               test-make-object
               ))
