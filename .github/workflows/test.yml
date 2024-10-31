@@ -11,7 +11,7 @@ jobs:
         uses: Bogdanp/setup-racket@v1.11
         with:
           architecture: 'x64'
-          distrubution: 'full'
+          distribution: 'full'
           version: '8.2'
-          name: Run Tests
-          run: raco all-tests test.rkt
+      - name: Run Tests
+        run: raco all-tests test.rkt
