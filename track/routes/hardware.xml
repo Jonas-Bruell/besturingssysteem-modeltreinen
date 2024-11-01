@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<track>
+  <detection-block-list>
+    <D1-1 name="1-1" in="S-28" out="S-10"></D1-1>
+    <detection-block>
+      <name>1-1</name>
+      <in>S-28</in>
+      <out>S-10</out>
+    </detection-block>
+  </detection-block-list>
+  <segment-list>
+
+  </segment-list>
+  <switch-list>
+
+  </switch-list>
+  <switch-3way-list>
+
+  </switch-3way-list>
+  <switch-cross-list>
+
+  </switch-cross-list>
+  <crossing-list>
+
+  </crossing-list>
+  <light-list>
+
+  </light-list>
+</track>
