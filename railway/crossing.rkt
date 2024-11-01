@@ -20,25 +20,32 @@
     ; @param id :: the name of the railroad crossing
     ; @param state :: the state of the railroad crossing - open or closed
     ;
-    (init-field id connection)
+    (init-field id connection segment-list)
     (field (state (send connection get-state)))
 
     ; Possible railway crossing states
     ;
     (define open 'open)
-    (define close 'close)
+    (define pending 'pending)
+    (define closed 'closed)
 
     ; get-id :: get the id of the railway crossing
     ;
-    ; @returns id-field of crossing
+    ; @returns symbol :: id-field of crossing
     ;
     (define/public (get-id) id)
     
     ; get-state :: get the state of the railway crossing
     ;
-    ; @returns state-field of crossing
+    ; @returns symbol :: state-field of crossing
     ;
     (define/public (get-state) state)
+
+    ; get-segments :: get the ids of the segments in the crossing
+    ;
+    ; @returns list :: list of segment ids
+    ;
+    (define/public (get-segments) segment-list)
     
     ; set-state! :: change the state of the railway crossing only when it is
     ; not yet in the required state
@@ -48,12 +55,15 @@
     (define/public (set-state! new-state)
       (cond ((eq? new-state state)
              (void))
-            ((or (eq? new-state open) (eq? new-state close))
-             (set! state new-state)
+            ((or (eq? new-state open) (eq? new-state closed))
              (send connection set-state! new-state)
-             ; wait 6 seconds, maybe an 'opening' or 'closing' state?
-             ; seperate thread?
-             ; check if real life version is really closed?
-             )
+             (set! state pending)
+             (thread
+              (λ ()
+                (let check-state ()
+                  (sleep 1)
+                  (if (eq? (send connection get-state) pending)
+                      (check-state)
+                      (set! state new-state))))))
             (else (error "crossing%: wrong message sent: " new-state))))
     ))
