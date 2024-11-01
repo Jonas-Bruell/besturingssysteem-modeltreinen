@@ -20,7 +20,11 @@
     ; @param id :: the name of the railroad crossing
     ; @param state :: the state of the railroad crossing - open or closed
     ;
-    (init-field connection id state)
+    (init-field id connection)
+    (field (state (send connection get-state)))
+
+    ; Possible railway crossing states
+    ;
     (define open 'open)
     (define close 'close)
 
@@ -42,8 +46,7 @@
     ; @param new-state :: the new state of the crossing - open or closed
     ;
     (define/public (set-state! new-state)
-      (cond ((or (and (eq? new-state open) (eq? state open))
-                 (and (eq? new-state close) (eq? state close)))
+      (cond ((eq? new-state state)
              (void))
             ((or (eq? new-state open) (eq? new-state close))
              (set! state new-state)
