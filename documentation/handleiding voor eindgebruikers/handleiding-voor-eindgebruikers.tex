@@ -1,0 +1,106 @@
+\documentclass[a4paper, 11pt]{article}
+
+% DEFINIËREN CODERING
+\usepackage[utf8]{inputenc}
+
+% DEFINIËREN BLAD
+\usepackage[
+top=20mm,
+bottom=20mm,
+left=20mm,
+right=20mm,
+heightrounded,
+]{geometry}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+%\pagestyle{fancy}
+\fancyhead[L]{}
+\fancyhead[C]{}
+\fancyhead[R]{}
+\fancyfoot[L]{}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{.4pt}
+\setlength{\headheight}{13.6pt}
+\setlength{\parindent}{1cm}
+
+% MEDIA
+% Tabellen
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{<{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{stackengine}
+\newcommand\xrowht[2][0]{\addstackgap[.5\dimexpr#2\relax]{\vphantom{#1}}}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{float}
+% Afbeeldingen
+\usepackage{graphicx}
+% Figuren
+\usepackage{tikz}
+
+% WISKUNDE
+% Basis
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+% Aanpassing
+\usepackage{dsfont}   % Voor de natuurlijke, gehele, rationele, reële, complexe getallen => ``$\mathfb{}$''
+\usepackage{mathdots} % Voor betere puntjes
+\usepackage{esvect}   % Voor betere vectorpijltjes => ``$\vv{}$''
+\usepackage{textcomp} % Nodig om gensymb correct te laten werken
+\usepackage{gensymb}  % Invoegen van enkele symbolen => ``\degree ; \celcius ; \perthousand ; \ohm ; \micro''
+\usepackage{cancel}   % Voor het beter doorstrepen van zaken => ``\cancel ; \bcancel ; \xcancel''
+\usepackage{esint}    % Meervoudige kringintegralen
+
+\newcommand{\naar}{\,$\rightarrow$\,}
+\newcommand{\ppp}{\ldots}
+\renewcommand{\empty}{$\varnothing$}
+\newcommand{\of}{$\cup$}
+\newcommand{\<}{\scriptsize\textless\normalsize}
+\renewcommand{\>}{\scriptsize\textgreater\normalsize}
+
+% Voorblad
+\title{Programmeerproject 2:\\ Handleiding Voor eindgebruikers}
+\date{Academiejaar 2023-2024}
+\author{Jonas Br\"ull, 0587194\\ (Jonas.Simon.E.Brull@vub.be)\\\\ 2ba Computerwetenschappen}
+
+% BEGIN DOCUMENT ===============================================================
+\begin{document}
+
+\pagenumbering{gobble}
+\maketitle
+\newpage
+
+\pagenumbering{gobble}
+\tableofcontents
+\newpage
+
+\pagestyle{fancy}
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+% ==============================================================================
+\section{Introductie} % ========================================================
+Dit document beschrijft de handleiding van mijn implementatie van een Modeltrein Software Toepassing in de programmeertaal Racket.\\
+Het is een deel van het opleidingsonderdeel ``Programmeerproject 2''.\\
+Concreet wordt in dit project verwacht om een controlesysteem te ontwikkelen dat modeltreinen kan aansturen vanaf een computer.
+
+\section{Opstarten}
+Het opstarten van het modeltreintjes project gebeurt voorlopig via het bestand \texttt{tcp/main.rkt}. Als je dit bestand runt in DrRacket, zullen 2 schermen openen, een \emph{GUI Simulator} en een \emph{GUI NMBS}. Via de laatste is het mogelijk om de simulator te besturen zoals hieronder uitgelegd. De GUI bestaat uit verschillende tabs, deze elk voor een eigen soort commando's instaat.
+
+\section{SWITCHES-tab}
+In deze tab kun je de wissels besturen. Elke wissel is aangeduid met diens naam, diens huidige stand en twee knoppen om diens stand te veranderen.
+
+\section{CROSSINGS-tab}
+In deze tab kun je de overwegen besturen. Elke overweg is aangeduid met diens naam, diens huidige stand en twee knoppen om diens stand te veranderen.
+
+\section{LIGHTS-tab}
+In deze tab kun je de lichten besturen. Elk licht is aangeduid met diens naam, diens huidige signaal en acht knoppen om diens signaal te veranderen.
+
+% ==============================================================================
+\label{lastpage}
+\end{document}
