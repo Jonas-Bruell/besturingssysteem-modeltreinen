@@ -15,10 +15,10 @@
 ;
 ; aliasses
 ;
-(define open 'open)
-(define closed 'closed)
+(define open    'open)
+(define closed  'closed)
 (define generic 'generic)
-(define timeout 1.5)
+(define timeout  1.5)
 
 ;
 ; abstrations
@@ -143,6 +143,7 @@
    (test-case
     "check if 'set-state!' doesn't error when calling 'closed"
     (check-not-exn (λ () (send (make-generic-crossing) set-state! closed))))
+   
    (test-case
     "check if open connection closes when calling (set-state! 'closed)"
     (let* ((connection (make-object connection% open))
@@ -151,8 +152,7 @@
       (check-eq? (send connection get-state) closed)))
    (test-case
     "check if open crossing closes when calling (set-state! 'closed)"
-    (let* ((connection (make-object connection% open))
-           (crossing (make-object crossing% 'id connection '())))
+    (let* ((crossing (make-open-crossing)))
       (send crossing set-state! closed)
       (sleep timeout)
       (check-eq? (send crossing get-state) closed)))
@@ -164,10 +164,10 @@
       (check-eq? (send connection get-state) closed)))
    (test-case
     "check if closed crossing stays closed when calling (set-state! 'closed)"
-    (let* ((connection (make-object connection% closed))
-           (crossing (make-object crossing% 'id connection '())))
+    (let* ((crossing (make-closed-crossing)))
       (send crossing set-state! closed)
       (check-eq? (send crossing get-state) closed)))
+   
    (test-case
     "check if closed connection opens when calling (set-state! 'open)"
     (let* ((connection (make-object connection% closed))
@@ -176,8 +176,7 @@
       (check-eq? (send connection get-state) open)))
    (test-case
     "check if closed crossing opens when calling (set-state! 'open)"
-    (let* ((connection (make-object connection% closed))
-           (crossing (make-object crossing% 'id connection '())))
+    (let* ((crossing (make-closed-crossing)))
       (send crossing set-state! open)
       (sleep timeout)
       (check-eq? (send crossing get-state) open)))
@@ -189,8 +188,7 @@
       (check-eq? (send connection get-state) open)))
    (test-case
     "check if open crossing stays open when calling (set-state! 'open)"
-    (let* ((connection (make-object connection% open))
-           (crossing (make-object crossing% 'id connection '())))
+    (let* ((crossing (make-open-crossing)))
       (send crossing set-state! open)
       (check-eq? (send crossing get-state) open)))
    (test-case

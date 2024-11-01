@@ -164,6 +164,7 @@ De \texttt{Main} klasse is het startpunt van railway-module van de software en f
 	\end{center}
 \end{table}
 
+% Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Crossing} % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. De constructor neemt als argumenten het \texttt{id} van de overweg, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een lijst met spoorwegsegmenten waarover deze overweg brugt. Het openen en sluiten van deze overweg neemt wat tijd in beslag, waartussen de overweg als status "\texttt{pending} heeft.
 \begin{table}[H]
@@ -176,7 +177,7 @@ De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. D
 			\hline
 			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van de overweg.\\
 			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van de overweg.\\
-			\texttt{get-segment-list} & (\empty \naar \textit{list}) & Geeft de segmenten waarover de overweg brugt.\\
+			\texttt{get-segments} & (\empty \naar \textit{list}) & Geeft de segmenten waarover de overweg brugt.\\
 			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Open of sluit de overweg adhv een status.\\
 			\hline
 		\end{tabular}
@@ -204,18 +205,21 @@ De \texttt{Detection-block} klasse is de atomaire abstractie van een detectieblo
 	\end{center}
 \end{table}
 
+% Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Light} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Light} klasse is de atomaire abstractie van een licht.
+De \texttt{Light} klasse is de atomaire abstractie van een licht. De constructor neemt als argumenten het \texttt{id} van het licht, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een spoorwegsegment waarover dit licht gaat.
 \begin{table}[H]
 	\begin{center}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
-			\texttt{make-object} & (\textit{symbol} \naar \textit{Light}) & Constructor\\
+			\texttt{make-object} & (\textit{symbol Object symbol} \naar \textit{Light}) & Constructor\\
 			\hline
-			\texttt{get-signal} & (\empty \naar \textit{symbol}) & Geeft het signaal van het Light\\
-			\texttt{set-signal!} & (\textit{symbol} \naar \empty) & Update het signaal van het Light\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van het licht.\\
+			\texttt{get-signal} & (\empty \naar \textit{symbol}) & Geeft het \texttt{signal} van het licht.\\
+			\texttt{get-segment} & (\empty \naar \textit{symbol}) & Geeft het segment waarover het licht gaat.\\
+			\texttt{set-signal!} & (\textit{symbol} \naar \empty) & Update het signaal van het licht.\\
 			\hline
 		\end{tabular}
 		\caption{Operaties van de Railway/Light klasse}

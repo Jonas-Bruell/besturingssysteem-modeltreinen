@@ -16,18 +16,18 @@
 
     ; This class represents an atomic abstraction of a railroad crossing
     ;
-    ; @param connection :: lower-level implementation of railroad crossing
     ; @param id :: the name of the railroad crossing
-    ; @param state :: the state of the railroad crossing - open or closed
+    ; @param connection :: lower-level implementation of railroad crossing
+    ; @param segment-list :: list of segments over which the crossing goes
     ;
     (init-field id connection segment-list)
     (field (state (send connection get-state)))
 
     ; Possible railway crossing states
     ;
-    (define open 'open)
+    (define open    'open)
     (define pending 'pending)
-    (define closed 'closed)
+    (define closed  'closed)
 
     ; get-id :: get the id of the railway crossing
     ;
