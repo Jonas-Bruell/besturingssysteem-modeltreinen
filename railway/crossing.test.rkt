@@ -141,7 +141,7 @@
 ;
 (define test-set-state!
   (test-suite
-   "Testing set-state"
+   "Testing set-state!"
    
    (test-case
     "check if 'set-state!' exists"

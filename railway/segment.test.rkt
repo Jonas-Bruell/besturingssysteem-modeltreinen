@@ -141,7 +141,7 @@
 ;
 (define test-set-state!
   (test-suite
-   "Testing set-state"
+   "Testing set-state!"
    
    (test-case
     "check if 'set-state!' exists"
@@ -153,38 +153,10 @@
                (λ () (send (make-generic-segment) set-state! 'wrong))))
 
    ;
-   ; (test-set-state! 'free) test suites
+   ; FREE :: (test-set-state! 'free) test suites
    ;
    (test-suite
     "check 'set-state!' with argemunt 'free"
-    
-    ;
-    ; (test-set-state! 'free) on reserved segment test suites
-    ;
-    (test-suite
-     "check with original state 'reserved"
-
-     (test-case
-      "check if (set-state! 'free) doesn't error"
-      (check-not-exn
-       (λ () (send (make-reserved-segment) set-state! free))))
-    
-     (test-case
-      "check if reserved segment frees"
-      (let* ((segment (make-reserved-segment)))
-        (send segment set-state! free)
-        (check-eq? (send segment get-state) free)))
-     (test-case
-      "check if reserved segment returns true after freed"
-      (let* ((segment (make-reserved-segment)))
-        (check-true (send segment set-state! free))))
-     (test-case
-      "check if reserved connection frees"
-      (let* ((connection (make-object connection% reserved))
-             (segment (make-object segment% 'id connection in out)))
-        (send segment set-state! free)
-        (check-eq? (send connection get-state) free)))
-     )
 
     ;
     ; (test-set-state! 'free) on free segment test suites
@@ -213,10 +185,37 @@
         (send segment set-state! free)
         (check-eq? (send connection get-state) free)))
      )
-    )
+    
+    ;
+    ; (test-set-state! 'free) on reserved segment test suites
+    ;
+    (test-suite
+     "check with original state 'reserved"
+
+     (test-case
+      "check if (set-state! 'free) doesn't error"
+      (check-not-exn
+       (λ () (send (make-reserved-segment) set-state! free))))
+    
+     (test-case
+      "check if reserved segment frees"
+      (let* ((segment (make-reserved-segment)))
+        (send segment set-state! free)
+        (check-eq? (send segment get-state) free)))
+     (test-case
+      "check if reserved segment returns true after freed"
+      (let* ((segment (make-reserved-segment)))
+        (check-true (send segment set-state! free))))
+     (test-case
+      "check if reserved connection frees"
+      (let* ((connection (make-object connection% reserved))
+             (segment (make-object segment% 'id connection in out)))
+        (send segment set-state! free)
+        (check-eq? (send connection get-state) free)))
+     ))
 
    ;
-   ; (test-set-state! 'reserved) test suites
+   ; RESERVED :: (test-set-state! 'reserved) test suites
    ;
    (test-suite
     "check 'set-state!' with argemunt 'reserved"
@@ -275,8 +274,7 @@
              (segment (make-object segment% 'id connection in out)))
         (send segment set-state! reserved)
         (check-eq? (send connection get-state) reserved)))
-     )
-    )))
+     ))))
 
 ;
 ; running all test suites

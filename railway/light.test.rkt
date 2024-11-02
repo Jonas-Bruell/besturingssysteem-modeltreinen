@@ -149,7 +149,7 @@
 ;
 (define test-set-signal!
   (test-suite
-   "Testing set-signal"
+   "Testing set-signal!"
    
    (test-case
     "check if 'set-signal!' exists"

@@ -37,6 +37,7 @@ heightrounded,
 \usepackage{multirow}
 \usepackage{hhline}
 \usepackage{float}
+\usepackage[table]{xcolor}
 % Afbeeldingen
 \usepackage{graphicx}
 % Figuren
@@ -136,6 +137,7 @@ De railway-module houdt ten allen tijden de staat van de fysieke modelspoorweg b
 De \texttt{Main} klasse is het startpunt van railway-module van de software en functioneert tevens ook als een interface. Om een digitaal equivalent van de staat van de modelspoorweg bij te houden, bezit deze klasse hiervoor ook de nodige getters en setters. Deze klasse berekent zelf welke spoorwegsegmenten bezet zijn en welke vrij, aan de hand van de locatie van de treinen. Hierdoor is het niet mogelijk om de status van spoorwegsegmenten, detectieblokken en wissels aan te passen. Om botsingen te voorkomen, is het well mogelijk deze te reserveren.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -163,7 +165,7 @@ De \texttt{Main} klasse is het startpunt van railway-module van de software en f
 			\texttt{get-train-speed} & (\textit{symbol} \naar \textit{symbol}) & Geeft snelheid weer van gegeven trein\\
 			\texttt{set-train-speed!} & (\textit{symbol} \textit{symbol} \naar \empty) & Update gegeven trein met gegeven snelheid\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Main klasse}
 	\end{center}
 \end{table}
@@ -173,6 +175,7 @@ De \texttt{Main} klasse is het startpunt van railway-module van de software en f
 De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. De constructor neemt als argumenten het \texttt{id} van de overweg, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een lijst met spoorwegsegmenten waarover deze overweg brugt. Het openen en sluiten van deze overweg neemt wat tijd in beslag, waartussen de overweg als status \lq\texttt{pending}' heeft.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -184,25 +187,37 @@ De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. D
 			\texttt{get-segments} & (\empty \naar \textit{list}) & Geeft de segmenten waarover de overweg brugt.\\
 			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Open of sluit de overweg adhv een status.\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Crossing klasse}
 	\end{center}
 \end{table}
 
+% Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Detection-block} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Detection-block} klasse is de atomaire abstractie van een detectieblok. Deze is een uitbreiding van de \texttt{Segment} klasse.
+De \texttt{Detection-block} klasse is de atomaire abstractie van een detectieblok. Deze is een uitbreiding van de \texttt{Segment} klasse. De constructor neemt als argumenten het \texttt{id} van het detectieblok, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en de twee andere spoorwegelementen waartussen dit detectieblok zich bevindt. De status van het detectieblok kan ofwel \texttt{free}, ofwel \texttt{reserved}, ofwel \texttt{occupied} zijn.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
-			\texttt{make-object} & (\textit{symbol} \naar \textit{Detection-block}) & Constructor\\
+			\texttt{make-object} & (\textit{symbol Object symbol symbol} & Constructor\\
+			&\naar \textit{Detection-block})&\\
 			\hline
-			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de status van het detection block\\
-			\texttt{set-state!} & (\textit{symbol} \naar \empty)& Update de status van het detection block\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van het detectieblok.\\
+			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van het detectieblok.\\
+			\texttt{get-next} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-prev} & (\empty \naar \textit{symbol}) & Geeft het vorige spoorwegelement weer.\\
+			\texttt{set-state!} & (\textit{symbol} \naar \textit{boolean}) & Update de \texttt{status} van het detectieblok.\\
+			&& • False wanneer \texttt{(set-state! 'reserved)}\\
+			&&   indien \texttt{Detection-block} gereserveerd.\\
+			&& • False wanneer \texttt{(set-state! 'reserved)}\\
+			&&   indien \texttt{Detection-block} occupied.\\
+			&& • False wanneer \texttt{(set-state! 'occupied)}\\
+			&&   indien \texttt{Detection-block} occupied.\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Detection-block klasse}
 	\end{center}
 \end{table}
@@ -212,6 +227,7 @@ De \texttt{Detection-block} klasse is de atomaire abstractie van een detectieblo
 De \texttt{Light} klasse is de atomaire abstractie van een licht. De constructor neemt als argumenten het \texttt{id} van het licht, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een spoorwegsegment waarover dit licht gaat. Het licht kan de volgende statussen hebben: \texttt{Hp0}, \texttt{Hp1}, \texttt{Hp0+Sh0}, \texttt{Ks1+Zs3}, \texttt{Ks2}, \texttt{Ks2+Zs3}, \texttt{Sh1}, \texttt{Ks1+Zs3+Zs3v}.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -223,7 +239,7 @@ De \texttt{Light} klasse is de atomaire abstractie van een licht. De constructor
 			\texttt{get-segment} & (\empty \naar \textit{symbol}) & Geeft het segment waarover het licht gaat.\\
 			\texttt{set-signal!} & (\textit{symbol} \naar \empty) & Update het signaal van het licht.\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Light klasse}
 	\end{center}
 \end{table}
@@ -233,21 +249,22 @@ De \texttt{Light} klasse is de atomaire abstractie van een licht. De constructor
 De \texttt{Segment} klasse is de atomaire abstractie van een spoorwegsegment. De constructor neemt als argumenten het \texttt{id} van het spoorwegsegment, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en de twee andere spoorwegelementen waartussen dit spoorwegsegment zich bevindt. De status van het spoorwegsegment kan ofwel \texttt{free}, ofwel \texttt{reserved} zijn.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
 			\texttt{make-object} & (\textit{symbol Object symbol symbol} \naar \textit{Segment}) & Constructor\\
 			\hline
-			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van de overweg.\\
-			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van de overweg.\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van het segment.\\
+			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van het segment.\\
 			\texttt{get-next} & (\empty \naar \textit{list}) & Geeft het volgende spoorwegelement weer.\\
 			\texttt{get-prev} & (\empty \naar \textit{list}) & Geeft het vorige spoorwegelement weer.\\
 			\texttt{set-state!} & (\textit{symbol} \naar \textit{boolean}) & Update de \texttt{status} van het segment.\\
 			&& False wanneer \texttt{(set-state! 'reserved)}\\
 			&& indien \texttt{Segment} reeds gereserveerd.\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Segment klasse}
 	\end{center}
 \end{table}
@@ -256,6 +273,7 @@ De \texttt{Segment} klasse is de atomaire abstractie van een spoorwegsegment. De
 De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -265,7 +283,7 @@ De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel.
 			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de status van de wissel\\
 			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de wissel\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Switch klasse}
 	\end{center}
 \end{table}
@@ -276,6 +294,7 @@ De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel.
 De \texttt{Switch-3way} klasse is de atomaire abstractie van een spoorwegwissel deze van 3 sporen laat samenkomen tot 1 spoor. Deze klasse is een uitbreiding is van de \texttt{Switch} klasse.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -285,7 +304,7 @@ De \texttt{Switch-3way} klasse is de atomaire abstractie van een spoorwegwissel 
 			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de status van de wissel\\
 			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de wissel\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Switch klasse}
 	\end{center}
 \end{table}
@@ -294,6 +313,7 @@ De \texttt{Switch-3way} klasse is de atomaire abstractie van een spoorwegwissel 
 De \texttt{Switch-cross} klasse is de atomaire abstractie van een spoorwegwissel deze de kruising maakt tussen 2 keer 2 sporen. Deze klasse is een uitbreiding van de \texttt{Switch} klasse.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -304,7 +324,7 @@ De \texttt{Switch-cross} klasse is de atomaire abstractie van een spoorwegwissel
 			\texttt{set-position-1!} & (\textit{symbol} \naar \empty) & Update de status van het eerste paar in de wissel\\
 			\texttt{set-position-2!} & (\textit{symbol} \naar \empty) & Update de status van het tweede paar in de wissel\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Switch klasse}
 	\end{center}
 \end{table}
@@ -313,6 +333,7 @@ De \texttt{Switch-cross} klasse is de atomaire abstractie van een spoorwegwissel
 De \texttt{Train} klasse is de atomaire abstractie van een trein.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -324,184 +345,12 @@ De \texttt{Train} klasse is de atomaire abstractie van een trein.
 			\texttt{get-train-speed} & (\empty \naar \textit{symbol}) & Geeft de snelheid van de trein\\
 			\texttt{set-train-speed!} & (\textit{symbol} \naar \empty) & Update de snelheid van de trein\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Railway/Train klasse}
 	\end{center}
 \end{table}
 
 \newpage
-
-% ==================================================================================================
-\section{Provider} % ===============================================================================
-De Provider-module is een abstractie van de software die gebruikt kan worden door clienten (bijvoorbeeld NMBS). Deze module is verantwoordelijk voor het beheren van routes op het treinnetwerk, moet ervoor zorgen dat klanten correcte timetables hebben en het moet mogelijk zijn om na een crash de huidige staat van de fysieke spoorweg terug te krijgen.
-
-	% ==================================================================================================
-\subsection{Afhankelijkheidsdiagram} % ================================================================
-\begin{center}
-	%\includegraphics[scale=.33]{Afhankelijkheidsdiagram2.jpg}
-\end{center}
-
-\subsection{Main} % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Main} klasse is het startpunt van de module en tevens ook de interface naar andere modules toe. De module bestaat uit twee onafhankelijke delen, een Grafische User Interface (GUI) en de interne logica (Logic), waar de main-klasse de interface speelt tussen de twee.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{Provider}) & Constructor\\
-			\hline
-			\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
-			\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/Main klasse}
-	\end{center}
-\end{table}
-
-\subsection{GUI} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-\subsubsection{Startup} % --------------------------------------------------------------------------
-De \texttt{Startup} klasse is de grafische representatie van het opstart menu, waar onder andere de configuratie voor de TCP verbinding zal kunnen gebeuren.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{Startup}) & Constructor\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/GUI/Startup klasse}
-	\end{center}
-\end{table}
-
-\subsubsection{Command\&Control} % -----------------------------------------------------------------
-De \texttt{Command\&Control} klasse is de grafische user interface deze module, de gebruikers van de Provider zullen hier de volledige applicatie meer kunnen besturen.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{C\&C}) & Constructor\\\hline
-			\texttt{update!} & (\empty \naar \empty) & Update de GUI naar de nieuwe staat van het systeem\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/GUI/Command\&Control klasse}
-	\end{center}
-\end{table}
-
-\newpage
-
-\subsection{Logic} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-\subsubsection{App} % ------------------------------------------------------------------------------
-De \texttt{App} klasse staat in voor de interne logica van het provider-systeem. Verschillende functies worden gedelegeerd naar de verschillende klasses waar deze op steunt.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{App}) & Constructor\\
-			\hline
-			\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
-			\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/Logic/App klasse}
-	\end{center}
-\end{table}
-
-\subsubsection{Startup} % --------------------------------------------------------------------------
-De \texttt{Startup} klasse is verantwoordelijk voor alle logica die gepaart gaat met het opstarten van de applicatie
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{Startup}) & Constructor\\
-			\hline
-			\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
-			\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/Logic/Startup klasse}
-	\end{center}
-\end{table}
-
-\subsubsection{TCP} % ------------------------------------------------------------------------------
-De \texttt{TCP} klasse is verantwoordelijk voor de communicatie met de Infrabel module.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{TCP}) & Constructor\\
-			\hline
-			\texttt{send-message} & (\textit{string} \naar \empty) & Verstuur een bericht naar de Infrabel module\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/Logic/TCP klasse}
-	\end{center}
-\end{table}
-
-\subsubsection{Route-calculator} % -----------------------------------------------------------------
-De \texttt{Route-calculator} klasse is verantwoordelijk voor het berekenen van de korste route tussen twee segmenten.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{Route-calculator}) & Constructor\\
-			\hline
-			\texttt{calculate-shortest-between} & (\textit{symbol} \textit{symbol} \naar \textit{pair}) & Berekent kortste route\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/Logic/Route-calculator klasse}
-	\end{center}
-\end{table}
-
-\newpage
-
-\subsubsection{Concurrency} % ----------------------------------------------------------------------
-De \texttt{Concurrency} klasse is verantwoordelijk voor het opstaan en inladen van de software.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{Concurrency}) & Constructor\\
-			\hline
-			\texttt{save} & (\textit{string} \naar \empty) & Slaat huidige staat van de software op.\\
-			\texttt{load!} & (\textit{string} \naar \empty) & Laadt de staat van de software in van een bestand.\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/Logic/Concurrency klasse}
-	\end{center}
-\end{table}
-
-\subsubsection{Timetables} % -----------------------------------------------------------------------
-De \texttt{Timetables} klasse is verantwoordelijk voor het genereren van tijdstabellen.
-\begin{table}[H]
-	\begin{center}
-		\begin{tabular}{|l l l|}
-			\hline
-			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
-			\hline
-			\texttt{make-object} & (\empty \naar \textit{Timetables}) & Constructor\\
-			\hline
-			\texttt{generate-timetable} & (\textit{symbol} \naar \textit{pair}) & Genereert timetables voor trein\\
-			\hline
-		\end{tabular}
-		\caption{Operaties van de Provider/Logic/Timetables klasse}
-	\end{center}
-\end{table}
 
 % ==================================================================================================
 \section{Infrabel} % ===============================================================================
@@ -517,6 +366,7 @@ De Infrabel-module is verantwoordelijk voor het beheren van het treinnetwerk, mo
 De \texttt{Main} klasse is het startpunt van de module en tevens ook de interface naar andere modules toe. De module bestaat uit twee onafhankelijke delen, een Grafische User Interface (GUI) en de interne logica (Logic), waar de main-klasse de interface speelt tussen de twee.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -526,7 +376,7 @@ De \texttt{Main} klasse is het startpunt van de module en tevens ook de interfac
 			\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
 			\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Infrabel/Main klasse}
 	\end{center}
 \end{table}
@@ -537,13 +387,14 @@ De \texttt{Main} klasse is het startpunt van de module en tevens ook de interfac
 De \texttt{Startup} klasse is de grafische representatie van het opstart menu, waar onder andere de configuratie voor de TCP verbinding zal kunnen gebeuren.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
 			\texttt{make-object} & (\empty \naar \textit{Startup}) & Constructor\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Infrabel/GUI/Startup klasse}
 	\end{center}
 \end{table}
@@ -554,6 +405,7 @@ De \texttt{Startup} klasse is de grafische representatie van het opstart menu, w
 De \texttt{Admin-debug} klasse is de grafische user interface deze module, de programmeurs van Infrabel zullen hier de volledige applicatie meer kunnen besturen.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -562,7 +414,7 @@ De \texttt{Admin-debug} klasse is de grafische user interface deze module, de pr
 			\hline
 			\texttt{update!} & (\empty \naar \empty) & Update de GUI naar de nieuwe staat van het systeem\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/GUI/Admin-debug klasse}
 	\end{center}
 \end{table}
@@ -573,6 +425,7 @@ De \texttt{Admin-debug} klasse is de grafische user interface deze module, de pr
 De \texttt{App} klasse is verantwoordelijk voor de interne logica van de Infrabel module. Het besteet verschillende taken uit aan de klasses waarop deze steunt.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -582,7 +435,7 @@ De \texttt{App} klasse is verantwoordelijk voor de interne logica van de Infrabe
 			\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
 			\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/Logic/App klasse}
 	\end{center}
 \end{table}
@@ -591,6 +444,7 @@ De \texttt{App} klasse is verantwoordelijk voor de interne logica van de Infrabe
 De \texttt{Startup} klasse is verantwoordelijk voor alle logica die gepaart gaat met het opstarten van de applicatie
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -600,7 +454,7 @@ De \texttt{Startup} klasse is verantwoordelijk voor alle logica die gepaart gaat
 			\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
 			\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/Logic/App klasse}
 	\end{center}
 \end{table}
@@ -609,6 +463,7 @@ De \texttt{Startup} klasse is verantwoordelijk voor alle logica die gepaart gaat
 De \texttt{TCP} klasse is verantwoordelijk voor de communicatie met de Provider module.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -617,7 +472,7 @@ De \texttt{TCP} klasse is verantwoordelijk voor de communicatie met de Provider 
 			\hline
 			\texttt{send-message} & (\textit{string} \naar \empty) & Verstuur een bericht naar de Provider module\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/Logic/TCP klasse}
 	\end{center}
 \end{table}
@@ -628,6 +483,7 @@ De \texttt{TCP} klasse is verantwoordelijk voor de communicatie met de Provider 
 De \texttt{UDP} klasse is een abstractie bovenop ofwel de Z21, ofwel de simulator. Aangezien het mogelijk moet blijven om op beiden te steunen, wordt de abstractie gemaakt.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -648,7 +504,7 @@ De \texttt{UDP} klasse is een abstractie bovenop ofwel de Z21, ofwel de simulato
 			\texttt{close-crossing!} & (\textit{symbol} \naar \empty) & Sluit opgegeven overweg.\\
 			\texttt{set-sign-code!} & (\textit{symbol} \textit{symbol} \naar \empty) & Updatet opgegeven licht.\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/Logic/UDP klasse}
 	\end{center}
 \end{table}
@@ -657,6 +513,7 @@ De \texttt{UDP} klasse is een abstractie bovenop ofwel de Z21, ofwel de simulato
 De \texttt{Collision-detector} klasse is verantwoordelijk voor het voorkomen van botsingen.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -665,7 +522,7 @@ De \texttt{Collision-detector} klasse is verantwoordelijk voor het voorkomen van
 			\hline
 			\texttt{calculate-collision?} & (\textit{symbol} \textit{symbol} \naar \textit{boolen}) & Returnt mogelijke botsingen\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/Logic/Collision-detector klasse}
 	\end{center}
 \end{table}
@@ -674,6 +531,7 @@ De \texttt{Collision-detector} klasse is verantwoordelijk voor het voorkomen van
 De \texttt{Signalisator} klasse is verantwoordelijk dat alle signalisatie rondom de spoorweg correct is.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -682,7 +540,7 @@ De \texttt{Signalisator} klasse is verantwoordelijk dat alle signalisatie rondom
 			\hline
 			\texttt{update!} & (\textit{string} \naar \empty) & Update klasse met huidige staat spoorweg\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/Logic/Signalisator klasse}
 	\end{center}
 \end{table}
@@ -691,6 +549,7 @@ De \texttt{Signalisator} klasse is verantwoordelijk dat alle signalisatie rondom
 De \texttt{Concurrency} klasse is verantwoordelijk voor het opstaan en inladen van de software.
 \begin{table}[H]
 	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
@@ -700,8 +559,191 @@ De \texttt{Concurrency} klasse is verantwoordelijk voor het opstaan en inladen v
 			\texttt{save} & (\textit{string} \naar \empty) & Slaat huidige staat van de software op.\\
 			\texttt{load!} & (\textit{string} \naar \empty) & Laadt de staat van de software in van een bestand.\\
 			\hline
-		\end{tabular}
+		\end{tabular}}
 		\caption{Operaties van de Provider/Logic/Concurrency klasse}
+	\end{center}
+\end{table}
+
+\newpage
+
+% ==================================================================================================
+\section{Provider} % ===============================================================================
+De Provider-module is een abstractie van de software die gebruikt kan worden door clienten (bijvoorbeeld NMBS). Deze module is verantwoordelijk voor het beheren van routes op het treinnetwerk, moet ervoor zorgen dat klanten correcte timetables hebben en het moet mogelijk zijn om na een crash de huidige staat van de fysieke spoorweg terug te krijgen.
+
+% ==================================================================================================
+\subsection{Afhankelijkheidsdiagram} % ================================================================
+\begin{center}
+	%\includegraphics[scale=.33]{Afhankelijkheidsdiagram2.jpg}
+\end{center}
+
+\subsection{Main} % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+De \texttt{Main} klasse is het startpunt van de module en tevens ook de interface naar andere modules toe. De module bestaat uit twee onafhankelijke delen, een Grafische User Interface (GUI) en de interne logica (Logic), waar de main-klasse de interface speelt tussen de twee.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{Provider}) & Constructor\\
+				\hline
+				\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
+				\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/Main klasse}
+	\end{center}
+\end{table}
+
+\subsection{GUI} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+\subsubsection{Startup} % --------------------------------------------------------------------------
+De \texttt{Startup} klasse is de grafische representatie van het opstart menu, waar onder andere de configuratie voor de TCP verbinding zal kunnen gebeuren.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{Startup}) & Constructor\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/GUI/Startup klasse}
+	\end{center}
+\end{table}
+
+\subsubsection{Command\&Control} % -----------------------------------------------------------------
+De \texttt{Command\&Control} klasse is de grafische user interface deze module, de gebruikers van de Provider zullen hier de volledige applicatie meer kunnen besturen.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{C\&C}) & Constructor\\\hline
+				\texttt{update!} & (\empty \naar \empty) & Update de GUI naar de nieuwe staat van het systeem\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/GUI/Command\&Control klasse}
+	\end{center}
+\end{table}
+
+\newpage
+
+\subsection{Logic} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+\subsubsection{App} % ------------------------------------------------------------------------------
+De \texttt{App} klasse staat in voor de interne logica van het provider-systeem. Verschillende functies worden gedelegeerd naar de verschillende klasses waar deze op steunt.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{App}) & Constructor\\
+				\hline
+				\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
+				\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/Logic/App klasse}
+	\end{center}
+\end{table}
+
+\subsubsection{Startup} % --------------------------------------------------------------------------
+De \texttt{Startup} klasse is verantwoordelijk voor alle logica die gepaart gaat met het opstarten van de applicatie
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{Startup}) & Constructor\\
+				\hline
+				\texttt{get-x} & (\textit{symbol} \naar \empty) & Placeholder voor getters voor uitwisseling van informatie\\
+				\texttt{set-x!} & (\empty \naar \textit{symbol}) & Placeholder voor setters voor updaten van informatie\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/Logic/Startup klasse}
+	\end{center}
+\end{table}
+
+\subsubsection{TCP} % ------------------------------------------------------------------------------
+De \texttt{TCP} klasse is verantwoordelijk voor de communicatie met de Infrabel module.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{TCP}) & Constructor\\
+				\hline
+				\texttt{send-message} & (\textit{string} \naar \empty) & Verstuur een bericht naar de Infrabel module\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/Logic/TCP klasse}
+	\end{center}
+\end{table}
+
+\subsubsection{Route-calculator} % -----------------------------------------------------------------
+De \texttt{Route-calculator} klasse is verantwoordelijk voor het berekenen van de korste route tussen twee segmenten.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{Route-calculator}) & Constructor\\
+				\hline
+				\texttt{calculate-shortest-between} & (\textit{symbol} \textit{symbol} \naar \textit{pair}) & Berekent kortste route\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/Logic/Route-calculator klasse}
+	\end{center}
+\end{table}
+
+\newpage
+
+\subsubsection{Concurrency} % ----------------------------------------------------------------------
+De \texttt{Concurrency} klasse is verantwoordelijk voor het opstaan en inladen van de software.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{Concurrency}) & Constructor\\
+				\hline
+				\texttt{save} & (\textit{string} \naar \empty) & Slaat huidige staat van de software op.\\
+				\texttt{load!} & (\textit{string} \naar \empty) & Laadt de staat van de software in van een bestand.\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/Logic/Concurrency klasse}
+	\end{center}
+\end{table}
+
+\subsubsection{Timetables} % -----------------------------------------------------------------------
+De \texttt{Timetables} klasse is verantwoordelijk voor het genereren van tijdstabellen.
+\begin{table}[H]
+	\begin{center}
+		{\rowcolors{2}{white!100}{gray!50!white!50}
+			\begin{tabular}{|l l l|}
+				\hline
+				\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
+				\hline
+				\texttt{make-object} & (\empty \naar \textit{Timetables}) & Constructor\\
+				\hline
+				\texttt{generate-timetable} & (\textit{symbol} \naar \textit{pair}) & Genereert timetables voor trein\\
+				\hline
+		\end{tabular}}
+		\caption{Operaties van de Provider/Logic/Timetables klasse}
 	\end{center}
 \end{table}
 

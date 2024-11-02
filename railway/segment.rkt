@@ -19,12 +19,14 @@
     ;
     ; @param id :: the name of the railroad segment
     ; @param connection :: lower-level implementation of railroad segment
+    ; @param in :: railway element that goes into this segment (clockwise)
+    ; @param out :: railway element that exits out of this segment (clockwise)
     ;
     (init-field id connection in out)
     (field (state (send connection get-state)))
 
     ;
-    ; Possible railway crossing states
+    ; Possible railway segment states
     ;
     (define free     'free)
     (define reserved 'reserved)
@@ -61,8 +63,8 @@
     ; set-state! :: change the state of the railway crossing only when it is
     ; not yet in the required state
     ;
-    ; @param new-state :: the new state of the crossing - open or closed
-    ; @returns boolean :: #f when trying to reserve a reserverd state
+    ; @param new-state symbol :: the new state of the segment
+    ; @returns boolean :: #f when trying to reserve a reserved state
     ;                     #t when trying to free a state
     ;
     (define/public (set-state! new-state)

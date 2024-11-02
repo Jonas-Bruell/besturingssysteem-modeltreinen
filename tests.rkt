@@ -11,9 +11,9 @@
 (require rackunit
          ;; RAILWAY
          "railway/crossing.test.rkt"
-         ;"railway/detection-block.test.rkt"
          "railway/light.test.rkt"
          "railway/segment.test.rkt"
+         "railway/detection-block.test.rkt"
          ;"railway/switch.test.rkt"
          ;"railway/switch-3way.test.rkt"
          ;"railway/switch-cross.test.rkt"
@@ -31,9 +31,9 @@
               ;; RAILWAY
               (test-suite "Unit testing of all RAILWAY module operations"
                           crossing-test
-                          ;detection-block-test
                           light-test
                           segment-test
+                          detection-block-test
                           ;switch-test
                           ;switch-3way-test
                           ;switch-cross-test

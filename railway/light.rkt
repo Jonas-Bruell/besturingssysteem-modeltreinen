@@ -61,7 +61,7 @@
     ; set-signal! :: change the signal of the railway light only when it is
     ; not yet on the required signal
     ;
-    ; @param new-signal :: the new signal of the light
+    ; @param new-signal symbol :: the new signal of the light
     ;
     (define/public (set-signal! new-signal)
       (cond ((eq? new-signal signal)

@@ -56,7 +56,7 @@
     ; set-state! :: change the state of the railway crossing only when it is
     ; not yet in the required state
     ;
-    ; @param new-state :: the new state of the crossing - open or closed
+    ; @param new-state symbol :: the new state of the crossing - open or closed
     ;
     (define/public (set-state! new-state)
       (cond ((eq? new-state state)
