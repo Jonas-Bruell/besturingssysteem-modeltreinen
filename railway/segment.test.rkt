@@ -7,33 +7,276 @@
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
-(require rackunit
-         rackunit/gui
-         "segment.rkt")
+(require rackunit "segment.rkt")
 (provide segment-test)
 
 ;
-; aliasses & abstrations
+; aliasses
+;
+(define free     'free)
+(define reserved 'reserved)
+(define generic  'generic)
+(define in       'in)
+(define out      'out)
+
+;
+; abstrations
 ;
 (define connection%
   (class object%
     (super-new)
-    (define/public (set-state! new-state) #t)))
+    (init-field state)
+    (define/public (get-state) state)
+    (define/public (set-state! new-state)
+      (set! state new-state))))
 
-(define connection (make-object connection%))
+(define make-connection
+  (λ () (make-object connection% generic)))
 
-(define segment
-  (make-object segment% connection 'test 'test))
+(define make-generic-segment
+  (λ () (make-object segment% 'id (make-connection) in out)))
+
+(define make-free-segment
+  (λ () (make-object segment% 'id (make-object connection% free) in out)))
+
+(define make-reserved-segment
+  (λ () (make-object segment% 'id (make-object connection% reserved) in out)))
 
 ;
-; individual test suites
+; test-make-object test suites
 ;
 (define test-make-object
-  (test-suite "testing make-object"
-              (test-case "check 'segment%' exists"
-                         (check-not-exn (λ () segment%)))
-              (test-case "check constructor doesn't error"
-                         (check-not-exn (λ () segment)))))
+  (test-suite
+   "Testing make-object"
+   
+   (test-case
+    "check if 'segment%' exists"
+    (check-not-exn (λ () segment%)))
+   (test-case
+    "check if constructor doesn't error"
+    (check-not-exn (λ () (make-object segment% 'id (make-connection) in out))))
+   (test-case
+    "check if constructor returns an object"
+    (check-true (object? (make-object segment% 'id (make-connection) in out))))
+   ))
+
+;
+; test-get-id test suites
+;
+(define test-get-id
+  (test-suite
+   "Testing get-id"
+
+   (test-case
+    "check if 'get-id' exists"
+    (check-true
+     (object-method-arity-includes? (make-generic-segment) 'get-id 0)))
+   (test-case
+    "check if 'get-id' doesn't error"
+    (check-not-exn (λ () (send (make-generic-segment) get-id))))
+   (test-case
+    "check if 'get-id' returns 'id"
+    (check-eq? (send (make-generic-segment) get-id) 'id))
+   ))
+
+;
+; test-get-state test suites
+;
+(define test-get-state
+  (test-suite
+   "Testing get-state"
+
+   (test-case
+    "check if 'get-state' exists"
+    (check-true
+     (object-method-arity-includes? (make-generic-segment) 'get-state 0)))
+   (test-case
+    "check if 'get-state' doesn't error"
+    (check-not-exn (λ () (send (make-generic-segment) get-state))))
+   (test-case
+    "check if 'get-state' returns 'generic"
+    (check-eq? (send (make-generic-segment) get-state) generic))
+   ))
+
+;
+; test-get-next test suites
+;
+(define test-get-next
+  (test-suite
+   "Testing get-next"
+
+   (test-case
+    "check if 'get-next' exists"
+    (check-true
+     (object-method-arity-includes? (make-generic-segment) 'get-next 0)))
+   (test-case
+    "check if 'get-next' doesn't error"
+    (check-not-exn (λ () (send (make-generic-segment) get-next))))
+   (test-case
+    "check if 'get-next' returns 'out"
+    (check-eq? (send (make-generic-segment) get-next) out))
+   ))
+
+;
+; test-get-prev test suites
+;
+(define test-get-prev
+  (test-suite
+   "Testing get-prev"
+
+   (test-case
+    "check if 'get-prev' exists"
+    (check-true
+     (object-method-arity-includes? (make-generic-segment) 'get-prev 0)))
+   (test-case
+    "check if 'get-prev' doesn't error"
+    (check-not-exn (λ () (send (make-generic-segment) get-prev))))
+   (test-case
+    "check if 'get-prev' returns 'out"
+    (check-eq? (send (make-generic-segment) get-prev) in))
+   ))
+
+;
+; test-set-state! test suites
+;
+(define test-set-state!
+  (test-suite
+   "Testing set-state"
+   
+   (test-case
+    "check if 'set-state!' exists"
+    (check-true
+     (object-method-arity-includes? (make-generic-segment) 'set-state! 1)))
+   (test-case
+    "check if 'set-state!' does error when calling with wrong message"
+    (check-exn exn:fail?
+               (λ () (send (make-generic-segment) set-state! 'wrong))))
+
+   ;
+   ; (test-set-state! 'free) test suites
+   ;
+   (test-suite
+    "check 'set-state!' with argemunt 'free"
+    
+    ;
+    ; (test-set-state! 'free) on reserved segment test suites
+    ;
+    (test-suite
+     "check with original state 'reserved"
+
+     (test-case
+      "check if (set-state! 'free) doesn't error"
+      (check-not-exn
+       (λ () (send (make-reserved-segment) set-state! free))))
+    
+     (test-case
+      "check if reserved segment frees"
+      (let* ((segment (make-reserved-segment)))
+        (send segment set-state! free)
+        (check-eq? (send segment get-state) free)))
+     (test-case
+      "check if reserved segment returns true after freed"
+      (let* ((segment (make-reserved-segment)))
+        (check-true (send segment set-state! free))))
+     (test-case
+      "check if reserved connection frees"
+      (let* ((connection (make-object connection% reserved))
+             (segment (make-object segment% 'id connection in out)))
+        (send segment set-state! free)
+        (check-eq? (send connection get-state) free)))
+     )
+
+    ;
+    ; (test-set-state! 'free) on free segment test suites
+    ;
+    (test-suite
+     "check with original state 'free"
+
+     (test-case
+      "check if (set-state! 'free) doesn't error"
+      (check-not-exn
+       (λ () (send (make-free-segment) set-state! free))))
+     
+     (test-case
+      "check if free segment stays free"
+      (let* ((segment (make-free-segment)))
+        (send segment set-state! free)
+        (check-eq? (send segment get-state) free)))
+     (test-case
+      "check if free segment returns true after freed"
+      (let* ((segment (make-free-segment)))
+        (check-true (send segment set-state! free))))
+     (test-case
+      "check if free connection stays free"
+      (let* ((connection (make-object connection% free))
+             (segment (make-object segment% 'id connection in out)))
+        (send segment set-state! free)
+        (check-eq? (send connection get-state) free)))
+     )
+    )
+
+   ;
+   ; (test-set-state! 'reserved) test suites
+   ;
+   (test-suite
+    "check 'set-state!' with argemunt 'reserved"
+
+    ;
+    ; (test-set-state! 'reserved) on free segment test suites
+    ;
+    (test-suite
+     "check with original state 'free"
+     
+     (test-case
+      "check if (set-state! 'reserved) doesn't error"
+      (check-not-exn
+       (λ () (send (make-free-segment) set-state! reserved))))
+    
+     (test-case
+      "check if free segment reserves"
+      (let* ((segment (make-free-segment)))
+        (send segment set-state! reserved)
+        (check-eq? (send segment get-state) reserved)))
+     (test-case
+      "check if free segment returns true after reserved"
+      (let* ((segment (make-free-segment)))
+        (check-true (send segment set-state! reserved))))
+     (test-case
+      "check if free connection reserves"
+      (let* ((connection (make-object connection% free))
+             (segment (make-object segment% 'id connection in out)))
+        (send segment set-state! reserved)
+        (check-eq? (send connection get-state) reserved)))
+     )
+
+    ;
+    ; (test-set-state! 'reserved) on reserved segment test suites
+    ;
+    (test-suite
+     "check with original state 'reserved"
+
+     (test-case
+      "check if (set-state! 'reserved) doesn't error"
+      (check-not-exn
+       (λ () (send (make-reserved-segment) set-state! reserved))))
+     
+     (test-case
+      "check if reserved segment stays reserved"
+      (let* ((segment (make-reserved-segment)))
+        (send segment set-state! reserved)
+        (check-eq? (send segment get-state) reserved)))
+     (test-case
+      "check if reserved segment returns false after reserved"
+      (let* ((segment (make-reserved-segment)))
+        (check-false (send segment set-state! reserved))))
+     (test-case
+      "check if reserved connection stays reserved"
+      (let* ((connection (make-object connection% reserved))
+             (segment (make-object segment% 'id connection in out)))
+        (send segment set-state! reserved)
+        (check-eq? (send connection get-state) reserved)))
+     )
+    )))
 
 ;
 ; running all test suites
@@ -41,4 +284,9 @@
 (define segment-test
   (test-suite "All segment% operation tests"
               test-make-object
+              test-get-id
+              test-get-state
+              test-get-next
+              test-get-prev
+              test-set-state!
               ))

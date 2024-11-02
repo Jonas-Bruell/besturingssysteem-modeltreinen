@@ -14,6 +14,7 @@
   (class object%
     (super-new)
 
+    ;
     ; This class represents an atomic abstraction of a railroad light
     ;
     ; @param id :: the name of the railroad light
@@ -23,6 +24,7 @@
     (init-field id connection segment)
     (field (signal (send connection get-signal)))
 
+    ;
     ; Possible railway light signals
     ;
     (define Hp0          'Hp0)
@@ -34,24 +36,28 @@
     (define Sh1          'Sh1)
     (define Ks1+Zs3+Zs3v 'Ks1+Zs3+Zs3v)
 
+    ;
     ; get-id :: get the id of the railway light
     ;
     ; @returns symbol :: id-field of light
     ;
     (define/public (get-id) id)
 
+    ;
     ; get-signal :: get the signal of the railway light
     ;
     ; @returns symbol :: signal-field of light
     ;
     (define/public (get-signal) signal)
 
+    ;
     ; get-segment :: get the id of the segment on which the light is
     ;
     ; @returns symbol :: id of segment
     ;
     (define/public (get-segment) segment)
 
+    ;
     ; set-signal! :: change the signal of the railway light only when it is
     ; not yet on the required signal
     ;

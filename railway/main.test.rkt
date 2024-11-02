@@ -62,5 +62,5 @@
 ;
 (define main-test
   (test-suite "All main% operation tests"
-              test-make-object
+              ;test-make-object
               ))

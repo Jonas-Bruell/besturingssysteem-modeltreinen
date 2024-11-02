@@ -7,9 +7,7 @@
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
-(require rackunit
-         rackunit/gui
-         "light.rkt")
+(require rackunit "light.rkt")
 (provide light-test)
 
 ;
@@ -69,7 +67,7 @@
     (make-object light% 'id (make-object connection% Ks1+Zs3+Zs3v) segment)))
 
 ;
-; individual test suites
+; test-make-object test suites
 ;
 (define test-make-object
   (test-suite
@@ -86,6 +84,9 @@
     (check-true (object? (make-object light% 'id (make-connection) segment))))
    ))
 
+;
+; test-get-id test suites
+;
 (define test-get-id
   (test-suite
    "Testing get-id"
@@ -102,6 +103,9 @@
     (check-eq? (send (make-generic-light) get-id) 'id))
    ))
 
+;
+; test-get-signal test suites
+;
 (define test-get-signal
   (test-suite
    "Testing get-signal"
@@ -118,6 +122,9 @@
     (check-eq? (send (make-generic-light) get-signal) generic))
    ))
 
+;
+; test-get-segment test suites
+;
 (define test-get-segment
   (test-suite
    "Testing get-segment"
@@ -137,6 +144,9 @@
     (check-true (eq? (send (make-generic-light) get-segment) segment)))
    ))
 
+;
+; test-set-signal! test suites
+;
 (define test-set-signal!
   (test-suite
    "Testing set-signal"
@@ -145,221 +155,291 @@
     "check if 'set-signal!' exists"
     (check-true
      (object-method-arity-includes? (make-generic-light) 'set-signal! 1)))
-   
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Hp0"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Hp0))))
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Hp1"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Hp1))))
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Hp0+Sh0"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Hp0+Sh0))))
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Ks1+Zs3"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Ks1+Zs3))))
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Ks2"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Ks2))))
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Ks2+Zs3"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Ks2+Zs3))))
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Sh1"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Sh1))))
-   (test-case
-    "check if 'set-signal!' doesn't error when calling 'Ks1+Zs3+Zs3v"
-    (check-not-exn (λ () (send (make-generic-light) set-signal! Ks1+Zs3+Zs3v))))
-   
-   (test-case
-    "check if connection switches to 'Hp0 when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Hp0)
-      (check-eq? (send connection get-signal) Hp0)))
-   (test-case
-    "check if generic light switches to 'Hp0 when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Hp0)
-      (check-eq? (send light get-signal) Hp0)))
-   (test-case
-    "check if connection stays on same signal when calling 'Hp0"
-    (let* ((connection (make-object connection% Hp0))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Hp0)
-      (check-eq? (send connection get-signal) Hp0)))
-   (test-case
-    "check if light stays on same signal when calling 'Hp0"
-    (let* ((light (make-Hp0-light)))
-      (send light set-signal! Hp0)
-      (check-eq? (send light get-signal) Hp0)))
-
-   (test-case
-    "check if connection switches to 'Hp1 when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Hp1)
-      (check-eq? (send connection get-signal) Hp1)))
-   (test-case
-    "check if generic light switches to 'Hp1 when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Hp1)
-      (check-eq? (send light get-signal) Hp1)))
-   (test-case
-    "check if connection stays on same signal when calling 'Hp1"
-    (let* ((connection (make-object connection% Hp1))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Hp1)
-      (check-eq? (send connection get-signal) Hp1)))
-   (test-case
-    "check if light stays on same signal when calling 'Hp1"
-    (let* ((light (make-Hp1-light)))
-      (send light set-signal! Hp1)
-      (check-eq? (send light get-signal) Hp1)))
-
-   (test-case
-    "check if connection switches to 'Hp0+Sh0 when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Hp0+Sh0)
-      (check-eq? (send connection get-signal) Hp0+Sh0)))
-   (test-case
-    "check if generic light switches to 'Hp0+Sh0 when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Hp0+Sh0)
-      (check-eq? (send light get-signal) Hp0+Sh0)))
-   (test-case
-    "check if connection stays on same signal when calling 'Hp0+Sh0"
-    (let* ((connection (make-object connection% Hp0+Sh0))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Hp0+Sh0)
-      (check-eq? (send connection get-signal) Hp0+Sh0)))
-   (test-case
-    "check if light stays on same signal when calling 'Hp0+Sh0"
-    (let* ((light (make-Hp0+Sh0-light)))
-      (send light set-signal! Hp0+Sh0)
-      (check-eq? (send light get-signal) Hp0+Sh0)))
-
-   (test-case
-    "check if connection switches to 'Ks1+Zs3 when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks1+Zs3)
-      (check-eq? (send connection get-signal) Ks1+Zs3)))
-   (test-case
-    "check if generic light switches to 'Ks1+Zs3 when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Ks1+Zs3)
-      (check-eq? (send light get-signal) Ks1+Zs3)))
-   (test-case
-    "check if connection stays on same signal when calling 'Ks1+Zs3"
-    (let* ((connection (make-object connection% Ks1+Zs3))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks1+Zs3)
-      (check-eq? (send connection get-signal) Ks1+Zs3)))
-   (test-case
-    "check if light stays on same signal when calling 'Ks1+Zs3"
-    (let* ((light (make-Ks1+Zs3-light)))
-      (send light set-signal! Ks1+Zs3)
-      (check-eq? (send light get-signal) Ks1+Zs3)))
-
-   (test-case
-    "check if connection switches to 'Ks2 when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks2)
-      (check-eq? (send connection get-signal) Ks2)))
-   (test-case
-    "check if generic light switches to 'Ks2 when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Ks2)
-      (check-eq? (send light get-signal) Ks2)))
-   (test-case
-    "check if connection stays on same signal when calling 'Ks2"
-    (let* ((connection (make-object connection% Ks2))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks2)
-      (check-eq? (send connection get-signal) Ks2)))
-   (test-case
-    "check if light stays on same signal when calling 'Ks2"
-    (let* ((light (make-Ks2-light)))
-      (send light set-signal! Ks2)
-      (check-eq? (send light get-signal) Ks2)))
-
-   (test-case
-    "check if connection switches to 'Ks2+Zs3 when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks2+Zs3)
-      (check-eq? (send connection get-signal) Ks2+Zs3)))
-   (test-case
-    "check if generic light switches to 'Ks2+Zs3 when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Ks2+Zs3)
-      (check-eq? (send light get-signal) Ks2+Zs3)))
-   (test-case
-    "check if connection stays on same signal when calling 'Ks2+Zs3"
-    (let* ((connection (make-object connection% Ks2+Zs3))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks2+Zs3)
-      (check-eq? (send connection get-signal) Ks2+Zs3)))
-   (test-case
-    "check if light stays on same signal when calling 'Ks2+Zs3"
-    (let* ((light (make-Ks2+Zs3-light)))
-      (send light set-signal! Ks2+Zs3)
-      (check-eq? (send light get-signal) Ks2+Zs3)))
-
-   (test-case
-    "check if connection switches to 'Sh1 when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Sh1)
-      (check-eq? (send connection get-signal) Sh1)))
-   (test-case
-    "check if generic light switches to 'Sh1 when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Sh1)
-      (check-eq? (send light get-signal) Sh1)))
-   (test-case
-    "check if connection stays on same signal when calling 'Sh1"
-    (let* ((connection (make-object connection% Sh1))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Sh1)
-      (check-eq? (send connection get-signal) Sh1)))
-   (test-case
-    "check if light stays on same signal when calling 'Sh1"
-    (let* ((light (make-Sh1-light)))
-      (send light set-signal! Sh1)
-      (check-eq? (send light get-signal) Sh1)))
-
-   (test-case
-    "check if connection switches to 'Ks1+Zs3+Zs3v when calling it"
-    (let* ((connection (make-connection))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks1+Zs3+Zs3v)
-      (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
-   (test-case
-    "check if generic light switches to 'Ks1+Zs3+Zs3v when calling it"
-    (let* ((light (make-generic-light)))
-      (send light set-signal! Ks1+Zs3+Zs3v)
-      (check-eq? (send light get-signal) Ks1+Zs3+Zs3v)))
-   (test-case
-    "check if connection stays on same signal when calling 'Ks1+Zs3+Zs3v"
-    (let* ((connection (make-object connection% Ks1+Zs3+Zs3v))
-           (light (make-object light% 'id connection segment)))
-      (send light set-signal! Ks1+Zs3+Zs3v)
-      (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
-   (test-case
-    "check if light stays on same signal when calling 'Ks1+Zs3+Zs3v"
-    (let* ((light (make-Ks1+Zs3+Zs3v-light)))
-      (send light set-signal! Ks1+Zs3+Zs3v)
-      (check-eq? (send light get-signal) Ks1+Zs3+Zs3v)))
-
    (test-case
     "check if 'set-signal!' does error when calling with wrong message"
     (check-exn exn:fail?
                (λ () (send (make-generic-light) set-signal! 'wrong))))
-   ))
+
+   ;
+   ; (test-set-signal! 'Hp0) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Hp0"
+   
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Hp0"
+     (check-not-exn (λ () (send (make-generic-light) set-signal! Hp0))))
+    
+    (test-case
+     "check if generic light switches to 'Hp0 when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Hp0)
+       (check-eq? (send light get-signal) Hp0)))
+    (test-case
+     "check if connection switches to 'Hp0 when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Hp0)
+       (check-eq? (send connection get-signal) Hp0)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Hp0"
+     (let* ((light (make-Hp0-light)))
+       (send light set-signal! Hp0)
+       (check-eq? (send light get-signal) Hp0)))
+    (test-case
+     "check if connection stays on same signal when calling 'Hp0"
+     (let* ((connection (make-object connection% Hp0))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Hp0)
+       (check-eq? (send connection get-signal) Hp0)))
+    )
+
+   ;
+   ; (test-set-signal! 'Hp1) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Hp1"
+    
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Hp1"
+     (check-not-exn (λ () (send (make-generic-light) set-signal! Hp1))))
+    
+    (test-case
+     "check if generic light switches to 'Hp1 when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Hp1)
+       (check-eq? (send light get-signal) Hp1)))
+    (test-case
+     "check if connection switches to 'Hp1 when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Hp1)
+       (check-eq? (send connection get-signal) Hp1)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Hp1"
+     (let* ((light (make-Hp1-light)))
+       (send light set-signal! Hp1)
+       (check-eq? (send light get-signal) Hp1)))
+    (test-case
+     "check if connection stays on same signal when calling 'Hp1"
+     (let* ((connection (make-object connection% Hp1))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Hp1)
+       (check-eq? (send connection get-signal) Hp1)))
+    )
+
+   ;
+   ; (test-set-signal! 'Hp0+Sh0) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Hp0+Sh0"
+    
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Hp0+Sh0"
+     (check-not-exn (λ () (send (make-generic-light) set-signal! Hp0+Sh0))))
+    
+    (test-case
+     "check if generic light switches to 'Hp0+Sh0 when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Hp0+Sh0)
+       (check-eq? (send light get-signal) Hp0+Sh0)))
+    (test-case
+     "check if connection switches to 'Hp0+Sh0 when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Hp0+Sh0)
+       (check-eq? (send connection get-signal) Hp0+Sh0)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Hp0+Sh0"
+     (let* ((light (make-Hp0+Sh0-light)))
+       (send light set-signal! Hp0+Sh0)
+       (check-eq? (send light get-signal) Hp0+Sh0)))
+    (test-case
+     "check if connection stays on same signal when calling 'Hp0+Sh0"
+     (let* ((connection (make-object connection% Hp0+Sh0))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Hp0+Sh0)
+       (check-eq? (send connection get-signal) Hp0+Sh0)))
+    )
+
+   ;
+   ; (test-set-signal! 'Ks1+Zs3) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Ks1+Zs3"
+
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Ks1+Zs3"
+     (check-not-exn (λ () (send (make-generic-light) set-signal! Ks1+Zs3))))
+    
+    (test-case
+     "check if generic light switches to 'Ks1+Zs3 when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Ks1+Zs3)
+       (check-eq? (send light get-signal) Ks1+Zs3)))
+    (test-case
+     "check if connection switches to 'Ks1+Zs3 when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks1+Zs3)
+       (check-eq? (send connection get-signal) Ks1+Zs3)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Ks1+Zs3"
+     (let* ((light (make-Ks1+Zs3-light)))
+       (send light set-signal! Ks1+Zs3)
+       (check-eq? (send light get-signal) Ks1+Zs3)))
+    (test-case
+     "check if connection stays on same signal when calling 'Ks1+Zs3"
+     (let* ((connection (make-object connection% Ks1+Zs3))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks1+Zs3)
+       (check-eq? (send connection get-signal) Ks1+Zs3)))
+    )
+
+   ;
+   ; (test-set-signal! 'Ks2) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Ks2"
+   
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Ks2"
+     (check-not-exn (λ () (send (make-generic-light) set-signal! Ks2))))
+    
+    (test-case
+     "check if generic light switches to 'Ks2 when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Ks2)
+       (check-eq? (send light get-signal) Ks2)))
+    (test-case
+     "check if connection switches to 'Ks2 when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks2)
+       (check-eq? (send connection get-signal) Ks2)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Ks2"
+     (let* ((light (make-Ks2-light)))
+       (send light set-signal! Ks2)
+       (check-eq? (send light get-signal) Ks2)))
+    (test-case
+     "check if connection stays on same signal when calling 'Ks2"
+     (let* ((connection (make-object connection% Ks2))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks2)
+       (check-eq? (send connection get-signal) Ks2)))
+    )
+
+   ;
+   ; (test-set-signal! 'Ks2+Zs3) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Ks2+Zs3"
+
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Ks2+Zs3"
+     (check-not-exn (λ () (send (make-generic-light) set-signal! Ks2+Zs3))))
+    
+    (test-case
+     "check if generic light switches to 'Ks2+Zs3 when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Ks2+Zs3)
+       (check-eq? (send light get-signal) Ks2+Zs3)))
+    (test-case
+     "check if connection switches to 'Ks2+Zs3 when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks2+Zs3)
+       (check-eq? (send connection get-signal) Ks2+Zs3)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Ks2+Zs3"
+     (let* ((light (make-Ks2+Zs3-light)))
+       (send light set-signal! Ks2+Zs3)
+       (check-eq? (send light get-signal) Ks2+Zs3)))
+    (test-case
+     "check if connection stays on same signal when calling 'Ks2+Zs3"
+     (let* ((connection (make-object connection% Ks2+Zs3))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks2+Zs3)
+       (check-eq? (send connection get-signal) Ks2+Zs3)))
+    )
+
+   ;
+   ; (test-set-signal! 'Sh1) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Sh1"
+    
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Sh1"
+     (check-not-exn (λ () (send (make-generic-light) set-signal! Sh1))))
+    
+    (test-case
+     "check if generic light switches to 'Sh1 when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Sh1)
+       (check-eq? (send light get-signal) Sh1)))
+    (test-case
+     "check if connection switches to 'Sh1 when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Sh1)
+       (check-eq? (send connection get-signal) Sh1)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Sh1"
+     (let* ((light (make-Sh1-light)))
+       (send light set-signal! Sh1)
+       (check-eq? (send light get-signal) Sh1)))
+    (test-case
+     "check if connection stays on same signal when calling 'Sh1"
+     (let* ((connection (make-object connection% Sh1))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Sh1)
+       (check-eq? (send connection get-signal) Sh1)))
+    )
+
+   ;
+   ; (test-set-signal! 'Ks1+Zs3+Zs3v) test suites
+   ;
+   (test-suite
+    "check 'set-signal!' with argument 'Ks1+Zs3+Zs3v"
+    
+    (test-case
+     "check if 'set-signal!' doesn't error when calling 'Ks1+Zs3+Zs3v"
+     (check-not-exn
+      (λ () (send (make-generic-light) set-signal! Ks1+Zs3+Zs3v))))
+    
+    (test-case
+     "check if generic light switches to 'Ks1+Zs3+Zs3v when calling it"
+     (let* ((light (make-generic-light)))
+       (send light set-signal! Ks1+Zs3+Zs3v)
+       (check-eq? (send light get-signal) Ks1+Zs3+Zs3v)))
+    (test-case
+     "check if connection switches to 'Ks1+Zs3+Zs3v when calling it"
+     (let* ((connection (make-connection))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks1+Zs3+Zs3v)
+       (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
+    
+    (test-case
+     "check if light stays on same signal when calling 'Ks1+Zs3+Zs3v"
+     (let* ((light (make-Ks1+Zs3+Zs3v-light)))
+       (send light set-signal! Ks1+Zs3+Zs3v)
+       (check-eq? (send light get-signal) Ks1+Zs3+Zs3v)))
+    (test-case
+     "check if connection stays on same signal when calling 'Ks1+Zs3+Zs3v"
+     (let* ((connection (make-object connection% Ks1+Zs3+Zs3v))
+            (light (make-object light% 'id connection segment)))
+       (send light set-signal! Ks1+Zs3+Zs3v)
+       (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
+    )))
 
 ;
 ; running all test suites

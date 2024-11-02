@@ -41,6 +41,8 @@ heightrounded,
 \usepackage{graphicx}
 % Figuren
 \usepackage{tikz}
+% URLS
+\usepackage{hyperref}
 
 % WISKUNDE
 % Basis
@@ -64,9 +66,11 @@ heightrounded,
 \renewcommand{\>}{\scriptsize\textgreater\normalsize}
 
 % Voorblad
-\title{Programmeerproject 2:\\ Voorstudie Modeltrein Software Toepassing}
-\date{Academiejaar 2024-2025}
-\author{Jonas Br\"ull, 0587194\\ (Jonas.Simon.E.Brull@vub.be)\\\\ 2/3ba Computerwetenschappen}
+\title{Programmeerproject 2:\\ Voorstudie Modeltrein Software Toepassing
+	\author{Jonas Br\"ull, 0587194\\ (Jonas.Simon.E.Brull@vub.be)\\\\ 2/3ba Computerwetenschappen}
+	\date{Academiejaar 2024-2025}
+	\thanks{\texttt{\url{https://github.com/Jonas-Bruell/besturingssysteem-modeltreinen}}}
+}
 
 % ==================================================================================================
 \begin{document}
@@ -166,7 +170,7 @@ De \texttt{Main} klasse is het startpunt van railway-module van de software en f
 
 % Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Crossing} % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. De constructor neemt als argumenten het \texttt{id} van de overweg, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een lijst met spoorwegsegmenten waarover deze overweg brugt. Het openen en sluiten van deze overweg neemt wat tijd in beslag, waartussen de overweg als status "\texttt{pending} heeft.
+De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. De constructor neemt als argumenten het \texttt{id} van de overweg, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een lijst met spoorwegsegmenten waarover deze overweg brugt. Het openen en sluiten van deze overweg neemt wat tijd in beslag, waartussen de overweg als status \lq\texttt{pending}' heeft.
 \begin{table}[H]
 	\begin{center}
 		\begin{tabular}{|l l l|}
@@ -184,8 +188,6 @@ De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. D
 		\caption{Operaties van de Railway/Crossing klasse}
 	\end{center}
 \end{table}
-
-\newpage
 
 \subsection{Detection-block} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 De \texttt{Detection-block} klasse is de atomaire abstractie van een detectieblok. Deze is een uitbreiding van de \texttt{Segment} klasse.
@@ -207,7 +209,7 @@ De \texttt{Detection-block} klasse is de atomaire abstractie van een detectieblo
 
 % Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Light} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Light} klasse is de atomaire abstractie van een licht. De constructor neemt als argumenten het \texttt{id} van het licht, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een spoorwegsegment waarover dit licht gaat.
+De \texttt{Light} klasse is de atomaire abstractie van een licht. De constructor neemt als argumenten het \texttt{id} van het licht, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een spoorwegsegment waarover dit licht gaat. Het licht kan de volgende statussen hebben: \texttt{Hp0}, \texttt{Hp1}, \texttt{Hp0+Sh0}, \texttt{Ks1+Zs3}, \texttt{Ks2}, \texttt{Ks2+Zs3}, \texttt{Sh1}, \texttt{Ks1+Zs3+Zs3v}.
 \begin{table}[H]
 	\begin{center}
 		\begin{tabular}{|l l l|}
@@ -226,18 +228,24 @@ De \texttt{Light} klasse is de atomaire abstractie van een licht. De constructor
 	\end{center}
 \end{table}
 
+% Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Segment} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Segment} klasse is de atomaire abstractie van een spoorwegsegment.
+De \texttt{Segment} klasse is de atomaire abstractie van een spoorwegsegment. De constructor neemt als argumenten het \texttt{id} van het spoorwegsegment, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en de twee andere spoorwegelementen waartussen dit spoorwegsegment zich bevindt. De status van het spoorwegsegment kan ofwel \texttt{free}, ofwel \texttt{reserved} zijn.
 \begin{table}[H]
 	\begin{center}
 		\begin{tabular}{|l l l|}
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
-			\texttt{make-object} & (\textit{symbol} \naar \textit{Segment}) & Constructor\\
+			\texttt{make-object} & (\textit{symbol Object symbol symbol} \naar \textit{Segment}) & Constructor\\
 			\hline
-			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de status van het segment\\
-			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Update de status van het segment\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van de overweg.\\
+			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van de overweg.\\
+			\texttt{get-next} & (\empty \naar \textit{list}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-prev} & (\empty \naar \textit{list}) & Geeft het vorige spoorwegelement weer.\\
+			\texttt{set-state!} & (\textit{symbol} \naar \textit{boolean}) & Update de \texttt{status} van het segment.\\
+			&& False wanneer \texttt{(set-state! 'reserved)}\\
+			&& indien \texttt{Segment} reeds gereserveerd.\\
 			\hline
 		\end{tabular}
 		\caption{Operaties van de Railway/Segment klasse}
