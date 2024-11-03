@@ -172,7 +172,7 @@ De \texttt{Main} klasse is het startpunt van railway-module van de software en f
 
 % Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Crossing} % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. De constructor neemt als argumenten het \texttt{id} van de overweg, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een lijst met spoorwegsegmenten waarover deze overweg brugt. Het openen en sluiten van deze overweg neemt wat tijd in beslag, waartussen de overweg als status \lq\texttt{pending}' heeft.
+De \texttt{Crossing} klasse is de atomaire abstractie van een spoorwegoverweg. De constructor neemt als argumenten het \texttt{id} van de overweg, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en een lijst van spoorwegsegmenten waarover deze overweg brugt. Het openen en sluiten van deze overweg neemt wat tijd in beslag, waartussen de overweg als status \lq\texttt{pending}' heeft.
 \begin{table}[H]
 	\begin{center}
 		{\rowcolors{2}{white!100}{gray!50!white!50}
@@ -258,8 +258,8 @@ De \texttt{Segment} klasse is de atomaire abstractie van een spoorwegsegment. De
 			\hline
 			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van het segment.\\
 			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van het segment.\\
-			\texttt{get-next} & (\empty \naar \textit{list}) & Geeft het volgende spoorwegelement weer.\\
-			\texttt{get-prev} & (\empty \naar \textit{list}) & Geeft het vorige spoorwegelement weer.\\
+			\texttt{get-next} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-prev} & (\empty \naar \textit{symbol}) & Geeft het vorige spoorwegelement weer.\\
 			\texttt{set-state!} & (\textit{symbol} \naar \textit{boolean}) & Update de \texttt{status} van het segment.\\
 			&& False wanneer \texttt{(set-state! 'reserved)}\\
 			&& indien \texttt{Segment} reeds gereserveerd.\\
@@ -269,8 +269,9 @@ De \texttt{Segment} klasse is de atomaire abstractie van een spoorwegsegment. De
 	\end{center}
 \end{table}
 
+% Implemented, Tested, Documented ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsection{Switch} % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel.
+De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel. Deze is een uitbreiding van de \texttt{Segment} klasse. De constructor neemt als argumenten het \texttt{id} van de wissel, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en de andere spoorwegelementen waartussen deze wissel zich bevindt, de ingaande als \texttt{symbol} en de uitgaande als een \texttt{cons}-cel van \texttt{symbol}s. De positie van de wissel kan ofwel \texttt{left}, ofwel \texttt{right}, zijn.
 \begin{table}[H]
 	\begin{center}
 		{\rowcolors{2}{white!100}{gray!50!white!50}
@@ -278,9 +279,16 @@ De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel.
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
-			\texttt{make-object} & (\textit{symbol} \naar \textit{Switch}) & Constructor\\
+			\texttt{make-object} & (\textit{symbol Object symbol pair} \naar \textit{Switch}) & Constructor\\
 			\hline
-			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de status van de wissel\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van het segment.\\
+			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van het segment.\\
+			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de \texttt{position} van de wissel\\
+			\texttt{get-next-left} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-next-right} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-prev} & (\empty \naar \textit{symbol}) & Geeft het vorige spoorwegelement weer.\\
+			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Update de \texttt{status} van het segment.\\
+			
 			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de wissel\\
 			\hline
 		\end{tabular}}

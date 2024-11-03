@@ -13,6 +13,7 @@
 ;
 ; aliasses
 ;
+(define id           'id)
 (define Hp0          'Hp0)
 (define Hp1          'Hp1)
 (define Hp0+Sh0      'Hp0+Sh0)
@@ -38,33 +39,35 @@
 (define make-connection
   (λ () (make-object connection% generic)))
 
+(define (make-light-with connection)
+  (make-object light% id connection segment))
+
 (define make-generic-light
-  (λ () (make-object light% 'id (make-connection) segment)))
+  (λ () (make-light-with (make-connection))))
 
 (define make-Hp0-light
-  (λ () (make-object light% 'id (make-object connection% Hp0) segment)))
+  (λ () (make-light-with (make-object connection% Hp0))))
 
 (define make-Hp1-light
-  (λ () (make-object light% 'id (make-object connection% Hp1) segment)))
+  (λ () (make-light-with (make-object connection% Hp1))))
 
 (define make-Hp0+Sh0-light
-  (λ () (make-object light% 'id (make-object connection% Hp0+Sh0) segment)))
+  (λ () (make-light-with (make-object connection% Hp0+Sh0))))
 
 (define make-Ks1+Zs3-light
-  (λ () (make-object light% 'id (make-object connection% Ks1+Zs3) segment)))
+  (λ () (make-light-with (make-object connection% Ks1+Zs3))))
 
 (define make-Ks2-light
-  (λ () (make-object light% 'id (make-object connection% Ks2) segment)))
+  (λ () (make-light-with (make-object connection% Ks2))))
 
 (define make-Ks2+Zs3-light
-  (λ () (make-object light% 'id (make-object connection% Ks2+Zs3) segment)))
+  (λ () (make-light-with (make-object connection% Ks2+Zs3))))
 
 (define make-Sh1-light
-  (λ () (make-object light% 'id (make-object connection% Sh1) segment)))
+  (λ () (make-light-with (make-object connection% Sh1))))
 
 (define make-Ks1+Zs3+Zs3v-light
-  (λ ()
-    (make-object light% 'id (make-object connection% Ks1+Zs3+Zs3v) segment)))
+  (λ () (make-light-with (make-object connection% Ks1+Zs3+Zs3v))))
 
 ;
 ; test-make-object test suites
@@ -78,10 +81,10 @@
     (check-not-exn (λ () light%)))
    (test-case
     "check if constructor doesn't error"
-    (check-not-exn (λ () (make-object light% 'id (make-connection) segment))))
+    (check-not-exn (λ () (make-generic-light))))
    (test-case
     "check if constructor returns an object"
-    (check-true (object? (make-object light% 'id (make-connection) segment))))
+    (check-true (object? (make-generic-light))))
    ))
 
 ;
@@ -100,7 +103,7 @@
     (check-not-exn (λ () (send (make-generic-light) get-id))))
    (test-case
     "check if 'get-id' returns 'id"
-    (check-eq? (send (make-generic-light) get-id) 'id))
+    (check-eq? (send (make-generic-light) get-id) id))
    ))
 
 ;
@@ -178,7 +181,7 @@
     (test-case
      "check if connection switches to 'Hp0 when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Hp0)
        (check-eq? (send connection get-signal) Hp0)))
     
@@ -190,7 +193,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Hp0"
      (let* ((connection (make-object connection% Hp0))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Hp0)
        (check-eq? (send connection get-signal) Hp0)))
     )
@@ -213,7 +216,7 @@
     (test-case
      "check if connection switches to 'Hp1 when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Hp1)
        (check-eq? (send connection get-signal) Hp1)))
     
@@ -225,7 +228,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Hp1"
      (let* ((connection (make-object connection% Hp1))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Hp1)
        (check-eq? (send connection get-signal) Hp1)))
     )
@@ -248,7 +251,7 @@
     (test-case
      "check if connection switches to 'Hp0+Sh0 when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Hp0+Sh0)
        (check-eq? (send connection get-signal) Hp0+Sh0)))
     
@@ -260,7 +263,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Hp0+Sh0"
      (let* ((connection (make-object connection% Hp0+Sh0))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Hp0+Sh0)
        (check-eq? (send connection get-signal) Hp0+Sh0)))
     )
@@ -283,7 +286,7 @@
     (test-case
      "check if connection switches to 'Ks1+Zs3 when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3)
        (check-eq? (send connection get-signal) Ks1+Zs3)))
     
@@ -295,7 +298,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Ks1+Zs3"
      (let* ((connection (make-object connection% Ks1+Zs3))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3)
        (check-eq? (send connection get-signal) Ks1+Zs3)))
     )
@@ -318,7 +321,7 @@
     (test-case
      "check if connection switches to 'Ks2 when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks2)
        (check-eq? (send connection get-signal) Ks2)))
     
@@ -330,7 +333,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Ks2"
      (let* ((connection (make-object connection% Ks2))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks2)
        (check-eq? (send connection get-signal) Ks2)))
     )
@@ -353,7 +356,7 @@
     (test-case
      "check if connection switches to 'Ks2+Zs3 when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks2+Zs3)
        (check-eq? (send connection get-signal) Ks2+Zs3)))
     
@@ -365,7 +368,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Ks2+Zs3"
      (let* ((connection (make-object connection% Ks2+Zs3))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks2+Zs3)
        (check-eq? (send connection get-signal) Ks2+Zs3)))
     )
@@ -388,7 +391,7 @@
     (test-case
      "check if connection switches to 'Sh1 when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Sh1)
        (check-eq? (send connection get-signal) Sh1)))
     
@@ -400,7 +403,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Sh1"
      (let* ((connection (make-object connection% Sh1))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Sh1)
        (check-eq? (send connection get-signal) Sh1)))
     )
@@ -424,7 +427,7 @@
     (test-case
      "check if connection switches to 'Ks1+Zs3+Zs3v when calling it"
      (let* ((connection (make-connection))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3+Zs3v)
        (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
     
@@ -436,7 +439,7 @@
     (test-case
      "check if connection stays on same signal when calling 'Ks1+Zs3+Zs3v"
      (let* ((connection (make-object connection% Ks1+Zs3+Zs3v))
-            (light (make-object light% 'id connection segment)))
+            (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3+Zs3v)
        (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
     )))

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.7.10)  2 NOV 2024 20:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.7.10)  3 NOV 2024 01:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -878,13 +878,18 @@ Overfull \hbox (24.06313pt too wide) in paragraph at lines 253--268
  [] 
  []
 
-[4] [5]
-Overfull \hbox (7.29378pt too wide) in paragraph at lines 337--349
+[4]
+Overfull \hbox (19.75052pt too wide) in paragraph at lines 277--294
+ [] 
+ []
+
+[5]
+Overfull \hbox (7.29378pt too wide) in paragraph at lines 344--356
  [] 
  []
 
 [6] [7] [8]
-Overfull \hbox (37.86426pt too wide) in paragraph at lines 487--508
+Overfull \hbox (37.86426pt too wide) in paragraph at lines 494--515
  [] 
  []
 
@@ -898,7 +903,7 @@ Package rerunfilecheck Info: File `specificatie-voor-ontwikkelaars.out' has not
 Here is how much of TeX's memory you used:
  22248 strings out of 478024
  408640 string characters out of 5842701
- 703434 words of memory out of 5000000
+ 703433 words of memory out of 5000000
  40176 multiletter control sequences out of 15000+600000
  485419 words of font info for 100 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -916,7 +921,7 @@ c/amsfonts/cm/cmr17.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts
 texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2022/texmf-dist
 /fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2022/texmf-dist/fonts/typ
 e1/public/cm-super/sfrm1200.pfb>
-Output written on specificatie-voor-ontwikkelaars.pdf (14 pages, 196125 bytes).
+Output written on specificatie-voor-ontwikkelaars.pdf (14 pages, 196762 bytes).
 
 PDF statistics:
  387 PDF objects out of 1000 (max. 8388607)

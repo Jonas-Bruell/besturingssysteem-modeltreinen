@@ -13,6 +13,7 @@
 ;
 ; aliasses
 ;
+(define id       'id)
 (define free     'free)
 (define reserved 'reserved)
 (define generic  'generic)
@@ -33,14 +34,17 @@
 (define make-connection
   (λ () (make-object connection% generic)))
 
+(define (make-segment-with connection)
+  (make-object segment% id connection in out))
+
 (define make-generic-segment
-  (λ () (make-object segment% 'id (make-connection) in out)))
+  (λ () (make-segment-with (make-connection))))
 
 (define make-free-segment
-  (λ () (make-object segment% 'id (make-object connection% free) in out)))
+  (λ () (make-segment-with (make-object connection% free))))
 
 (define make-reserved-segment
-  (λ () (make-object segment% 'id (make-object connection% reserved) in out)))
+  (λ () (make-segment-with (make-object connection% reserved))))
 
 ;
 ; test-make-object test suites
@@ -54,10 +58,10 @@
     (check-not-exn (λ () segment%)))
    (test-case
     "check if constructor doesn't error"
-    (check-not-exn (λ () (make-object segment% 'id (make-connection) in out))))
+    (check-not-exn (λ () (make-generic-segment))))
    (test-case
     "check if constructor returns an object"
-    (check-true (object? (make-object segment% 'id (make-connection) in out))))
+    (check-true (object? (make-generic-segment))))
    ))
 
 ;
@@ -76,7 +80,7 @@
     (check-not-exn (λ () (send (make-generic-segment) get-id))))
    (test-case
     "check if 'get-id' returns 'id"
-    (check-eq? (send (make-generic-segment) get-id) 'id))
+    (check-eq? (send (make-generic-segment) get-id) id))
    ))
 
 ;
@@ -181,7 +185,7 @@
      (test-case
       "check if free connection stays free"
       (let* ((connection (make-object connection% free))
-             (segment (make-object segment% 'id connection in out)))
+             (segment (make-segment-with connection)))
         (send segment set-state! free)
         (check-eq? (send connection get-state) free)))
      )
@@ -209,7 +213,7 @@
      (test-case
       "check if reserved connection frees"
       (let* ((connection (make-object connection% reserved))
-             (segment (make-object segment% 'id connection in out)))
+             (segment (make-segment-with connection)))
         (send segment set-state! free)
         (check-eq? (send connection get-state) free)))
      ))
@@ -243,7 +247,7 @@
      (test-case
       "check if free connection reserves"
       (let* ((connection (make-object connection% free))
-             (segment (make-object segment% 'id connection in out)))
+             (segment (make-segment-with connection)))
         (send segment set-state! reserved)
         (check-eq? (send connection get-state) reserved)))
      )
@@ -271,7 +275,7 @@
      (test-case
       "check if reserved connection stays reserved"
       (let* ((connection (make-object connection% reserved))
-             (segment (make-object segment% 'id connection in out)))
+             (segment (make-segment-with connection)))
         (send segment set-state! reserved)
         (check-eq? (send connection get-state) reserved)))
      ))))

@@ -13,6 +13,7 @@
 ;
 ; aliasses
 ;
+(define id       'id)
 (define free     'free)
 (define reserved 'reserved)
 (define occupied 'occupied)
@@ -34,20 +35,20 @@
 (define make-connection
   (λ () (make-object connection% generic)))
 
+(define (make-detection-block-with connection)
+  (make-object detection-block% id connection in out))
+
 (define make-generic-detection-block
-  (λ () (make-object detection-block% 'id (make-connection) in out)))
+  (λ () (make-detection-block-with (make-connection))))
 
 (define make-free-detection-block
-  (λ () (make-object
-            detection-block% 'id (make-object connection% free) in out)))
+  (λ () (make-detection-block-with (make-object connection% free))))
 
 (define make-reserved-detection-block
-  (λ () (make-object
-            detection-block% 'id (make-object connection% reserved) in out)))
+  (λ () (make-detection-block-with (make-object connection% reserved))))
 
 (define make-occupied-detection-block
-  (λ () (make-object
-            detection-block% 'id (make-object connection% occupied) in out)))
+  (λ () (make-detection-block-with (make-object connection% occupied))))
 
 ;
 ; test-make-object test suites
@@ -62,11 +63,11 @@
    (test-case
     "check if constructor doesn't error"
     (check-not-exn
-     (λ () (make-object detection-block% 'id (make-connection) in out))))
+     (λ () (make-generic-detection-block))))
    (test-case
     "check if constructor returns an object"
     (check-true
-     (object? (make-object detection-block% 'id (make-connection) in out))))
+     (object? (make-generic-detection-block))))
    ))
 
 ;
@@ -85,7 +86,7 @@
     (check-not-exn (λ () (send (make-generic-detection-block) get-id))))
    (test-case
     "check if 'get-id' returns 'id"
-    (check-eq? (send (make-generic-detection-block) get-id) 'id))
+    (check-eq? (send (make-generic-detection-block) get-id) id))
    ))
 
 ;
@@ -194,8 +195,7 @@
      (test-case
       "check if free connection stays free"
       (let* ((connection (make-object connection% free))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
         (check-eq? (send connection get-state) free)))
      )
@@ -223,8 +223,7 @@
      (test-case
       "check if reserved connection frees"
       (let* ((connection (make-object connection% reserved))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
         (check-eq? (send connection get-state) free)))
      )
@@ -252,8 +251,7 @@
      (test-case
       "check if occupied connection frees"
       (let* ((connection (make-object connection% occupied))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
         (check-eq? (send connection get-state) free)))
      ))
@@ -287,8 +285,7 @@
      (test-case
       "check if free connection reserves"
       (let* ((connection (make-object connection% free))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
         (check-eq? (send connection get-state) reserved)))
      )
@@ -316,8 +313,7 @@
      (test-case
       "check if reserved connection stays reserved"
       (let* ((connection (make-object connection% reserved))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
         (check-eq? (send connection get-state) reserved)))
      )
@@ -345,8 +341,7 @@
      (test-case
       "check if occupied connection stays occupied"
       (let* ((connection (make-object connection% occupied))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
         (check-eq? (send connection get-state) occupied)))
      ))
@@ -380,8 +375,7 @@
      (test-case
       "check if free connection occupies"
       (let* ((connection (make-object connection% free))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! occupied)
         (check-eq? (send connection get-state) occupied)))
      )
@@ -409,8 +403,7 @@
      (test-case
       "check if reserved connection occupies"
       (let* ((connection (make-object connection% reserved))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! occupied)
         (check-eq? (send connection get-state) occupied)))
      )
@@ -438,8 +431,7 @@
      (test-case
       "check if occupied connection stays occupied"
       (let* ((connection (make-object connection% occupied))
-             (detection-block
-              (make-object detection-block% 'id connection in out)))
+             (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! occupied)
         (check-eq? (send connection get-state) occupied)))
      ))))

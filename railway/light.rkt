@@ -59,7 +59,7 @@
 
     ;
     ; set-signal! :: change the signal of the railway light only when it is
-    ; not yet on the required signal
+    ;                not yet on the required signal
     ;
     ; @param new-signal symbol :: the new signal of the light
     ;

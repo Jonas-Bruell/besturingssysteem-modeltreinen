@@ -13,6 +13,7 @@
 ;
 ; aliasses
 ;
+(define id      'id)
 (define open    'open)
 (define closed  'closed)
 (define generic 'generic)
@@ -32,14 +33,17 @@
 (define make-connection
   (λ () (make-object connection% generic)))
 
+(define (make-crossing-with connection segment-list)
+  (make-object crossing% id connection segment-list))
+
 (define make-generic-crossing
-  (λ () (make-object crossing% 'id (make-connection) '())))
+  (λ () (make-crossing-with (make-connection) '())))
 
 (define make-open-crossing
-  (λ () (make-object crossing% 'id (make-object connection% open) '())))
+  (λ () (make-crossing-with (make-object connection% open) '())))
 
 (define make-closed-crossing
-  (λ () (make-object crossing% 'id (make-object connection% closed) '())))
+  (λ () (make-crossing-with (make-object connection% closed) '())))
 
 ;
 ; test-make-object test suites
@@ -53,10 +57,10 @@
     (check-not-exn (λ () crossing%)))
    (test-case
     "check if constructor doesn't error"
-    (check-not-exn (λ () (make-object crossing% 'id (make-connection) '()))))
+    (check-not-exn (λ () (make-generic-crossing))))
    (test-case
     "check if constructor returns an object"
-    (check-true (object? (make-object crossing% 'id (make-connection) '()))))
+    (check-true (object? (make-generic-crossing))))
    ))
 
 ;
@@ -75,7 +79,7 @@
     (check-not-exn (λ () (send (make-generic-crossing) get-id))))
    (test-case
     "check if 'get-id' returns 'id"
-    (check-eq? (send (make-generic-crossing) get-id) 'id))
+    (check-eq? (send (make-generic-crossing) get-id) id))
    ))
 
 ;
@@ -116,20 +120,19 @@
     (check-true (list? (send (make-generic-crossing) get-segments))))
    (test-case
     "check if 'get-segments' returns a empty list when no segements"
-    (check-true (null? (send (make-object crossing% 'id (make-connection) '())
+    (check-true (null? (send (make-crossing-with (make-connection) '())
                              get-segments))))
    (test-case
     "check if 'get-segments' returns an atomic list when 1 segements"
     (let ((segment-list
-           (send (make-object crossing% 'id (make-connection) '(segment))
+           (send (make-crossing-with (make-connection) '(segment))
                  get-segments)))
       (check-true (and (eq? (car segment-list) 'segment)
                        (null? (cdr segment-list))))))
    (test-case
     "check if 'get-segments' returns a list with 2 elements when 2 segements"
     (let ((segment-list
-           (send
-            (make-object crossing% 'id (make-connection) '(segment1 segment2))
+           (send (make-crossing-with (make-connection) '(segment1 segment2))
             get-segments)))
       (check-true (and (eq? (car segment-list) 'segment1)
                        (eq? (cadr segment-list) 'segment2)
@@ -172,7 +175,7 @@
     (test-case
      "check if closed connection opens"
      (let* ((connection (make-object connection% closed))
-            (crossing (make-object crossing% 'id connection '())))
+            (crossing (make-crossing-with connection '())))
        (send crossing set-state! open)
        (sleep timeout)
        (check-eq? (send connection get-state) open)))
@@ -185,7 +188,7 @@
     (test-case
      "check if open connection stays open"
      (let* ((connection (make-object connection% open))
-            (crossing (make-object crossing% 'id connection '())))
+            (crossing (make-crossing-with connection '())))
        (send crossing set-state! open)
        (check-eq? (send connection get-state) open)))
     )
@@ -210,7 +213,7 @@
     (test-case
      "check if open connection closes"
      (let* ((connection (make-object connection% open))
-            (crossing (make-object crossing% 'id connection '())))
+            (crossing (make-crossing-with connection '())))
        (send crossing set-state! closed)
        (sleep timeout)
        (check-eq? (send connection get-state) closed)))
@@ -223,7 +226,7 @@
     (test-case
      "check if closed connection stays closed"
      (let* ((connection (make-object connection% closed))
-            (crossing (make-object crossing% 'id connection '())))
+            (crossing (make-crossing-with connection '())))
        (send crossing set-state! closed)
        (check-eq? (send connection get-state) closed)))
     )))

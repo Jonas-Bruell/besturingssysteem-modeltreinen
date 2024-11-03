@@ -54,14 +54,14 @@
 
     ;
     ; set-state! :: change the state of the railway crossing only when it is
-    ; not yet in the required state
+    ;               not yet in the required state
     ;
     ; @param new-state symbol :: the new state of the crossing - open or closed
     ;
     (define/public (set-state! new-state)
       (cond ((eq? new-state state)
              (void))
-            ((or (eq? new-state open) (eq? new-state closed))
+            ((member new-state (list open closed))
              (send connection set-state! new-state)
              (set! state pending)
              (thread

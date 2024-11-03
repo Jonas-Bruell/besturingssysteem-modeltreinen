@@ -35,7 +35,7 @@
 
     ;
     ; set-state! :: change the state of the railway crossing only when it is
-    ; not yet in the required state
+    ;               not yet in the required state
     ;
     ; @param new-state symbol :: the new state of the detection-block
     ; @returns boolean :: #f when trying to reserve a reserved state
@@ -55,7 +55,7 @@
                                            (eq? occupied new-state)))
                  (and (eq? reserved state) (eq? occupied new-state)))
              (send connection set-state! new-state)
-             (set! state new-state)
+             (set! state (send connection get-state))
              #t)
             (else (error "segment%: wrong message sent: " new-state))))
     ))
