@@ -319,12 +319,12 @@ De \texttt{Switch-3way} klasse is de atomaire abstractie van een spoorwegwissel 
 			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de 3-wegs wissel\\
 			\hline
 		\end{tabular}}
-		\caption{Operaties van de Railway/Switch klasse}
+		\caption{Operaties van de Railway/Switch-3way klasse}
 	\end{center}
 \end{table}
 
 \subsection{Switch-cross} % ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Switch-cross} klasse is de atomaire abstractie van een spoorwegwissel deze de kruising maakt tussen 2 keer 2 sporen. Deze klasse is een uitbreiding van de \texttt{Switch} klasse.
+De \texttt{Switch-cross} klasse is de atomaire abstractie van een spoorwegwissel deze de kruising maakt tussen 2 keer 2 sporen. Deze klasse is een uitbreiding van de \texttt{Switch} klasse. De constructor neemt als argumenten het \texttt{id} van de wissel, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en de andere spoorwegelementen waartussen deze wissel zich bevindt, zowel de ingaande als uitgaande als als een \texttt{list} van \texttt{symbol}s. De positie van de wissel kan ofwel \texttt{in-left}, ofwel \texttt{in-right}, \texttt{out-left}, ofwel \texttt{out-right} zijn.
 \begin{table}[H]
 	\begin{center}
 		{\rowcolors{2}{white!100}{gray!50!white!50}
@@ -332,14 +332,20 @@ De \texttt{Switch-cross} klasse is de atomaire abstractie van een spoorwegwissel
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
-			\texttt{make-object} & (\textit{symbol} \naar \textit{Switch-cross}) & Constructor\\
+			\texttt{make-object} & (\textit{symbol Object pair pair} \naar \textit{Switch}) & Constructor\\
 			\hline
-			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de status van de wissel\\
-			\texttt{set-position-1!} & (\textit{symbol} \naar \empty) & Update de status van het eerste paar in de wissel\\
-			\texttt{set-position-2!} & (\textit{symbol} \naar \empty) & Update de status van het tweede paar in de wissel\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van de kruis-wissel.\\
+			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van de kruis-wissel.\\
+			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de \texttt{position} van de kruis-wissel\\
+			\texttt{get-next-left} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-next-right} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-prev-left} & (\empty \naar \textit{symbol}) & Geeft het vorige spoorwegelement weer.\\
+			\texttt{get-prev-right} & (\empty \naar \textit{symbol}) & Geeft het vorige spoorwegelement weer.\\
+			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Update de \texttt{status} van de kruis-wissel.\\
+			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de kruis-wissel\\
 			\hline
 		\end{tabular}}
-		\caption{Operaties van de Railway/Switch klasse}
+		\caption{Operaties van de Railway/Switch-cross klasse}
 	\end{center}
 \end{table}
 

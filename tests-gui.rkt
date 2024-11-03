@@ -10,3 +10,10 @@
 
 (require rackunit/gui "tests.rkt")
 (test/gui all-tests)
+
+;
+; TO DO IN SWITCH-3WAY & SWITCH-CROSS
+; -> id's als lists implementeren om zo de 2 sub-wissels te representeren
+; -> deze 2 sub-wissels implementeren
+; -> set-position! aanpassen om deze 2 sub-wissels aan te spreken
+;

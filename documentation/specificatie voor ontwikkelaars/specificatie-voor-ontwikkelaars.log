@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.7.10)  3 NOV 2024 02:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.7.10)  3 NOV 2024 02:59
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -889,30 +889,35 @@ Overfull \hbox (21.02191pt too wide) in paragraph at lines 305--322
  []
 
 
-Overfull \hbox (7.29378pt too wide) in paragraph at lines 351--363
+Overfull \hbox (6.73836pt too wide) in paragraph at lines 331--348
  [] 
  []
 
-[6] [7] [8]
-Overfull \hbox (37.86426pt too wide) in paragraph at lines 501--522
+
+Overfull \hbox (7.29378pt too wide) in paragraph at lines 357--369
  [] 
  []
 
-[9] [10] [11] 
+[6] [7] [8] [9]
+Overfull \hbox (37.86426pt too wide) in paragraph at lines 507--528
+ [] 
+ []
+
+[10] [11] [12] 
 AED: lastpage setting LastPage
-[12] (./specificatie-voor-ontwikkelaars.aux)
+[13] (./specificatie-voor-ontwikkelaars.aux)
 Package rerunfilecheck Info: File `specificatie-voor-ontwikkelaars.out' has not
  changed.
 (rerunfilecheck)             Checksum: 7A65777F2F53C1ABCF58371A41FD2FB8;4308.
  ) 
 Here is how much of TeX's memory you used:
- 22248 strings out of 478024
- 408640 string characters out of 5842701
+ 22249 strings out of 478024
+ 408647 string characters out of 5842701
  703433 words of memory out of 5000000
  40176 multiletter control sequences out of 15000+600000
  485419 words of font info for 100 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,11n,80p,651b,468s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,11n,80p,664b,468s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {c:/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<c:/tex
 live/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texlive/2022
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb><c:/texlive/2022/texmf-di
@@ -926,11 +931,11 @@ c/amsfonts/cm/cmr17.pfb><c:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts
 texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><c:/texlive/2022/texmf-dist
 /fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2022/texmf-dist/fonts/typ
 e1/public/cm-super/sfrm1200.pfb>
-Output written on specificatie-voor-ontwikkelaars.pdf (14 pages, 197419 bytes).
+Output written on specificatie-voor-ontwikkelaars.pdf (15 pages, 198562 bytes).
 
 PDF statistics:
- 387 PDF objects out of 1000 (max. 8388607)
- 341 compressed objects within 4 object streams
- 83 named destinations out of 1000 (max. 500000)
+ 391 PDF objects out of 1000 (max. 8388607)
+ 344 compressed objects within 4 object streams
+ 84 named destinations out of 1000 (max. 500000)
  333 words of extra memory for PDF output out of 10000 (max. 10000000)
 
