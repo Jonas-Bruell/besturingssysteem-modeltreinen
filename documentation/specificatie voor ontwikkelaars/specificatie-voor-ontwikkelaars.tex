@@ -281,14 +281,13 @@ De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel. Deze
 			\hline
 			\texttt{make-object} & (\textit{symbol Object symbol pair} \naar \textit{Switch}) & Constructor\\
 			\hline
-			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van het segment.\\
-			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van het segment.\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van de wissel.\\
+			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van de wissel.\\
 			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de \texttt{position} van de wissel\\
 			\texttt{get-next-left} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
 			\texttt{get-next-right} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
 			\texttt{get-prev} & (\empty \naar \textit{symbol}) & Geeft het vorige spoorwegelement weer.\\
-			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Update de \texttt{status} van het segment.\\
-			
+			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Update de \texttt{status} van de wissel.\\
 			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de wissel\\
 			\hline
 		\end{tabular}}
@@ -299,7 +298,7 @@ De \texttt{Switch} klasse is de atomaire abstractie van een spoorwegwissel. Deze
 \newpage
 
 \subsection{Switch-3way} % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-De \texttt{Switch-3way} klasse is de atomaire abstractie van een spoorwegwissel deze van 3 sporen laat samenkomen tot 1 spoor. Deze klasse is een uitbreiding is van de \texttt{Switch} klasse.
+De \texttt{Switch-3way} klasse is de atomaire abstractie van een spoorwegwissel deze van 3 sporen laat samenkomen tot 1 spoor. Deze klasse is een uitbreiding is van de \texttt{Switch} klasse. De constructor neemt als argumenten het \texttt{id} van de wissel, een \lq\texttt{connection}' (communicatie naar ondergelegen laag) en de andere spoorwegelementen waartussen deze wissel zich bevindt, de ingaande als \texttt{symbol} en de uitgaande als een \texttt{list} van \texttt{symbol}s. De positie van de wissel kan ofwel \texttt{left}, ofwel \texttt{middle}, ofwel \texttt{right}, zijn.
 \begin{table}[H]
 	\begin{center}
 		{\rowcolors{2}{white!100}{gray!50!white!50}
@@ -307,10 +306,17 @@ De \texttt{Switch-3way} klasse is de atomaire abstractie van een spoorwegwissel 
 			\hline
 			\textbf{Naam} & \textbf{Signatuur} & \textbf{Uitleg}\\
 			\hline
-			\texttt{make-object} & (\textit{symbol} \naar \textit{Switch-3way}) & Constructor\\
+			\texttt{make-object} & (\textit{symbol Object symbol list} \naar \textit{Switch}) & Constructor\\
 			\hline
-			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de status van de wissel\\
-			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de wissel\\
+			\texttt{get-id} & (\empty \naar \textit{symbol}) & Geeft het \texttt{id} van de 3-wegs wissel.\\
+			\texttt{get-state} & (\empty \naar \textit{symbol}) & Geeft de \texttt{status} van de 3-wegs wissel.\\
+			\texttt{get-position} & (\empty \naar \textit{symbol}) & Geeft de \texttt{position} van de 3-wegs wissel\\
+			\texttt{get-next-left} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-next-middle} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-next-right} & (\empty \naar \textit{symbol}) & Geeft het volgende spoorwegelement weer.\\
+			\texttt{get-prev} & (\empty \naar \textit{symbol}) & Geeft het vorige spoorwegelement weer.\\
+			\texttt{set-state!} & (\textit{symbol} \naar \empty) & Update de \texttt{status} van de 3-wegs wissel.\\
+			\texttt{set-position!} & (\textit{symbol} \naar \empty) & Update de status van de 3-wegs wissel\\
 			\hline
 		\end{tabular}}
 		\caption{Operaties van de Railway/Switch klasse}

@@ -150,7 +150,7 @@
    ))
 
 ;
-; test-get-position test suites
+; test-get-state test suites
 ;
 (define test-get-state
   (test-suite

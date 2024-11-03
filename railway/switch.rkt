@@ -69,5 +69,5 @@
             ((member new-position (list left right))
              (send connection set-position! new-position)
              (set! position (send connection get-position)))
-            (else (error "segment%: wrong message sent: " new-position))))    
+            (else (error "switch%: wrong message sent: " new-position))))
     ))

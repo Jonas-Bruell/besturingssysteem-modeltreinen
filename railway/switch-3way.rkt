@@ -8,16 +8,57 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(provide switch-3way%) ; (object symbol symbol -> class)
+(require "switch.rkt")
+(provide switch-3way%)
 
 (define switch-3way%
-  (class object%
+  (class switch%
     (super-new)
-    (init-field connection id position)
-    (define/public (get-position) position)
-    (define/public (set-position! new-position)
-      (set! position new-position)
-      (if (member new-position '(1 2))
-        (send connection set-switch-position! id new-position)
-        (error "switch%: wrong message sent: " new-position)))
+;
+    ; This class represents an atomic abstraction of a railroad 3-way switch
+    ;
+    ; @param id :: the name of the railroad 3-way switch
+    ; @param connection :: lower-level implementation of railroad 3-way switch
+    ; @param in :: railway element that goes into this segment (clockwise)
+    ; @param out :: (left middle right), list of railway element that exits out
+    ;               of this segment (clockwise)
+    ;
+    (inherit-field id connection in out)
+    (inherit-field state position)
+
+    ;
+    ; Possible railway switch positions
+    ;
+    (define left   'left)
+    (define middle 'middle)
+    (define right  'right)
+
+    ;
+    ; get-next-middle :: get the next railway element, in the direction of the
+    ;                    2-ended side, in the middle.
+    ;
+    ; @returns symbol :: middle out-field of switch-3way
+    ;
+    (define/public (get-next-middle) (cadr out))
+    
+    ;
+    ; get-next-right :: get the next railway element, in the direction of the
+    ;                   2-ended side, on the right.
+    ;
+    ; @returns symbol :: right out-field of switch
+    ;
+    (define/override (get-next-right) (caddr out))
+
+    ; set-position! :: change the position of the railway switch only when it is
+    ;                  not yet in the required state
+    ;
+    ; @param new-position symbol :: the new position of the switch
+    ;
+    (define/override (set-position! new-position)
+       (cond ((eq? new-position position)
+             (void))
+            ((member new-position (list left middle right))
+             (send connection set-position! new-position)
+             (set! position (send connection get-position)))
+            (else (error "switch-3way%: wrong message sent: " new-position))))
     ))
