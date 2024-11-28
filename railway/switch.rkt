@@ -9,7 +9,10 @@
 
 #lang racket
 (require "segment.rkt")
-(provide switch%)
+(provide left right switch%)
+
+(define left 'left)
+(define right 'right)
 
 (define switch%
   (class segment%
@@ -27,12 +30,6 @@
     (inherit-field id connection in out)
     (inherit-field state)
     (field (position (send connection get-position)))
-
-    ;
-    ; Possible railway switch positions
-    ;
-    (define left 'left)
-    (define right 'right)
 
     ;
     ; get-next-left :: get the next railway element, in the direction of the
@@ -64,7 +61,7 @@
     ; @param new-position symbol :: the new position of the switch
     ;
     (define/public (set-position! new-position)
-       (cond ((eq? new-position position)
+      (cond ((eq? new-position position)
              (void))
             ((member new-position (list left right))
              (send connection set-position! new-position)

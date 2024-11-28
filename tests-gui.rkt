@@ -17,3 +17,6 @@
 ; -> deze 2 sub-wissels implementeren
 ; -> set-position! aanpassen om deze 2 sub-wissels aan te spreken
 ;
+
+;; What about de twee wissels in een lijst steken als connections??
+;; -> ook voor testing accessible??
