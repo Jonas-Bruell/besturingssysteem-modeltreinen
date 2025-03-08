@@ -1,5 +1,11 @@
-compiled
+# VS Code
+.vscode
+
+# Racket
+/**/compiled
 /**/*.bak
 /**/*.1
 
+# Other
 TODO.txt
+.DS_Store

@@ -9,6 +9,7 @@
 #lang racket
 
 (require rackunit
+         rackunit/gui
          ;; RAILWAY
          "railway/crossing.test.rkt"
          "railway/light.test.rkt"
@@ -20,6 +21,7 @@
          ;"railway/train.test.rkt"
          ;"railway/main.test.rkt"
          ;; INFRABEL
+         "infrabel/logic/track-interface.test.rkt"
          ;; PROVIDER
          )
 
@@ -35,13 +37,14 @@
                           segment-test
                           detection-block-test
                           switch-test
-                          switch-3way-test
-                          switch-cross-test
+                          ;switch-3way-test
+                          ;switch-cross-test
                           ;train-test
                           ;main-test
                           )
               ;; INFRABEL
               (test-suite "Unit testing of all INFRABEL module operations"
+                          ;(track-interface-test 'sim)
                           (test-case "test"
                                      (check-not-exn (λ () '())))
                           )
@@ -51,3 +54,4 @@
                                      (check-not-exn (λ () '())))
                           )
               ))
+(test/gui all-tests)

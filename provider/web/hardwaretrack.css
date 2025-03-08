@@ -49,46 +49,57 @@ div {
 *
 */
 
+#rails {
+  background: black;
+}
+
 #U-1 {
   top: calc(6.5 * var(--two-point-five-vw));
   left: calc(3.5 * var(--two-point-five-vw));
   height: calc(1.5 * var(--two-point-five-vw));
+  background: inherit;
 }
 
 #U-2 {
   top: calc(2 * var(--two-point-five-vw));
   right: calc(2.1 * var(--two-point-five-vw));
   width: calc(5.5 * var(--two-point-five-vw));
+  background: inherit;
 }
 
 #U-3 {
   top: calc(3 * var(--two-point-five-vw));
   right: calc(3.1 * var(--two-point-five-vw));
   width: calc(8.5 * var(--two-point-five-vw));
+  background: inherit;
 }
 
 #U-4 {
   top: calc(4.1 * var(--two-point-five-vw));
   right: calc(3.5 * var(--two-point-five-vw));
   height: calc(3 * var(--two-point-five-vw));
+  background: inherit;
 }
 
 #U-5 {
   bottom: calc(4 * var(--two-point-five-vw));
   right: calc(17 * var(--two-point-five-vw));
   width: calc(10 * var(--two-point-five-vw));
+  background: inherit;
 }
 
 #U-6 {
   bottom: calc(5.5 * var(--two-point-five-vw));
   right: calc(21 * var(--two-point-five-vw));
   width: calc(2 * var(--two-point-five-vw));
+  background: inherit;
 }
 
 #U-7 {
   top: calc(6 * var(--two-point-five-vw));
   right: calc(19.5 * var(--two-point-five-vw));
   width: calc(10 * var(--two-point-five-vw));
+  background: inherit;
 }
 
 /*

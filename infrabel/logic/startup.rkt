@@ -3,7 +3,7 @@
 (require try-catch
          "../../modules/string-contains.rkt"
          (prefix-in gui: "../gui/startup.rkt")
-         (prefix-in udp: "../udp/socket.rkt")
+         (prefix-in railway: "railway-interface.rkt")
          (prefix-in server: "../tcp/server.rkt")
          (prefix-in adm&dbg: "../gui/admin-debugger.rkt")
          (prefix-in infrabel: "main.rkt"))
@@ -15,11 +15,7 @@
   (gui:startup simulator-types startup-callback status-callback)
   )
 
-
-
-
-
-(define socket (udp:make-socket))
+(define socket (railway:make-railway))
 (define server (void))
 (define infra 'dummy)
 (define gui 'dummy)

@@ -40,7 +40,7 @@
     ;                         ___ secondary-switch _/___ out-middle
     ; in ___ primary-switch _/__________________________ out-right
     ;
-    #|
+    #||#
     (define/override
       (make-primary-switch primary-id secondary-id out-right)
       (thunk
@@ -52,7 +52,7 @@
       (thunk
        (make-object switch%
          secondary-id connection primary-id (cons out-left out-middle))))
-    |#
+    #||#
 
     (define/override (set-position-left! primary-switch secondary-switch)
       (thunk

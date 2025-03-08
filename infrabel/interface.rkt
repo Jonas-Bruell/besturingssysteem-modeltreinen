@@ -9,7 +9,7 @@
 
 #lang racket
 
-(require "main/startup.rkt")
+(require "logic/startup.rkt")
 
 (provide start-infrabel
          )

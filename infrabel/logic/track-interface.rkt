@@ -8,39 +8,39 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require (prefix-in sim: "simulator/interface.rkt")
-         (prefix-in hw:  "hardware-library/interface.rkt"))
-(provide make-socket
-         )
+(require (prefix-in sim: "../../track/simulator/interface.rkt")
+         (prefix-in hw:  "../../track/hardware-library/interface.rkt"))
+(provide track%)
 
 (define architecture 'sim)
 
-(define (make-socket)
-  (new socket%))
-
-(define socket%
+(define track%
   (class object%
     (super-new)
 
     (define/public (config architecture-setup version)
       (set! architecture architecture-setup)
-      (case version
-        ('hardware (sim:setup-hardware))
-        ('straight (sim:setup-straight))
-        ('straight-with-switch (sim:setup-straight-with-switch))
-        ('loop (sim:setup-loop))
-        ('loop-and-switches (sim:setup-loop-and-switches))))
+      (case architecture-setup
+        ;('hw (hw:start))
+        ('sim (case version
+                ('hardware (sim:setup-hardware))
+                ('straight (sim:setup-straight))
+                ('straight-with-switch (sim:setup-straight-with-switch))
+                ('loop (sim:setup-loop))
+                ('loop-and-switches (sim:setup-loop-and-switches))))))
 
-    (define/public (open-connection)
+    (define/public (start)
       ((λ (method) method)
        (case architecture
          ('sim (sim:start))
+         ('hw  (hw:start))
          )))
 
-    (define/public (close-connection)
+    (define/public (stop)
       ((λ (method) method)
        (case architecture
          ('sim (sim:stop))
+         ('hw  (hw:stop))
          )))
 
     (define/public (add-loco train-id previous-segment-id current-segment-id)
