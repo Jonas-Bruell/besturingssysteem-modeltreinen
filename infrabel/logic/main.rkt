@@ -8,8 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require (prefix-in udp: "../udp/socket.rkt")
-         "../../railway/main.rkt")
+(require "../../railway/main.rkt")
 
 (provide start-infrabel   ; (/ -> /)
          )

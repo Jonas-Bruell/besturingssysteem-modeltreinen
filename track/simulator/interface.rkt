@@ -30,6 +30,7 @@
          
          get-loco-speed
          set-loco-speed!
+         
 
          get-occupied-detection-blocks
          
@@ -39,7 +40,9 @@
          close-crossing!
          open-crossing!
 
-         set-sign-code!)
+         set-sign-code!
+
+         )
 
 ;;; INTERFACE ;;;
 

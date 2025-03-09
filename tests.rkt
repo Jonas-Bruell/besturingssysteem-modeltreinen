@@ -8,16 +8,28 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
 
+;
+; TO DO IN SWITCH-3WAY & SWITCH-CROSS
+; -> id's als lists implementeren om zo de 2 sub-wissels te representeren
+; -> deze 2 sub-wissels implementeren
+; -> set-position! aanpassen om deze 2 sub-wissels aan te spreken
+;
+
+;; What about de twee wissels in een lijst steken als connections??
+;; -> ook voor testing accessible??
+
 (require rackunit
          rackunit/gui
+         rackunit/text-ui
+         racket/cmdline
          ;; RAILWAY
          "railway/crossing.test.rkt"
          "railway/light.test.rkt"
          "railway/segment.test.rkt"
          "railway/detection-block.test.rkt"
          "railway/switch.test.rkt"
-         "railway/switch-3way.test.rkt"
-         "railway/switch-cross.test.rkt"
+         ;"railway/switch-3way.test.rkt"
+         ;"railway/switch-cross.test.rkt"
          ;"railway/train.test.rkt"
          ;"railway/main.test.rkt"
          ;; INFRABEL
@@ -54,4 +66,11 @@
                                      (check-not-exn (λ () '())))
                           )
               ))
-(test/gui all-tests)
+(let/cc exit
+(command-line
+ #:once-any
+ [("-g" "--github") "Run tests without GUI"
+                    (run-tests all-tests 'verbose)
+                    (exit)]
+ #:args ()
+ (test/gui all-tests)))

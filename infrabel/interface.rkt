@@ -9,12 +9,13 @@
 
 #lang racket
 
-(require "logic/startup.rkt")
+(require "config.rkt"
+         "logic/startup.rkt")
 
 (provide start-infrabel
          )
 
 ; startup
 (define (start-infrabel)
-  (startup)
+  (startup TRACKS_LIST)
   )

@@ -3,7 +3,8 @@
 (require try-catch
          "../../modules/string-contains.rkt"
          (prefix-in gui: "../gui/startup.rkt")
-         (prefix-in railway: "railway-interface.rkt")
+         (prefix-in track: "track-interface.rkt")
+         (prefix-in railway: "../../railway/main.rkt")
          (prefix-in server: "../tcp/server.rkt")
          (prefix-in adm&dbg: "../gui/admin-debugger.rkt")
          (prefix-in infrabel: "main.rkt"))
@@ -11,19 +12,19 @@
 (provide startup
          )
 
-(define (startup)
-  (gui:startup simulator-types startup-callback status-callback)
+(define (startup tracks-list)
+  (gui:startup (simulator-types tracks-list) startup-callback status-callback)
   )
 
-(define socket (railway:make-railway))
+(define socket (new track:track%))
 (define server (void))
 (define infra 'dummy)
 (define gui 'dummy)
 
-(define simulator-types
+(define (simulator-types tracks-list)
   (map (λ (s) (let ((l (string-length s))) (substring s 0 (- l 4))))
        (filter (λ (str) (string-contains? str ".rkt"))
-               (map path->string (directory-list "infrabel/routes")))))
+               (map path->string (directory-list tracks-list)))))
 (define startup-callback
   (λ (type version host port a&d?)
     (startup-server type version host port a&d?)))
@@ -40,10 +41,10 @@
     (send status-callback insert "Connecting to the modal railway ... : ")
     (try
      ((send socket config 'sim (string->symbol version))
-      (send socket open-connection))
+      (send socket start))
      (catch (exn:fail? (send status-callback insert
                              "\nERROR: could not connect to modal railway\n\n")
-                       (send socket close-connection) (return #f) e)))
+                       (send socket stop) (return #f) e)))
     (send status-callback insert "SUCCES\n")
     ;; server connection
     (send status-callback insert "Setting up server ... : ")
@@ -56,7 +57,7 @@
               status-callback insert
               (string-append*
                `("\nERROR: could not setup server on " ,host ":" ,port "\n\n")))
-             (send socket close-connection) (return #f) e)))
+             (send socket stop) (return #f) e)))
     (send
      status-callback insert "SUCCES\n")
 
@@ -69,7 +70,7 @@
      (catch (exn:fail?
              (send status-callback insert
                    "\nERROR: could not setup admin and debugger panel \n\n")
-             (send socket close-connection) (display e) (return #f) e)))
+             (send socket stop) (display e) (return #f) e)))
     (send status-callback insert "SUCCES\n")
     
     ;; ending message 

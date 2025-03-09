@@ -10,12 +10,18 @@
 
 (provide start
          stop
+
+         get-detection-block-ids
+         get-switch-ids
          
          add-loco
+
          
          get-loco-speed
          set-loco-speed!
          ;get-loco-detection-block ;; DEPRECATED
+
+         get-occupied-detection-blocks
          
          get-switch-position
          set-switch-position!
@@ -24,11 +30,6 @@
          open-crossing!
 
          set-sign-code!
-         
-         get-occupied-detection-blocks
-
-         get-detection-block-ids
-         get-switch-ids
          
          )
 
