@@ -19,50 +19,49 @@
 
 (define infrabel%
   (class railway%
-    (init-field connection)
-    (init-field track-version)
+    (init-field track)
     (super-new)
-    (inherit setup-object)
+    (inherit setup-railway-objects)
     ; track
     (define/override (track)
       (dynamic-require
        (string-append "infrabel/routes/" track-version ".rkt") 'TRACK))
     ; segments
-    (define/override (segment-list segment%)
-      (thunk (setup-object
+    (define/override (make-segments-list segment%)
+      (thunk (setup-railway-objects
               segment%
-              connection
+              track
               '(U-1 U-2 U-3 U-4 U-5 U-6 U-7)
               (λ (id) 'free))))
     ; detection-blocks
-    (define/override (detection-block-list detection-block%)
-      (thunk (setup-object
+    (define/override (make-detection-blocks-list detection-block%)
+      (thunk (setup-railway-objects
               detection-block%
-              connection
+              track
               (send connection get-detection-block-ids)
               (λ (id)
                 (if (member id (send connection get-occupied-detection-blocks))
                     'occupied
                     'free)))))
     ; switches
-    (define/override (switch-list switch%)
-      (thunk (setup-object
+    (define/override (make-switches-list switch%)
+      (thunk (setup-railway-objects
               switch%
-              connection
+              track
               (send connection get-switch-ids)
               (λ (id) (send connection get-switch-position id)))))
     ; crossings
-    (define/override (crossing-list crossing%)
-      (thunk (setup-object
+    (define/override (make-crossings-list crossing%)
+      (thunk (setup-railway-objects
               crossing%
-              connection
+              track
               '(C-1 C-2)
               (λ (id) 1))))
     ; lights
-    (define/override (light-list light%)
-      (thunk (setup-object
+    (define/override (make-lights-list light%)
+      (thunk (setup-railway-objects
               light%
-              connection
+              track
               '(L-1 L-2)
               (λ (id) 'Hp1))))
     ;trains

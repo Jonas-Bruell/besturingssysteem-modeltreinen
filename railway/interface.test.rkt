@@ -7,10 +7,8 @@
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
-(require rackunit
-         rackunit/gui
-         "main.rkt")
-(provide main-test)
+(require rackunit "interface.rkt")
+(provide railway-interface-test)
 
 ;
 ; aliasses & abstrations
@@ -60,7 +58,7 @@
 ;
 ; running all test suites
 ;
-(define main-test
+(define railway-interface-test
   (test-suite "All main% operation tests"
               ;test-make-object
               ))

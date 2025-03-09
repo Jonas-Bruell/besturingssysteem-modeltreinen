@@ -3,18 +3,16 @@
 (provide TRACK)
 
 (define TRACK
-  '((block
-     (detection-block
-     ;(name cl-in cl-out)
-      (D1   NIL   D2    )
-      (D2   D1    T     )
-      (D3   T     D4    )
-      (D4   D3    NIL   )
-      )
-     (segment
-     ;(name cl-in cl-out)
-      (T    D2    D3    )
-      )
+  '((detection-block
+    ;(name cl-in cl-out)
+     (D1   NIL   D2    )
+     (D2   D1    T     )
+     (D3   T     D4    )
+     (D4   D3    NIL   )
+     )
+    (segment
+    ;(name cl-in cl-out)
+     (T    D2    D3    )
      )
     (switch
     ;(name in    out1 out2 )

@@ -8,17 +8,33 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require "../config.rkt"
-         (prefix-in sim: "../../track/simulator/interface.rkt")
-         (prefix-in hw:  "../../track/hardware-library/interface.rkt"))
+(require "config.rkt"
+         (prefix-in sim: "simulator/interface.rkt")
+         (prefix-in hw:  "hardware-library/interface.rkt"))
 (provide track%)
 
 (define architecture 'sim)
 
 (define track%
   (class object%
+    (init-field (version "undefined"))
     (super-new)
 
+    (define/public (set-state! new-state) (void))
+    ;(define/public (get-position new-state) (void))
+
+    (define/public (get-version) version)
+    
+    (define/public (get-versions)
+      (map (λ (s) (let ((l (string-length s))) (substring s 0 (- l 4))))
+           (filter (λ (str) (string-contains? str ".rkt"))
+                   (map path->string (directory-list TRACKS_LIST)))))
+
+    (define/public (set-version! new-version) (set! version new-version))
+
+    (define/public (get-meta-data)
+      (dynamic-require (string-append "track/routes/" version ".rkt") 'TRACK))
+      
     (define/public (config architecture-setup version)
       (set! architecture architecture-setup)
       (case architecture-setup

@@ -6,7 +6,7 @@
 ;;                                > version 4 <                               ;;
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#lang racket
+#lang racket/gui
 
 ;
 ; TO DO IN SWITCH-3WAY & SWITCH-CROSS
@@ -18,7 +18,13 @@
 ;; What about de twee wissels in een lijst steken als connections??
 ;; -> ook voor testing accessible??
 
-(require racket/gui racket/cmdline rackunit rackunit/gui rackunit/text-ui
+;; Ander idee: deze concepten bestaan niet op "railway niveau", maar enkel op
+;; "infrabel niveau", tezamen met bv. lights en crossings die gekoppeld zijn aan
+;; segments & detectionblocks + switches die dit alles verbinden.
+
+(require racket/cmdline rackunit rackunit/gui rackunit/text-ui
+         ;; TRACK
+         "track/interface.test.rkt"
          ;; RAILWAY
          "railway/crossing.test.rkt"
          "railway/light.test.rkt"
@@ -28,73 +34,74 @@
          ;"railway/switch-3way.test.rkt"
          ;"railway/switch-cross.test.rkt"
          ;"railway/train.test.rkt"
-         ;"railway/main.test.rkt"
+         ;"railway/interface.test.rkt"
          ;; INFRABEL
-         "infrabel/logic/track-interface.test.rkt"
          ;; PROVIDER
          )
 
 ; running all test suites
-(define (all-tests sim? gui?)
+(define (all-tests sim? gui? s-eff?)
   (test-suite
    "Unit testing all modules"
    ;; TRACK
-   (test-suite "Unit testing of all TRACK module operations"
-               (test-case "test"
-                          (check-not-exn (λ () '())))
-               )
+   (test-suite
+    "Unit testing of all TRACK module operations"
+    (when s-eff? (when gui? (track-interface-test (if sim? 'sim 'hw))))
+    )
    ;; RAILWAY
-   (test-suite "Unit testing of all RAILWAY module operations"
-               crossing-test
-               light-test
-               segment-test
-               detection-block-test
-               switch-test
-               ;switch-3way-test
-               ;switch-cross-test
-               ;train-test
-               ;main-test
-               )
+   (test-suite
+    "Unit testing of all RAILWAY module operations"
+    crossing-test
+    light-test
+    segment-test
+    detection-block-test
+    switch-test
+    ;switch-3way-test
+    ;switch-cross-test
+    ;train-test
+    ;railway-interface-test
+    )
    ;; INFRABEL
-   (test-suite "Unit testing of all INFRABEL module operations"
-               ;(track-interface-test 'sim)
-               (test-case "test"
-                          (check-not-exn (λ () '())))
-               )
+   (test-suite
+    "Unit testing of all INFRABEL module operations"
+    (test-case "test"
+               (check-not-exn (λ () '())))
+    )
    ;; PROVIDER
-   (test-suite "Unit testing of all PROVIDER module operations"
-               (test-case "test"
-                          (check-not-exn (λ () '())))
-               )))
+   (test-suite
+    "Unit testing of all PROVIDER module operations"
+    (test-case "test"
+               (check-not-exn (λ () '())))
+    )))
 
 ;; RackUnit setup GUI for manual running of program
 (define gui%
   (class dialog%
-    (init-field startup-callback)
+    (init-field callback)
     (super-new (label "RackUnit setup"))
     (let ((config-pane
-           (new vertical-pane% (parent this) (alignment '(left bottom))))
+           (new vertical-pane% (parent this) (alignment '(left center))))
           (start-pane
            (new pane% (parent this) (alignment '(center center))))
-          (sim? #t))
+          (sim? #t) (gui? #t) (s-eff? #t))
+      (new radio-box%
+           (label "") (vert-margin 10) (horiz-margin 6) (style '(horizontal))
+           (choices '("Simulator   " "Hardware")) (parent config-pane)
+           (callback (λ (t e) (set! sim? (zero? (send t get-selection))))))
       (new check-box%
-           (label "Test GUI components") (vert-margin 10) (horiz-margin 10)
-           (parent config-pane)
-           (value #t)
-           (callback (λ (t e) (set! sim? (send t get-value)))))
+           (label "Include tests with side-effects?") (horiz-margin 10)
+           (value #t) (parent config-pane)
+           (callback (λ (t e) (set! s-eff? (send t get-value)))))
       (new check-box%
-           (label "Test SIM components xxxxxxxxxxxx") (horiz-margin 10)
-           (parent config-pane)
-           (value #t)
-           (callback (λ (t e) (set! sim? (send t get-value)))))
+           (label "Test components with GUI dependancy?") (horiz-margin 10)
+           (value #t) (parent config-pane)
+           (callback (λ (t e) (set! gui? (send t get-value)))))
       (new button%
-           (label "start") (vert-margin 10)
-           (parent start-pane)
-           (callback (λ (t e) (send this show #f) (startup-callback sim?)))))))
-
-(define startup-callback
-  (λ (sim?)
-    (test/gui (all-tests sim? #t))))
+           (label "start") (vert-margin 10) (parent start-pane)
+           (callback
+            (λ (t e) (send this show #f) (callback sim? gui? s-eff?)))))))
+(define callback
+  (λ (sim? gui? s-eff?) (test/gui (all-tests sim? gui? s-eff?))))
 
 ;; Manual running or automatic testing with "-g" flag
 (let/cc exit
@@ -102,7 +109,7 @@
    #:once-any
    [("-g" "--github")
     "Run tests without GUI"
-    (run-tests (all-tests #t #f) 'verbose)
+    (run-tests (all-tests #t #f #t) 'verbose)
     (exit)]
    #:args ()
-   (send (make-object gui% startup-callback) show #t)))
+   (send (make-object gui% callback) show #t)))

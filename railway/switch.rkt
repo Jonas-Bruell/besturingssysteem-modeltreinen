@@ -29,7 +29,7 @@
     ;
     (inherit-field id connection in out)
     (inherit-field state)
-    (field (position (send connection get-position)))
+    (init-field (position (send connection get-position)))
 
     ;
     ; get-next-left :: get the next railway element, in the direction of the
@@ -65,6 +65,6 @@
              (void))
             ((member new-position (list left right))
              (send connection set-position! new-position)
-             (set! position (send connection get-position)))
+             (set! position new-position))
             (else (error "switch%: wrong message sent: " new-position))))
     ))
