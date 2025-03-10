@@ -9,11 +9,10 @@
 ;
 ; aliasses
 ;
+(define train 'T-7)
 (define versions       '("hardware" "loop-and-switches" "loop" "straight-with-switch" "straight"))
 (define switch-ids-sim '(S-1 S-2 S-3 S-4 S-5 S-6 S-7 S-8 S-9 S-10 S-11 S-12 S-16 S-20 S-23 S-24 S-25 S-26 S-27 S-28))
-(define switch-ids-hw  '(S-16 S-1 S-28 S-8 S-7 S-4 S-26 S-12 S-5 S-27 S-11 S-2 S-24 S-3 S-25 S-9 S-20 S-6 S-23 S-10))
 (define detect-ids-sim '(1-1 1-2 1-3 1-4 1-5 1-6 1-7 1-8 2-1 2-2 2-3 2-4 2-5 2-6 2-7 2-8))
-(define detect-ids-hw  '(1-1 1-2 1-3 1-4 1-5 1-6 1-7 1-8 2-1 2-2 2-3 2-4 2-5 2-6 2-7 2-8))
 
 ;
 ; setting up all individual test suites
@@ -23,25 +22,15 @@
    "check if 'get-versions' returns all versions"
    (check-equal? (send track get-versions) versions)))
 
-(define (test-open-crossing! track)
+(define (test-set-crossing-position! track)
   (test-suite
-   "Testing open-crossing!"
+   "Testing set-crossing-position!"
    (test-case
-    "check if 'open-crossing!' exists"
-    (object-method-arity-includes? track 'open-crossing! 0))
+    "check if 'set-crossing-position!' exists"
+    (object-method-arity-includes? track 'set-crossing-position! 0))
    (test-case
-    "check if 'open-crossing!' doesn't error"
-    (check-not-exn (λ () (send track open-crossing! 'C-1))))))
-
-(define (test-close-crossing! track)
-  (test-suite
-   "Testing close-crossing!"
-   (test-case
-    "check if 'close-crossing!' exists"
-    (object-method-arity-includes? track 'close-crossing! 0))
-   (test-case
-    "check if 'close-crossing!' doesn't error"
-    (check-not-exn (λ () (send track close-crossing! 'C-1))))))
+    "check if 'set-crossing-position!' doesn't error"
+    (check-not-exn (λ () (send track set-crossing-position! 'C-1 'open))))))
 
 (define (test-set-sign-code! track)
   (test-suite
@@ -53,7 +42,7 @@
     "check if 'set-sign-code!' doesn't error"
     (check-not-exn (λ () (send track set-sign-code! 'L-1 'Hp0))))))
 
-(define (test-get-switch-ids track architecture)
+(define (test-get-switch-ids track)
   (test-suite
    "Testing get-switch-ids"
    (test-case
@@ -64,10 +53,9 @@
     (check-not-exn (λ () (send track get-switch-ids))))
    (test-case
     "check if 'get-switch-ids' returns correct switch ids"
-    (check-equal? (send track get-switch-ids)
-                  (if (eq? architecture 'sim) switch-ids-sim switch-ids-hw)))))
+    (check-equal? (send track get-switch-ids) switch-ids-sim))))
 
-(define (test-get-set-switch-position track architecture)
+(define (test-get-set-switch-position track)
   (let ((switch-ids (send track get-switch-ids)))
     (test-suite
      "Testing get-switch-position & set-switch-position!"
@@ -82,21 +70,19 @@
       (check-not-exn (λ () (send track get-switch-position (car switch-ids)))))
      (test-case
       "check if 'set-switch-position!' doesn't error"
-      (check-not-exn (λ () (send track set-switch-position! (car switch-ids) 1))))
+      (check-not-exn (λ () (send track set-switch-position! (car switch-ids) 'left))))
      (test-case
-      "check if all switches can be set to position '1'"
-      (for-each (λ (switch) (send track set-switch-position! switch 1)) switch-ids)
-      (when (eq? architecture 'hw) (sleep 1))
+      "check if all switches can be set to position 'left'"
+      (for-each (λ (switch) (send track set-switch-position! switch 'left)) switch-ids)
       (check-equal? (map (λ (switch) (send track get-switch-position switch)) switch-ids)
-                    '(1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1)))
+                    '(left left left left left left left left left left left left left left left left left left left left)))
      (test-case
-      "check if all switches can be set to position '2'"
-      (for-each (λ (switch) (send track set-switch-position! switch 2)) switch-ids)
-      (when (eq? architecture 'hw) (sleep 1))
+      "check if all switches can be set to position 'right'"
+      (for-each (λ (switch) (send track set-switch-position! switch 'right)) switch-ids)
       (check-equal? (map (λ (switch) (send track get-switch-position switch)) switch-ids)
-                    '(2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2))))))
+                    '(right right right right right right right right right right right right right right right right right right right right))))))
 
-(define (test-get-detection-block-ids track architecture)
+(define (test-get-detection-block-ids track)
   (test-suite
    "Testing get-detection-blocks-ids"
    (test-case
@@ -107,8 +93,7 @@
     (check-not-exn (λ () (send track get-detection-block-ids))))
    (test-case
     "check if 'get-detection-blocks-ids' returns correct detection block ids"
-    (check-equal? (send track get-detection-block-ids)
-                  (if (eq? architecture 'sim) detect-ids-sim detect-ids-hw)))))
+    (check-equal? (send track get-detection-block-ids) detect-ids-sim))))
 
 (define (test-get-occupied-detection-blocks-no-train track)
   (test-suite
@@ -131,7 +116,7 @@
     (object-method-arity-includes? track 'add-loco 0))
    (test-case
     "check if 'add-loco' doesn't error"
-    (check-not-exn (λ () (send track add-loco 'T-3 '1-4 '1-5))))))
+    (check-not-exn (λ () (send track add-loco train '1-4 '1-5))))))
 
 (define (test-get-set-loco-speed track)
   (test-suite
@@ -144,18 +129,18 @@
     (object-method-arity-includes? track 'set-loco-speed! 0))
    (test-case
     "check if 'get-loco-speed' doesn't error"
-    (check-not-exn (λ () (send track get-loco-speed 'T-3))))
+    (check-not-exn (λ () (send track get-loco-speed train))))
    (test-case
     "check if 'set-loco-speed!' doesn't error"
-    (check-not-exn (λ () (send track set-loco-speed! 'T-3 0))))
+    (check-not-exn (λ () (send track set-loco-speed! train 0))))
    (test-case
     "check if 'get-loco-speed' returns '0'"
-    (check-eq? 0 (send track get-loco-speed 'T-3)))
+    (check-eq? 0 (send track get-loco-speed train)))
    (test-case
     "check if 'get-loco-speed' returns '1' when speed is '1'"
-    (send track set-loco-speed! 'T-3 1)
-    (check-eq? 1 (send track get-loco-speed 'T-3))
-    (send track set-loco-speed! 'T-3 0))))
+    (send track set-loco-speed! train 1)
+    (check-eq? 1 (send track get-loco-speed train))
+    (send track set-loco-speed! train 0))))
 
 (define (test-get-occupied-detection-blocks-with-train track)
   (test-case
@@ -165,19 +150,18 @@
 ;
 ; testing all test suites
 ;
-(define (track-interface-test architecture)
+(define (track-interface-test)
   (let* ((track (new track%))
-         (config (send track config architecture 'hardware))
+         (config (send track config 'sim 'hardware))
          (start (send track start))
          (tests (test-suite
-                 "Track interface tests"
+                 "Unit testing of the TRACK interface"
                  (test-get-versions track)
-                 (test-open-crossing! track)
-                 (test-close-crossing! track)
+                 (test-set-crossing-position! track)
                  (test-set-sign-code! track)
-                 (test-get-switch-ids track architecture)
-                 (test-get-set-switch-position track architecture)
-                 (test-get-detection-block-ids track architecture)
+                 (test-get-switch-ids track)
+                 (test-get-set-switch-position track)
+                 (test-get-detection-block-ids track)
                  (test-get-occupied-detection-blocks-no-train track)
                  (test-add-loco track)
                  (test-get-set-loco-speed track)

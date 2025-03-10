@@ -12,6 +12,9 @@
 (require "config.rkt"
          "logic/startup.rkt")
 
+(require "../railway/interface.rkt")
+(require "../track/interface.rkt")
+
 (provide start-infrabel
          )
 

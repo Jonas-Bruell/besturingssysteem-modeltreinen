@@ -28,18 +28,16 @@
   (class object%
     (super-new)
     (init-field state)
-    (define/public (get-state) state)
-    (define/public (set-state! new-state)
-      (set! state new-state))))
-
-(define make-connection
-  (λ () (make-object connection% generic)))
+    (define/public (get-state id) state)
+    (define/public (set-state! id new-state)
+      (set! state new-state))
+    (define/public (get-position id) generic)))
 
 (define (make-detection-block-with connection)
   (make-object detection-block% id connection in out))
 
 (define make-generic-detection-block
-  (λ () (make-detection-block-with (make-connection))))
+  (λ () (make-detection-block-with (make-object connection% generic))))
 
 (define make-free-detection-block
   (λ () (make-detection-block-with (make-object connection% free))))
@@ -197,7 +195,7 @@
       (let* ((connection (make-object connection% free))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
-        (check-eq? (send connection get-state) free)))
+        (check-eq? (send connection get-state id) free)))
      )
     
     ;
@@ -225,7 +223,7 @@
       (let* ((connection (make-object connection% reserved))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
-        (check-eq? (send connection get-state) free)))
+        (check-eq? (send connection get-state id) free)))
      )
 
     ;
@@ -253,7 +251,7 @@
       (let* ((connection (make-object connection% occupied))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
-        (check-eq? (send connection get-state) free)))
+        (check-eq? (send connection get-state id) free)))
      ))
 
    ;
@@ -287,7 +285,7 @@
       (let* ((connection (make-object connection% free))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
-        (check-eq? (send connection get-state) reserved)))
+        (check-eq? (send connection get-state id) reserved)))
      )
 
     ;
@@ -315,7 +313,7 @@
       (let* ((connection (make-object connection% reserved))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
-        (check-eq? (send connection get-state) reserved)))
+        (check-eq? (send connection get-state id) reserved)))
      )
 
     ;
@@ -343,7 +341,7 @@
       (let* ((connection (make-object connection% occupied))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
-        (check-eq? (send connection get-state) occupied)))
+        (check-eq? (send connection get-state id) occupied)))
      ))
 
    ;
@@ -377,7 +375,7 @@
       (let* ((connection (make-object connection% free))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! occupied)
-        (check-eq? (send connection get-state) occupied)))
+        (check-eq? (send connection get-state id) occupied)))
      )
 
     ;
@@ -405,7 +403,7 @@
       (let* ((connection (make-object connection% reserved))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! occupied)
-        (check-eq? (send connection get-state) occupied)))
+        (check-eq? (send connection get-state id) occupied)))
      )
 
     ;
@@ -433,7 +431,7 @@
       (let* ((connection (make-object connection% occupied))
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! occupied)
-        (check-eq? (send connection get-state) occupied)))
+        (check-eq? (send connection get-state id) occupied)))
      ))))
 
 ;

@@ -2,10 +2,10 @@
 
 (require try-catch
          "../../modules/string-contains.rkt"
-         (prefix-in gui: "../gui/startup.rkt")
-         (prefix-in track: "track-interface.rkt")
-         (prefix-in railway: "../../railway/main.rkt")
+         (prefix-in track: "../../track/interface.rkt")
+         (prefix-in railway: "../../railway/interface.rkt")
          (prefix-in server: "../tcp/server.rkt")
+         (prefix-in gui: "../gui/startup.rkt")
          (prefix-in adm&dbg: "../gui/admin-debugger.rkt")
          (prefix-in infrabel: "main.rkt"))
 

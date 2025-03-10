@@ -54,7 +54,7 @@
                  (and (eq? free state) (or (eq? reserved new-state)
                                            (eq? occupied new-state)))
                  (and (eq? reserved state) (eq? occupied new-state)))
-             (send connection set-state! new-state)
+             (send connection set-state! id new-state)
              (set! state new-state)
              #t)
             (else (error "segment%: wrong message sent: " new-state))))

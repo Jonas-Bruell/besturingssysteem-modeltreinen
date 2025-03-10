@@ -32,8 +32,8 @@
   (class object%
     (super-new)
     (init-field signal)
-    (define/public (get-signal) signal)
-    (define/public (set-signal! new-signal)
+    (define/public (get-signal id) signal)
+    (define/public (set-sign-code! id new-signal)
       (set! signal new-signal))))
 
 (define make-connection
@@ -183,7 +183,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Hp0)
-       (check-eq? (send connection get-signal) Hp0)))
+       (check-eq? (send connection get-signal id) Hp0)))
     
     (test-case
      "check if light stays on same signal when calling 'Hp0"
@@ -195,7 +195,7 @@
      (let* ((connection (make-object connection% Hp0))
             (light (make-light-with connection)))
        (send light set-signal! Hp0)
-       (check-eq? (send connection get-signal) Hp0)))
+       (check-eq? (send connection get-signal id) Hp0)))
     )
 
    ;
@@ -218,7 +218,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Hp1)
-       (check-eq? (send connection get-signal) Hp1)))
+       (check-eq? (send connection get-signal id) Hp1)))
     
     (test-case
      "check if light stays on same signal when calling 'Hp1"
@@ -230,7 +230,7 @@
      (let* ((connection (make-object connection% Hp1))
             (light (make-light-with connection)))
        (send light set-signal! Hp1)
-       (check-eq? (send connection get-signal) Hp1)))
+       (check-eq? (send connection get-signal id) Hp1)))
     )
 
    ;
@@ -253,7 +253,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Hp0+Sh0)
-       (check-eq? (send connection get-signal) Hp0+Sh0)))
+       (check-eq? (send connection get-signal id) Hp0+Sh0)))
     
     (test-case
      "check if light stays on same signal when calling 'Hp0+Sh0"
@@ -265,7 +265,7 @@
      (let* ((connection (make-object connection% Hp0+Sh0))
             (light (make-light-with connection)))
        (send light set-signal! Hp0+Sh0)
-       (check-eq? (send connection get-signal) Hp0+Sh0)))
+       (check-eq? (send connection get-signal id) Hp0+Sh0)))
     )
 
    ;
@@ -288,7 +288,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3)
-       (check-eq? (send connection get-signal) Ks1+Zs3)))
+       (check-eq? (send connection get-signal id) Ks1+Zs3)))
     
     (test-case
      "check if light stays on same signal when calling 'Ks1+Zs3"
@@ -300,7 +300,7 @@
      (let* ((connection (make-object connection% Ks1+Zs3))
             (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3)
-       (check-eq? (send connection get-signal) Ks1+Zs3)))
+       (check-eq? (send connection get-signal id) Ks1+Zs3)))
     )
 
    ;
@@ -323,7 +323,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Ks2)
-       (check-eq? (send connection get-signal) Ks2)))
+       (check-eq? (send connection get-signal id) Ks2)))
     
     (test-case
      "check if light stays on same signal when calling 'Ks2"
@@ -335,7 +335,7 @@
      (let* ((connection (make-object connection% Ks2))
             (light (make-light-with connection)))
        (send light set-signal! Ks2)
-       (check-eq? (send connection get-signal) Ks2)))
+       (check-eq? (send connection get-signal id) Ks2)))
     )
 
    ;
@@ -358,7 +358,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Ks2+Zs3)
-       (check-eq? (send connection get-signal) Ks2+Zs3)))
+       (check-eq? (send connection get-signal id) Ks2+Zs3)))
     
     (test-case
      "check if light stays on same signal when calling 'Ks2+Zs3"
@@ -370,7 +370,7 @@
      (let* ((connection (make-object connection% Ks2+Zs3))
             (light (make-light-with connection)))
        (send light set-signal! Ks2+Zs3)
-       (check-eq? (send connection get-signal) Ks2+Zs3)))
+       (check-eq? (send connection get-signal id) Ks2+Zs3)))
     )
 
    ;
@@ -393,7 +393,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Sh1)
-       (check-eq? (send connection get-signal) Sh1)))
+       (check-eq? (send connection get-signal id) Sh1)))
     
     (test-case
      "check if light stays on same signal when calling 'Sh1"
@@ -405,7 +405,7 @@
      (let* ((connection (make-object connection% Sh1))
             (light (make-light-with connection)))
        (send light set-signal! Sh1)
-       (check-eq? (send connection get-signal) Sh1)))
+       (check-eq? (send connection get-signal id) Sh1)))
     )
 
    ;
@@ -429,7 +429,7 @@
      (let* ((connection (make-connection))
             (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3+Zs3v)
-       (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
+       (check-eq? (send connection get-signal id) Ks1+Zs3+Zs3v)))
     
     (test-case
      "check if light stays on same signal when calling 'Ks1+Zs3+Zs3v"
@@ -441,7 +441,7 @@
      (let* ((connection (make-object connection% Ks1+Zs3+Zs3v))
             (light (make-light-with connection)))
        (send light set-signal! Ks1+Zs3+Zs3v)
-       (check-eq? (send connection get-signal) Ks1+Zs3+Zs3v)))
+       (check-eq? (send connection get-signal id) Ks1+Zs3+Zs3v)))
     )))
 
 ;

@@ -21,7 +21,8 @@
     ; @param previous :: the state of the railroad crossing - open or closed
     ; @param current :: the state of the railroad crossing - open or closed
     ;
-    (init-field connection id previous current)
+    (init-field id connection previous current)
+    ; Only works on simulator, retuns false on hardware
     (send connection add-loco id previous current)
 
     ; This class represents an atomic abstraction of a railroad crossing
@@ -47,7 +48,7 @@
     ; @param state :: the state of the railroad crossing - open or closed
     ;
     (define/public (get-train-speed)
-      #t)
+      (send connection get-loco-speed id))
 
     ; This class represents an atomic abstraction of a railroad crossing
     ;
@@ -56,6 +57,6 @@
     ; @param state :: the state of the railroad crossing - open or closed
     ;
     (define/public (set-train-speed! new-speed)
-      #t)
+      (send connection set-loco-speed! id new-speed))
     
     ))

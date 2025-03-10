@@ -23,7 +23,8 @@
     ; @param out :: railway element that exits out of this segment (clockwise)
     ;
     (init-field id connection in out)
-    (init-field (state (send connection get-state)))
+    (init-field (state (send connection get-state id)))
+    (init-field (position (send connection get-position id)))
 
     ;
     ; Possible railway segment states
@@ -74,7 +75,7 @@
              #t)
             ((or (and (eq? free new-state) (eq? reserved state))
                  (and (eq? reserved new-state) (eq? free state)))
-             (send connection set-state! new-state)
+             (send connection set-state! id new-state)
              (set! state new-state)
              #t)
             (else (error "segment%: wrong message sent: " new-state))))

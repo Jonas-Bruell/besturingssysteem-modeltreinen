@@ -29,19 +29,16 @@
   (class object%
     (super-new)
     (init-field state pos)
-    (define/public (get-state) state)
-    (define/public (get-position) pos)
-    (define/public (set-state! new-state) (set! state new-state))
-    (define/public (set-position! new-pos) (set! pos new-pos))))
-
-(define make-connection
-  (λ () (make-object connection% generic generic)))
+    (define/public (get-state id) state)
+    (define/public (get-position id) pos)
+    (define/public (set-state! id new-state) (set! state new-state))
+    (define/public (set-switch-position! id new-pos) (set! pos new-pos))))
 
 (define (make-switch-with connection)
   (make-object switch% id connection in out))
 
 (define make-generic-switch
-  (λ () (make-switch-with (make-connection))))
+  (λ () (make-switch-with (make-object connection% generic generic))))
 
 (define make-free-switch
   (λ () (make-switch-with (make-object connection% free generic))))
@@ -249,7 +246,7 @@
      (let* ((connection (make-object connection% generic right))
             (switch (make-switch-with connection)))
        (send switch set-position! left)
-       (check-eq? (send connection get-position) left)))
+       (check-eq? (send connection get-position id) left)))
     
     (test-case
      "check if left-positioned switch stays left"
@@ -261,7 +258,7 @@
      (let* ((connection (make-object connection% generic left))
             (switch (make-switch-with connection)))
        (send switch set-position! left)
-       (check-eq? (send connection get-position) left)))
+       (check-eq? (send connection get-position id) left)))
     )
 
    ;
@@ -285,7 +282,7 @@
      (let* ((connection (make-object connection% generic left))
             (switch (make-switch-with connection)))
        (send switch set-position! right)
-       (check-eq? (send connection get-position) right)))
+       (check-eq? (send connection get-position id) right)))
     
     (test-case
      "check if right-positioned switch stays right"
@@ -297,7 +294,7 @@
      (let* ((connection (make-object connection% generic right))
             (switch (make-switch-with connection)))
        (send switch set-position! right)
-       (check-eq? (send connection get-position) right)))
+       (check-eq? (send connection get-position id) right)))
     )))
 
 ;

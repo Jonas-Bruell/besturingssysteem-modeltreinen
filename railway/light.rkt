@@ -22,7 +22,7 @@
     ; @param segment :: segment over which the light goes
     ;
     (init-field id connection segment)
-    (field (signal (send connection get-signal)))
+    (init-field (signal (send connection get-signal id)))
 
     ;
     ; Possible railway light signals
@@ -68,7 +68,7 @@
              (void))
             ((member new-signal
                   (list Hp0 Hp1 Hp0+Sh0 Ks1+Zs3 Ks2 Ks2+Zs3 Sh1 Ks1+Zs3+Zs3v))
-             (send connection set-signal! new-signal)
-             (set! signal (send connection get-signal)))
+             (send connection set-sign-code! id new-signal)
+             (set! signal new-signal))
             (else (error "light%: wrong message sent: " new-signal))))
     ))

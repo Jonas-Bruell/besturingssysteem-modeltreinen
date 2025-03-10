@@ -40,18 +40,15 @@
          )
 
 ; running all test suites
-(define (all-tests sim? gui? s-eff?)
+(define (all-tests gui? s-eff? slp?)
   (test-suite
    "Unit testing all modules"
    ;; TRACK
-   (test-suite
-    "Unit testing of all TRACK module operations"
-    (when s-eff? (when gui? (track-interface-test (if sim? 'sim 'hw))))
-    )
+   (when (and slp? s-eff? gui?) (track-interface-test))
    ;; RAILWAY
    (test-suite
     "Unit testing of all RAILWAY module operations"
-    crossing-test
+    (when slp? crossing-test)
     light-test
     segment-test
     detection-block-test
@@ -83,25 +80,25 @@
            (new vertical-pane% (parent this) (alignment '(left center))))
           (start-pane
            (new pane% (parent this) (alignment '(center center))))
-          (sim? #t) (gui? #t) (s-eff? #t))
-      (new radio-box%
-           (label "") (vert-margin 10) (horiz-margin 6) (style '(horizontal))
-           (choices '("Simulator   " "Hardware")) (parent config-pane)
-           (callback (λ (t e) (set! sim? (zero? (send t get-selection))))))
+          (gui? #t) (s-eff? #t) (slp? #f))
+      (new check-box%
+           (label "Include tests with timeouts or sleeps?") (horiz-margin 10)
+           (value slp?) (parent config-pane)
+           (callback (λ (t e) (set! slp? (send t get-value)))))
       (new check-box%
            (label "Include tests with side-effects?") (horiz-margin 10)
-           (value #t) (parent config-pane)
+           (value s-eff?) (parent config-pane)
            (callback (λ (t e) (set! s-eff? (send t get-value)))))
       (new check-box%
            (label "Test components with GUI dependancy?") (horiz-margin 10)
-           (value #t) (parent config-pane)
+           (value gui?) (parent config-pane)
            (callback (λ (t e) (set! gui? (send t get-value)))))
       (new button%
            (label "start") (vert-margin 10) (parent start-pane)
            (callback
-            (λ (t e) (send this show #f) (callback sim? gui? s-eff?)))))))
+            (λ (t e) (send this show #f) (callback gui? s-eff? slp?)))))))
 (define callback
-  (λ (sim? gui? s-eff?) (test/gui (all-tests sim? gui? s-eff?))))
+  (λ (gui? s-eff? slp?) (test/gui (all-tests gui? s-eff? slp?))))
 
 ;; Manual running or automatic testing with "-g" flag
 (let/cc exit
@@ -109,7 +106,7 @@
    #:once-any
    [("-g" "--github")
     "Run tests without GUI"
-    (run-tests (all-tests #t #f #t) 'verbose)
+    (run-tests (all-tests #f #t #t) 'verbose)
     (exit)]
    #:args ()
    (send (make-object gui% callback) show #t)))

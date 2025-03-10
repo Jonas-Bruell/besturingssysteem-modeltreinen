@@ -27,18 +27,16 @@
   (class object%
     (super-new)
     (init-field state)
-    (define/public (get-state) state)
-    (define/public (set-state! new-state)
-      (set! state new-state))))
-
-(define make-connection
-  (λ () (make-object connection% generic)))
+    (define/public (get-state id) state)
+    (define/public (set-state! id new-state)
+      (set! state new-state))
+    (define/public (get-position id) generic)))
 
 (define (make-segment-with connection)
   (make-object segment% id connection in out))
 
 (define make-generic-segment
-  (λ () (make-segment-with (make-connection))))
+  (λ () (make-segment-with (make-object connection% generic))))
 
 (define make-free-segment
   (λ () (make-segment-with (make-object connection% free))))
@@ -187,7 +185,7 @@
       (let* ((connection (make-object connection% free))
              (segment (make-segment-with connection)))
         (send segment set-state! free)
-        (check-eq? (send connection get-state) free)))
+        (check-eq? (send connection get-state id) free)))
      )
     
     ;
@@ -215,7 +213,7 @@
       (let* ((connection (make-object connection% reserved))
              (segment (make-segment-with connection)))
         (send segment set-state! free)
-        (check-eq? (send connection get-state) free)))
+        (check-eq? (send connection get-state id) free)))
      ))
 
    ;
@@ -249,7 +247,7 @@
       (let* ((connection (make-object connection% free))
              (segment (make-segment-with connection)))
         (send segment set-state! reserved)
-        (check-eq? (send connection get-state) reserved)))
+        (check-eq? (send connection get-state id) reserved)))
      )
 
     ;
@@ -277,7 +275,7 @@
       (let* ((connection (make-object connection% reserved))
              (segment (make-segment-with connection)))
         (send segment set-state! reserved)
-        (check-eq? (send connection get-state) reserved)))
+        (check-eq? (send connection get-state id) reserved)))
      ))))
 
 ;

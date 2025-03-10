@@ -22,10 +22,10 @@
     ; @param segment-list :: list of segments over which the crossing goes
     ;
     (init-field id connection segment-list)
-    (field (state (send connection get-state)))
+    (init-field (position (send connection get-position id)))
 
     ;
-    ; Possible railway crossing states
+    ; Possible railway crossing positions
     ;
     (define open    'open)
     (define pending 'pending)
@@ -39,11 +39,11 @@
     (define/public (get-id) id)
 
     ;
-    ; get-state :: get the state of the railway crossing
+    ; get-position :: get the position of the railway crossing
     ;
-    ; @returns symbol :: state-field of crossing
+    ; @returns symbol :: position-field of crossing
     ;
-    (define/public (get-state) state)
+    (define/public (get-position) position)
 
     ;
     ; get-segments :: get the ids of the segments in the crossing
@@ -53,23 +53,17 @@
     (define/public (get-segments) segment-list)
 
     ;
-    ; set-state! :: change the state of the railway crossing only when it is
-    ;               not yet in the required state
+    ; set-position! :: change the position of the railway crossing only when
+    ;                  it is not yet in the required position
     ;
-    ; @param new-state symbol :: the new state of the crossing - open or closed
+    ; @param new-position symbol :: the new position of the crossing
     ;
-    (define/public (set-state! new-state)
-      (cond ((eq? new-state state)
+    (define/public (set-position! new-position)
+      (cond ((eq? new-position position)
              (void))
-            ((member new-state (list open closed))
-             (send connection set-state! new-state)
-             (set! state pending)
-             (thread
-              (λ ()
-                (let check-state ()
-                  (sleep 1)
-                  (if (eq? (send connection get-state) pending)
-                      (check-state)
-                      (set! state new-state))))))
-            (else (error "crossing%: wrong message sent: " new-state))))
+            ((member new-position (list open closed))
+             (send connection set-crossing-position! id new-position)
+             (set! position pending)
+             (thread (λ () (sleep 6) (set! position new-position))))
+            (else (error "crossing%: wrong message sent: " new-position))))
     ))
