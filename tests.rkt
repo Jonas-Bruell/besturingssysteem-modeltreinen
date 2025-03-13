@@ -26,14 +26,14 @@
          ;; TRACK
          "track/interface.test.rkt"
          ;; RAILWAY
-         "railway/crossing.test.rkt"
-         "railway/light.test.rkt"
-         "railway/segment.test.rkt"
-         "railway/detection-block.test.rkt"
-         "railway/switch.test.rkt"
-         ;"railway/switch-3way.test.rkt"
-         ;"railway/switch-cross.test.rkt"
-         ;"railway/train.test.rkt"
+         "railway/components/crossing.test.rkt"
+         "railway/components/light.test.rkt"
+         "railway/components/segment.test.rkt"
+         "railway/components/detection-block.test.rkt"
+         "railway/components/switch.test.rkt"
+         ;"railway/components/switch-3way.test.rkt"
+         ;"railway/components/switch-cross.test.rkt"
+         ;"railway/components/train.test.rkt"
          ;"railway/interface.test.rkt"
          ;; INFRABEL
          ;; PROVIDER
