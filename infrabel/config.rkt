@@ -2,5 +2,8 @@
 
 (provide (all-defined-out))
 
-(define TRACKS_LIST "track/routes")
-(define HARDWARE_SPEED_SCALAR .25)
+;; SERVER STARTUP
+(define DEFAULT_HOST "localhost")
+(define DEFAULT_PORT "2020")
+(define DEFAULT_A&D_CHECKBOX #t)
+

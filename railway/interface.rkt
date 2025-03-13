@@ -1,19 +1,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
-;;                          >>> railway/main.rkt <<<                          ;;
-;;                      programmeerproject 2,  2023-2024                      ;;
+;;                        >>> railway/interface.rkt <<<                       ;;
+;;                      programmeerproject 2,  2024-2025                      ;;
 ;;                      written by: Jonas Brüll, 0587194                      ;;
-;;                                > version 1 <                               ;;
+;;                                > version 5 <                               ;;
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require "segment.rkt"
-         "detection-block.rkt"
-         "switch.rkt"
-         "crossing.rkt"
-         "light.rkt"
-         "train.rkt")
+(require "control-panel.rkt"
+         "components/segment.rkt"
+         "components/detection-block.rkt"
+         "components/switch.rkt"
+         "components/crossing.rkt"
+         "components/light.rkt"
+         "components/train.rkt")
 (provide railway%)
 
 (define railway%
@@ -23,7 +24,17 @@
     (init-field (track-info (send track get-track-info)))
     (init-field (train-info (send track get-train-info)))
 
+    ;### !! abstractielaag niet doorbreken -> admin&debug !!
+    (define/public (get-track)
+      track-info)
+    (define/public (stop)
+      (send track stop))
+    
     (define (search id object-list) (cdr (assoc id object-list)))
+
+    ; control panel
+    (define/public (start-control-panel)
+      (send (make-object control-panel% this) show #t))
 
     ; segments
     (define segments-list
@@ -127,11 +138,11 @@
     ; trains
     (define trains-list
       (let* ((train-ids   train-info)
-             (train-prevs '(U-2 1-7 1-4))
-             (train-currs '(1-3 1-6 1-5)))
+             (train-prevs '(U-2 1-7 1-4 1-5))
+             (train-currs '(1-3 1-6 1-5 1-4)))
         (map (λ (id prev curr)
                (cons id (make-object train% id track prev curr)))
-               train-ids train-prevs train-currs)))
+             train-ids train-prevs train-currs)))
     (define/public (get-train-ids) (map car trains-list))
     (define/public (get-train-speed train)
       (send (search train trains-list) get-train-speed))

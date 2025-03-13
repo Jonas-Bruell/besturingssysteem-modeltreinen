@@ -152,7 +152,7 @@
 ;
 (define (track-interface-test)
   (let* ((track (new track%))
-         (config (send track config 'sim 'hardware))
+         (config (send track config! 'sim "hardware"))
          (start (send track start))
          (tests (test-suite
                  "Unit testing of the TRACK interface"

@@ -13,11 +13,10 @@
          (prefix-in hw:  "hardware-library/interface.rkt"))
 (provide track%)
 
-(define architecture 'sim)
-
 (define track%
   (class object%
-    (init-field (version "undefined"))
+    (init-field (architecture 'undefined))
+    (init-field (version 'undefined))
     (super-new)
 
     ;
@@ -28,14 +27,14 @@
     (define/public (get-position id) (void))
     
     ;
-    ; Version meta data getters & setters
+    ; Track info getters
     ;
+    (define/public (get-architecture) architecture)
     (define/public (get-version) version)
     (define/public (get-versions)
       (map (λ (s) (let ((l (string-length s))) (substring s 0 (- l 4))))
            (filter (λ (str) (string-contains? str ".rkt"))
                    (map path->string (directory-list TRACKS_LIST)))))
-    (define/public (set-version! new-version) (set! version new-version))
     (define/public (get-track-info)
       (dynamic-require (string-append "track/routes/" version ".rkt") 'TRACK))
     (define/public (get-train-info) TRAINS_LIST)
@@ -43,11 +42,12 @@
     ;
     ; Configuration of track
     ;
-    (define/public (config architecture-setup version)
+    (define/public (config! architecture-setup version-setup)
       (set! architecture architecture-setup)
+      (set! version version-setup)
       (case architecture-setup
         ('hw (void))
-        ('sim (case version
+        ('sim (case (string->symbol version)
                 ('hardware (sim:setup-hardware))
                 ('straight (sim:setup-straight))
                 ('straight-with-switch (sim:setup-straight-with-switch))
@@ -90,7 +90,7 @@
       ((λ (method) method)
        (case architecture
          ('sim (sim:set-loco-speed! train-id speed))
-         ('hw (hw:set-loco-speed! train-id (* speed HARDWARE_SPEED_SCALAR)))
+         ('hw (hw:set-loco-speed! train-id (inexact->exact (* speed HARDWARE_SPEED_SCALAR))))
          )))
 
     ; detection blocks

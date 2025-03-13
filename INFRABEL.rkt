@@ -1,3 +1,4 @@
 #lang racket
-(require "infrabel/interface.rkt")
-(start-infrabel)
+(require "infrabel/startup.rkt")
+(require "track/interface.rkt")
+(define infrabel (start-infrabel track%))

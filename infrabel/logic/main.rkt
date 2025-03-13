@@ -8,21 +8,25 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
-(require "railway/interface.rkt")
-(require "track/interface.rkt")
+(require "../../railway/interface.rkt")
+(require "../../track/interface.rkt")
 (define track (new track%))
 (send track set-version! "hardware")
 (send track config 'sim 'hardware)
 (send track start)
-(define railway (new railway% (track track)))
-;(send railway get-detection-block-state '1-7)
 
 
 
+(define infrabel%
+  (class railway%
+    (super-new)
+    ))
 
 
 
+(define infrabel (new infrabel% (track track)))
 
+#|
 
 
 
@@ -33,7 +37,7 @@
   (new infrabel% (connection socket) (track-version version))
   )
 
-(define infrabel%
+(define infrabel*%
   (class railway%
     (init-field track)
     (super-new)
@@ -88,3 +92,4 @@
     (define/public (get-test-train-list)
       (get-the-test-train-list connection))
     ))
+|#
