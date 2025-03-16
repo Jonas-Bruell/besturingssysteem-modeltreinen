@@ -31,6 +31,7 @@
     (init-field state pos)
     (define/public (get-state id) state)
     (define/public (get-position id) pos)
+    (define/public (get-switch-position id) pos)
     (define/public (set-state! id new-state) (set! state new-state))
     (define/public (set-switch-position! id new-pos) (set! pos new-pos))))
 
@@ -246,7 +247,7 @@
      (let* ((connection (make-object connection% generic right))
             (switch (make-switch-with connection)))
        (send switch set-position! left)
-       (check-eq? (send connection get-position id) left)))
+       (check-eq? (send connection get-switch-position id) left)))
     
     (test-case
      "check if left-positioned switch stays left"
@@ -258,7 +259,7 @@
      (let* ((connection (make-object connection% generic left))
             (switch (make-switch-with connection)))
        (send switch set-position! left)
-       (check-eq? (send connection get-position id) left)))
+       (check-eq? (send connection get-switch-position id) left)))
     )
 
    ;
@@ -282,7 +283,7 @@
      (let* ((connection (make-object connection% generic left))
             (switch (make-switch-with connection)))
        (send switch set-position! right)
-       (check-eq? (send connection get-position id) right)))
+       (check-eq? (send connection get-switch-position id) right)))
     
     (test-case
      "check if right-positioned switch stays right"
@@ -294,7 +295,7 @@
      (let* ((connection (make-object connection% generic right))
             (switch (make-switch-with connection)))
        (send switch set-position! right)
-       (check-eq? (send connection get-position id) right)))
+       (check-eq? (send connection get-switch-position id) right)))
     )))
 
 ;
