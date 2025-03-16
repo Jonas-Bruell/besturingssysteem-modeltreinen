@@ -20,15 +20,15 @@
 (define railway%
   (class object%
     (super-new)
-    (init-field track)
-    (init-field (track-info (send track get-track-info)))
-    (init-field (train-info (send track get-train-info)))
+    (init-field connection)
+    (init-field (track-info (send connection get-track-info)))
+    (init-field (train-info (send connection get-train-info)))
 
     ;### !! abstractielaag niet doorbreken -> admin&debug !!
     (define/public (get-track)
       track-info)
     (define/public (stop)
-      (send track stop))
+      (send connection stop))
     
     (define (search id object-list) (cdr (assoc id object-list)))
 
@@ -43,7 +43,7 @@
              (segment-ins  (map cadr segments))
              (segment-outs (map caddr segments)))
         (map (λ (id in out)
-               (cons id (make-object segment% id track in out 'free)))
+               (cons id (make-object segment% id connection in out 'free)))
              segment-ids segment-ins segment-outs)))
     (define/public (get-segment-ids) (map car segments-list))
     (define/public (get-segment-next segment)
@@ -62,7 +62,8 @@
              (detect-ins  (map cadr detects))
              (detect-outs (map caddr detects)))
         (map (λ (id in out)
-               (cons id (make-object detection-block% id track in out 'free)))
+               (cons id
+                     (make-object detection-block% id connection in out 'free)))
              detect-ids detect-ins detect-outs)))
     (define/public (get-detection-block-ids) (map car detects-list))
     (define/public (get-detection-block-next detection-block)
@@ -83,7 +84,8 @@
                                (map caddr switches)
                                (map cadddr switches))))
         (map (λ (id in outs)
-               (cons id (make-object switch% id track in outs 'free 'left)))
+               (cons id
+                     (make-object switch% id connection in outs 'free 'left)))
              switch-ids switch-ins switch-outs)))
     (define/public (get-switch-ids) (map car switches-list))
     (define/public (get-switch-next switch)
@@ -109,7 +111,7 @@
              (crossing-ids (map car crossings))
              (crossing-segments-lists (map cadr crossings)))
         (map (λ (id segments)
-               (cons id (make-object crossing% id track segments 'open)))
+               (cons id (make-object crossing% id connection segments 'open)))
              crossing-ids crossing-segments-lists)))
     (define/public (get-crossing-ids) (map car crossings-list))
     (define/public (get-crossing-segments crossing)
@@ -125,7 +127,7 @@
              (light-ids (map car lights))
              (light-segments (map cadr lights)))
         (map (λ (id segment)
-               (cons id (make-object light% id track segment 'Hp1)))
+               (cons id (make-object light% id connection segment 'Hp1)))
              light-ids light-segments)))
     (define/public (get-light-ids) (map car lights-list))
     (define/public (get-light-segment light)
@@ -141,7 +143,7 @@
              (train-prevs '(U-2 1-7 1-4 1-5))
              (train-currs '(1-3 1-6 1-5 1-4)))
         (map (λ (id prev curr)
-               (cons id (make-object train% id track prev curr)))
+               (cons id (make-object train% id connection prev curr)))
              train-ids train-prevs train-currs)))
     (define/public (get-train-ids) (map car trains-list))
     (define/public (get-train-speed train)

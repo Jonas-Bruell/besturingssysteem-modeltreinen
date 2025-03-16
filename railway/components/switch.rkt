@@ -65,6 +65,6 @@
              (void))
             ((member new-position (list left right))
              (send connection set-switch-position! id new-position)
-             (set! position new-position))
+             (set! position (send connection get-switch-position id)))
             (else (error "switch%: wrong message sent: " new-position))))
     ))

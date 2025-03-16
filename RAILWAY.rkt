@@ -6,3 +6,5 @@
 ;(send track config! 'hw "hardware")
 (send track start)
 (define railway (new railway% (track track)))
+
+;; Run this file to test Railway (not for production)

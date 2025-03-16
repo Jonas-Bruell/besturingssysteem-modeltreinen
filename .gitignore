@@ -2,10 +2,21 @@
 .vscode
 
 # Racket
-/**/compiled
-/**/*.bak
-/**/*.1
+compiled
+*.bak
+*.1
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# Drawio
+*.drawio.bkp
 
 # Other
-TODO.txt
 .DS_Store

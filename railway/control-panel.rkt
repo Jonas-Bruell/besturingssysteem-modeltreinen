@@ -39,10 +39,16 @@
                 ;lights-callback-list
                 )
     
-    (super-new
-     (label "Railway Controle Panel")
-     (width SERVER_A&D_WIDTH)
-     (height SERVER_A&D_HEIGHT))
+    (super-new (label "Railway Controle Panel")
+               (width SERVER_A&D_WIDTH)
+               (height SERVER_A&D_HEIGHT))
+
+    ;; UPDATE :: append callbacks to list for automatic updating
+    (define callbacks-list '())
+    (define/public (update!)
+      (for-each (λ (callback)
+                  (send (car callback) set-label ((cdr callback))))
+                callbacks-list))
 
     (define horizontal-group-box-panel%
       (class horizontal-pane%
@@ -56,12 +62,7 @@
         (callback t e)
         (change-colors)))
 
-    ;; UPDATE :: append callbacks to list for automatic updating
-    (define callbacks-list '())
-    (define/public (update!)
-      (for-each (λ (callback)
-                  (send (car callback) set-label ((cdr callback))))
-                callbacks-list))
+
 
     ;; defining and filling of panels
     (let* ((upper-columns
@@ -89,8 +90,7 @@
                  (min-width (/ SERVER_A&D_WIDTH 2))))
 
            (switches*-panel
-            (new group-box-panel% (label "SPECIAL SWITCHES")
-                 (parent right-column)))
+            (new group-box-panel% (label "SPECIAL SWITCHES") (parent right-column)))
            (crossings-panel
             (new group-box-panel% (label "CROSSINGS") (parent right-column)))
            (lights-panel
@@ -136,6 +136,13 @@
       (fill-panel emergency-panel
                   (list
                    (list 'stop (cons "stop sim" (λ (t e) (send railway stop))))
+                   (list 'emergency
+                         (cons "stop trains"
+                               (λ (t e)
+                                 (send railway set-train-speed! 'T-3 0)
+                                 (send railway set-train-speed! 'T-5 0)
+                                 (send railway set-train-speed! 'T-7 0)
+                                 (send railway set-train-speed! 'T-9 0))))
                    ))
       
       ;;
@@ -499,41 +506,24 @@
       (define Ks2+Zs3      'Ks2+Zs3)
       (define Sh1          'Sh1)
       (define Ks1+Zs3+Zs3v 'Ks1+Zs3+Zs3v)
+
       ; FILL TRAINS
-      (fill-panel trains-panel
-                  (list
-                   (list 'T-3
-                         (cons "-40" (λ (t e) (send railway set-train-speed! 'T-3 -40)))
-                         (cons "-20" (λ (t e) (send railway set-train-speed! 'T-5 -20)))
-                         (cons "0" (λ (t e) (send railway set-train-speed! 'T-5 0)))
-                         (cons "40" (λ (t e) (send railway set-train-speed! 'T-3 40)))
-                         (cons "80" (λ (t e) (send railway set-train-speed! 'T-3 80)))
-                         (cons "120" (λ (t e) (send railway set-train-speed! 'T-3 120)))
-                         (cons "160" (λ (t e) (send railway set-train-speed! 'T-3 160))))
-                   (list 'T-5
-                         (cons "-40" (λ (t e) (send railway set-train-speed! 'T-5 -40)))
-                         (cons "-20" (λ (t e) (send railway set-train-speed! 'T-5 -20)))
-                         (cons "0" (λ (t e) (send railway set-train-speed! 'T-5 0)))
-                         (cons "40" (λ (t e) (send railway set-train-speed! 'T-5 40)))
-                         (cons "80" (λ (t e) (send railway set-train-speed! 'T-5 80)))
-                         (cons "120" (λ (t e) (send railway set-train-speed! 'T-5 120)))
-                         (cons "160" (λ (t e) (send railway set-train-speed! 'T-5 160))))
-                   (list 'T-7
-                         (cons "-40" (λ (t e) (send railway set-train-speed! 'T-7 -40)))
-                         (cons "-20" (λ (t e) (send railway set-train-speed! 'T-7 -20)))
-                         (cons "0" (λ (t e) (send railway set-train-speed! 'T-7 0)))
-                         (cons "40" (λ (t e) (send railway set-train-speed! 'T-7 40)))
-                         (cons "80" (λ (t e) (send railway set-train-speed! 'T-7 80)))
-                         (cons "120" (λ (t e) (send railway set-train-speed! 'T-7 120)))
-                         (cons "160" (λ (t e) (send railway set-train-speed! 'T-7 160))))
-                   (list 'T-9
-                         (cons "-40" (λ (t e) (send railway set-train-speed! 'T-9 -40)))
-                         (cons "-20" (λ (t e) (send railway set-train-speed! 'T-9 -20)))
-                         (cons "0" (λ (t e) (send railway set-train-speed! 'T-9 0)))
-                         (cons "40" (λ (t e) (send railway set-train-speed! 'T-9 40)))
-                         (cons "25" (λ (t e) (send railway set-train-speed! 'T-9 80)))
-                         (cons "120" (λ (t e) (send railway set-train-speed! 'T-9 120)))
-                         (cons "160" (λ (t e) (send railway set-train-speed! 'T-9 160))))
-                   ))
-      )
-    ))
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-panel)))
+             (message (new message% (label "T-3") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-3 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-3 0) (send slider set-value 0)))))
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-panel)))
+             (message (new message% (label "T-5") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-5 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-5 0) (send slider set-value 0)))))
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-panel)))
+             (message (new message% (label "T-7") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-7 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-7 0) (send slider set-value 0)))))
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-panel)))
+             (message (new message% (label "T-9") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-9 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-9 0) (send slider set-value 0)))))
+
+      
+      )))

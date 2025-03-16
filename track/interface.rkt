@@ -1,9 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
-;;                               >>> udp.rkt <<<                              ;;
-;;                      programmeerproject 2,  2023-2024                      ;;
+;;                         >>> track/interface.rkt <<<                        ;;
+;;                      programmeerproject 2,  2023-2025                      ;;
 ;;                      written by: Jonas Brüll, 0587194                      ;;
-;;                                > version 1 <                               ;;
+;;                                > version 5 <                               ;;
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -82,15 +82,16 @@
     (define/public (get-loco-speed train-id)
       ((λ (method) method)
        (case architecture
-         ('sim (sim:get-loco-speed train-id))
-         ('hw (/ (hw:get-loco-speed train-id) HARDWARE_SPEED_SCALAR))
+         ('sim (inexact->exact (/ (sim:get-loco-speed train-id)
+                                  SIMULATOR_SPEED_SCALAR)))
+         ('hw (hw:get-loco-speed train-id))
          )))
 
     (define/public (set-loco-speed! train-id speed)
       ((λ (method) method)
        (case architecture
-         ('sim (sim:set-loco-speed! train-id speed))
-         ('hw (hw:set-loco-speed! train-id (inexact->exact (* speed HARDWARE_SPEED_SCALAR))))
+         ('sim (sim:set-loco-speed! train-id (* speed SIMULATOR_SPEED_SCALAR)))
+         ('hw (hw:set-loco-speed! train-id speed))
          )))
 
     ; detection blocks
