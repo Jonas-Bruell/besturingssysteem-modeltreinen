@@ -15,6 +15,7 @@
 (define infrabel%
   (class railway%
     (super-new)
+    (init-field server)
 
     ;
     ; deze methodes nog allemaal aanpassen naar de "infrabel methodes"
@@ -22,8 +23,6 @@
     ;
 
     ;### !! abstractielaag niet doorbreken -> admin&debug !!
-    (define/override (get-track)
-      (super get-track))
     (define/override (stop)
       (super stop))
     (define/override (start-control-panel)

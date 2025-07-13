@@ -9,12 +9,13 @@
 
 #lang racket
 
-(require "main/startup.rkt")
+;(require "main/startup.rkt")
 
 (provide start-provider
          )
 
 ; startup
 (define (start-provider name background-color text-color)
-  (startup name background-color text-color)
+  (void)
+  ;(startup name background-color text-color)
   )

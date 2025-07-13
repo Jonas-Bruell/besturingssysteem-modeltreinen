@@ -24,6 +24,7 @@
 
 (require racket/cmdline rackunit rackunit/gui rackunit/text-ui
          ;; TRACK
+         "track/interface.rkt"
          "track/interface.test.rkt"
          ;; RAILWAY
          "railway/components/crossing.test.rkt"
@@ -34,12 +35,40 @@
          ;"railway/components/switch-3way.test.rkt"
          ;"railway/components/switch-cross.test.rkt"
          ;"railway/components/train.test.rkt"
+         "railway/interface.rkt"
          ;"railway/interface.test.rkt"
          ;; INFRABEL
          ;; PROVIDER
          )
 
-; running all test suites
+;;
+;; Test suites for testing by hand
+;;
+(define (repl-test-track architecture)
+  (define track (new track%))
+  (cond ((eq? architecture 'simulator) (send track config! 'sim "hardware"))
+        ((eq? architecture 'hardware) (send track config! 'hw "hardware"))
+        (else (error "repl-test-track: type does not exist on track%" architecture)))
+  (send track start)
+  track)
+
+(define (repl-test-railway architecture)
+  (define track (repl-test-track architecture))
+  (define railway (new railway% (connection track)))
+  railway)
+
+(define (repl-test-infrabel)
+  (display "test infrabel"))
+
+(define (repl-test-provider)
+  (display "test provider"))
+
+(define (repl-test-nmbs)
+  (display "test nmbs"))
+
+;;
+;; Test suites for (automatic) unit testing
+;;
 (define (all-tests gui? s-eff? slp?)
   (test-suite
    "Unit testing all modules"
@@ -71,7 +100,9 @@
                (check-not-exn (λ () '())))
     )))
 
-;; RackUnit setup GUI for manual running of program
+;;
+;; RackUnit setup GUI for manual running of program (rackunit gui)
+;;
 (define gui%
   (class dialog%
     (init-field callback)
@@ -100,7 +131,9 @@
 (define callback
   (λ (gui? s-eff? slp?) (test/gui (all-tests gui? s-eff? slp?))))
 
-;; Manual running or automatic testing with "-g" flag
+;;
+;; Manual running or automatic testing with "-g" flag (github actions)
+;;
 (let/cc exit
   (command-line
    #:once-any

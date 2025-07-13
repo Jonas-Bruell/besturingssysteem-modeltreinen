@@ -15,8 +15,10 @@
           (only-in "railway.rkt" the-railway [clear-setup rw:clear-setup])
           (only-in "trains.rkt" TRAINS [remove-all-trains tr:remove-all-trains]))
 
-(provide initialize-simulator launch-simulator-loop stop-simulator-loop request-redraw-switch)
+(provide initialize-simulator launch-simulator-loop stop-simulator-loop request-redraw-switch
+         set-panel)
 
+(define PANEL #f)
 (define WINDOW #f)
 (define REDRAW-SWITCHES '())
 
@@ -26,7 +28,15 @@
 (define SCREEN-WIDTH 3000) 
 (define SCREEN-HEIGHT 1800)
 
-(define DESIRED-MAX-FPS 25) ;; Lower this value to get less CPU usage
+(define DESIRED-MAX-FPS 15) ;; Lower this value to get less CPU usage
+
+;; JONAS : added setter to set my panel as "WINDOW"
+(define (set-panel panel)
+  (set! PANEL panel))
+(define (set-window-or-panel)
+  (if PANEL
+      PANEL
+      (make-object window% WINDOW-TITLE SCREEN-WIDTH SCREEN-HEIGHT on-close-callback)))
 
 (define (draw-all-segments)
   (send the-railway draw-all-segments WINDOW 'segments))
@@ -50,7 +60,7 @@
 
 (define (initialize-simulator)
   (unless WINDOW
-    (set! WINDOW (make-object window% WINDOW-TITLE SCREEN-WIDTH SCREEN-HEIGHT on-close-callback))
+    (set! WINDOW (set-window-or-panel))
     (sleep/yield 1)
     (send WINDOW create-layer 'segments)
     (send WINDOW create-layer 'crossings)

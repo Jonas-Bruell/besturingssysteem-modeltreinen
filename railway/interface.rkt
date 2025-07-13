@@ -23,18 +23,22 @@
     (init-field connection)
     (init-field (track-info (send connection get-track-info)))
     (init-field (train-info (send connection get-train-info)))
-
-    ;### !! abstractielaag niet doorbreken -> admin&debug !!
-    (define/public (get-track)
-      track-info)
-    (define/public (stop)
-      (send connection stop))
+    (field (control-panel (new (class object% (super-new)
+                                 (define/public (update-control-panel id)
+                                   (void))))))
     
     (define (search id object-list) (cdr (assoc id object-list)))
 
+    ; stop simulator
+    (define/public (stop)
+      (send connection stop))
+
     ; control panel
     (define/public (start-control-panel)
-      (send (make-object control-panel% this) show #t))
+      (set! control-panel (make-object control-panel% this track-info)) 
+      (send control-panel show #t))
+    (define/public (update-control-panel id)
+      (send control-panel update! id))
 
     ; segments
     (define segments-list

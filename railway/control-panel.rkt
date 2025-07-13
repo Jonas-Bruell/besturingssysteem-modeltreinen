@@ -1,9 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                            ;;
-;;                            >>> gui/main.rkt <<<                            ;;
-;;                      programmeerproject 2,  2023-2024                      ;;
+;;                       >>> railway/control-panel <<<                        ;;
+;;                      programmeerproject 2,  2023-2025                      ;;
 ;;                      written by: Jonas Brüll, 0587194                      ;;
-;;                                > version 1 <                               ;;
+;;                                > version 6 <                               ;;
 ;;                                                                            ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -12,44 +12,71 @@
 (require "config.rkt")
 (provide control-panel%)
 
-#|
-(define gui (new object%))
-(define (make-adm&dbg sim system)
-  (set! gui (make-object gui% system))
-  gui)
-(define (update-adm&dbg!)
-  (send gui update!))
-|#
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
-
 (define control-panel%
   (class frame%
-    (init-field railway ;; terug abstraheren naar callbacks!!! ################
-                ;switches-callback-list
-                ;trains-callback-list
-                ;crossings-callback-list
-                ;lights-callback-list
-                )
-    
+    (init-field railway)
+    (init-field track-info)
     (super-new (label "Railway Controle Panel")
                (width SERVER_A&D_WIDTH)
                (height SERVER_A&D_HEIGHT))
 
-    ;; UPDATE :: append callbacks to list for automatic updating
+    ;
+    ; update!
+    ;
     (define callbacks-list '())
-    (define/public (update!)
-      (for-each (λ (callback)
-                  (send (car callback) set-label ((cdr callback))))
-                callbacks-list))
+    (define (add-to-callbacks-list id callback)
+      (append callbacks-list (list id callback)))
+    (define/public (update! id)
+      (let ((elements-tail (member id callbacks-list)))
+        (if elements-tail
+            ((cadr elements-tail))
+            (error "railway/control-panel.rkt - update! - id not found: " id))))
 
+    ;
+    ; define all panels & panes
+    ;
+    (let* ((menu-bar (new menu-bar% (parent this)))
+           (menu-bar-menu (new menu% (label "Menu") (parent menu-bar)))
+
+           (trains-panel (new horizontal-pane% (parent this)))
+           (emergency-stop-pane (new vertical-pane% (parent trains-panel)))
+           (trains-pane (new vertical-pane% (parent trains-panel)))
+           
+           (tab-panel (new tab-panel% (parent this) (choices '("Switches" "Other"))))
+
+           (left-column (new vertical-pane% (parent this) (min-width (/ SERVER_A&D_WIDTH 2))))
+           (right-column (new vertical-pane% (parent this) (min-width (/ SERVER_A&D_WIDTH 2))))
+           )
+      
+      (new menu-item% (label "stop") (parent menu-bar-menu) (callback (λ (t e) (send railway stop))))
+
+      ;
+      ; FILL TRAINS PANE
+      ;
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-pane)))
+             (message (new message% (label "T-3") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-3 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-3 0) (send slider set-value 0)))))
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-pane)))
+             (message (new message% (label "T-5") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-5 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-5 0) (send slider set-value 0)))))
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-pane)))
+             (message (new message% (label "T-7") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-7 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-7 0) (send slider set-value 0)))))
+      (let* ((horizontal-pane (new horizontal-pane% (parent trains-pane)))
+             (message (new message% (label "T-9") (parent horizontal-pane)))
+             (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-9 (send t get-value)))))))
+        (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-9 0) (send slider set-value 0)))))
+
+
+
+
+      (void)
+      )))
+#|
+      
     (define horizontal-group-box-panel%
       (class horizontal-pane%
         (init label parent)
@@ -196,7 +223,7 @@
                               (send railway set-switch-position! (car l) 'left))
                             (λ (t e)
                               (send railway set-switch-position! (car l) 'right))))
-               (cdr (assoc 'switch (send railway get-track)))))
+               (cdr (assoc 'switch track-info))))
          (index 0))
         (new switch-panel%
              (parent (if (< index 10)
@@ -283,7 +310,7 @@
                             (send railway set-switch-position! (caddr l) 'right))))
                   (cdr (assoc 'threeway
                               (cdr (assoc 'switch*
-                                          (send railway get-track))))))))
+                                          track-info)))))))
         (new three-way-switch-panel%
              (parent switches*-panel)
              (name (symbol->string (caar (car switch))))
@@ -374,7 +401,7 @@
                             (send railway set-switch-position! (caddr l) 'right))))
                   (cdr (assoc 'cross
                               (cdr (assoc 'switch*
-                                          (send railway get-track))))))))
+                                          track-info)))))))
         (new cross-switch-panel%
              (parent switches*-panel)
              (name (symbol->string (caar (car switch))))
@@ -420,7 +447,7 @@
                  (list l (λ () (format "~a" (send railway
                                                   get-detection-block-state
                                                   (car l))))))
-               (cdr (assoc 'detection-block (send railway get-track)))))
+               (cdr (assoc 'detection-block track-info))))
          (index 0))
         (let ((status (new status%
                            (parent (if (< index 10)
@@ -439,7 +466,7 @@
         ((block (map (λ (l) (list l (λ () (format "~a" (send railway
                                                              get-segment-state
                                                              (car l))))))
-                     (cdr (assoc 'segment (send railway get-track))))))
+                     (cdr (assoc 'segment track-info)))))
         (new status%
              (parent blocks-panel-U)
              (name (symbol->string (caaar block)))
@@ -524,6 +551,5 @@
              (message (new message% (label "T-9") (parent horizontal-pane)))
              (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-9 (send t get-value)))))))
         (new button% (label "stop") (parent horizontal-pane) (callback (λ (t e) (send railway set-train-speed! 'T-9 0) (send slider set-value 0)))))
-
-      
-      )))
+)
+  |#    

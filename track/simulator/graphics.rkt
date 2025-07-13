@@ -28,15 +28,20 @@
 (define window%
   (class object%
     (super-new)
-    (init-field title width height [close-callback (thunk (void))])
+    ;; JONAS : changed init-field to accept "embedded?"
+    (init-field (title "") (width 3000) (height 1800) [close-callback (thunk (void))] (embedded? #f))
   
     (define (scale value)
       (* value 0.4))
 
     (set! width (exact-round (scale width)))
     (set! height (exact-round (scale height)))
-
-    (define frame (make-object augmented-frame% title width height close-callback))
+    
+    ;; JONAS : changed frame to be able to place the graphical simulator in a panel
+    (define frame
+      (if embedded?
+          (new panel% (parent embedded?))
+          (make-object augmented-frame% title width height close-callback)))
 
     ; Make the drawing area
     (define canvas (new canvas% [parent frame]
