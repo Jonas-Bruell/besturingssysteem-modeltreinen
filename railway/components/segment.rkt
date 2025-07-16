@@ -17,14 +17,22 @@
     ;
     ; This class represents an atomic abstraction of a railroad segment
     ;
+    ; @param add-to-log-callback :: function to add a string to the log callback
     ; @param id :: the name of the railroad segment
     ; @param connection :: lower-level implementation of railroad segment
     ; @param in :: railway element that goes into this segment (clockwise)
     ; @param out :: railway element that exits out of this segment (clockwise)
     ;
-    (init-field id connection in out)
+    (init-field add-to-log id connection in out)
     (init-field (state (send connection get-state id)))
     (init-field (position (send connection get-position id)))
+
+    ;
+    ; add-to-log :: add a message of type string to the log
+    ;
+    ; @param string :: the string to be added to the log
+    ;
+    (define log-event (add-to-log (string-append "Segment '" (symbol->string id))))
 
     ;
     ; Possible railway segment states
@@ -77,6 +85,8 @@
                  (and (eq? reserved new-state) (eq? free state)))
              (send connection set-state! id new-state)
              (set! state new-state)
+             (log-event "Method set-state! called"
+                        (string-append "changed State to '" (symbol->string new-state)))
              #t)
             (else (error "segment%: wrong message sent: " new-state))))
     ))

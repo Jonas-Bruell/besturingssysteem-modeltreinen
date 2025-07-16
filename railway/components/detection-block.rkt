@@ -18,12 +18,13 @@
     ;
     ; This class represents an atomic abstraction of a railroad detection block
     ;
+    ; @param add-to-log-callback :: function to add a string to the log callback
     ; @param id :: the name of the railroad segment
     ; @param connection :: lower-level implementation of detection block
     ; @param in :: railway element that goes into this block (clockwise)
     ; @param out :: railway element that exits out of this block (clockwise)
     ;
-    (inherit-field id connection in out)
+    (inherit-field add-to-log id connection in out)
     (inherit-field state)
 
     ;
@@ -32,6 +33,13 @@
     (define free     'free)
     (define reserved 'reserved)
     (define occupied 'occupied)
+
+    ;
+    ; add-to-log :: add a message of type string to the log
+    ;
+    ; @param string :: the string to be added to the log
+    ;
+    (define log-event (add-to-log (string-append "D-Block '" (symbol->string id)))) ; curryied
 
     ;
     ; set-state! :: change the state of the railway crossing only when it is
@@ -56,6 +64,8 @@
                  (and (eq? reserved state) (eq? occupied new-state)))
              (send connection set-state! id new-state)
              (set! state new-state)
+             (log-event "Method set-state! called"
+                        (string-append "changed state to '" (symbol->string new-state)))
              #t)
             (else (error "segment%: wrong message sent: " new-state))))
     ))

@@ -11,6 +11,7 @@
 
 (require try-catch
          racket/exn
+         racket/date
          "config.rkt"
          "interface.rkt"
          "server.rkt"
@@ -19,12 +20,30 @@
 
 (provide start-infrabel)
 
-(define status-callback (λ (callback) (set! status-callback callback)))
-(define infrabel #f)
+;;
+;; Logging
+;;
+(date-display-format 'rfc2822)
+(define logs-callback (λ (callback) (set! logs-callback callback)))
+(define add-to-log
+  (curry (λ (service origin action event)
+           (send logs-callback insert
+                 (string-append (date->string (current-date) #t)
+                                "  ---  " service " > " origin " > " action " : " event "\n")))))
+
+;;
+;; Automatic Updating
+;;
+(define to-update-list '())
+(define (add-to-update lambda-wrapped-function)
+  (set! to-update-list (append to-update-list (list lambda-wrapped-function))))
+(thread (λ () (let loop () (for-each (λ (x) (x)) to-update-list) (sleep 1) (loop))))
 
 ;;
 ;; startup-callback
 ;;
+(define status-callback (λ (callback) (set! status-callback callback)))
+(define infrabel #f)
 (define (startup-callback track tab-panels sim-graphics)
   (λ (architecture version host port control-panel?)
     (let/cc return
@@ -49,7 +68,11 @@
         ;; connect to server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (send status-callback insert "Setting up INFRABEL server ... : ")
         (try
-         ((set! server (new infrabel-server% (host host) (port port))))
+         ((set! server (new infrabel-server%
+                            (host host)
+                            (port port)
+                            (add-to-log add-to-log)
+                            (add-to-update add-to-update))))
          (catch (exn:fail?     
                  (send status-callback insert
                        (string-append*
@@ -62,7 +85,11 @@
         ;; startup INFRABEL with track & server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (send status-callback insert "Initialising INFRABEL Control Software ... : ")
         (try
-         ((set! infrabel (new infrabel% (connection track) (server server)))
+         ((set! infrabel (new infrabel%
+                              (connection track)
+                              (server server)
+                              (add-to-log add-to-log)
+                              (add-to-update add-to-update)))
           (send server init! infrabel))
          (catch (exn:fail?     
                  (send status-callback insert
@@ -80,6 +107,9 @@
            ((set! gui (new infrabel-gui%
                            (infrabel infrabel)
                            (railway-tab-panels-list tab-panels)
+                           (logs-callback logs-callback)
+                           (add-to-log add-to-log)
+                           (add-to-update add-to-update)
                            (set-simulator-panel (car sim-graphics))
                            (simulator-panel (cdr sim-graphics))))
             (send gui show #t))

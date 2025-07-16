@@ -21,15 +21,23 @@
     ;
     ; This class represents an atomic abstraction of a railroad switch
     ;
+    ; @param add-to-log-callback :: function to add a string to the log callback
     ; @param id :: the name of the railroad switch
     ; @param connection :: lower-level implementation of railroad switch
     ; @param in :: railway element that goes into this segment (clockwise)
     ; @param out :: (left . right), cons-cell of railway element that exits out
     ;               of this segment (clockwise)
     ;
-    (inherit-field id connection in out)
+    (inherit-field add-to-log id connection in out)
     (inherit-field state)
     (inherit-field position)
+
+    ;
+    ; add-to-log :: add a message of type string to the log
+    ;
+    ; @param string :: the string to be added to the log
+    ;
+    (define log-event (add-to-log (string-append "Switch '" (symbol->string id)))) ; currying
 
     ;
     ; get-next-left :: get the next railway element, in the direction of the
@@ -55,6 +63,7 @@
     ;
     (define/public (get-position) position)
 
+    ;
     ; set-position! :: change the position of the railway switch only when it is
     ;                  not yet in the required state
     ;
@@ -65,6 +74,8 @@
              (void))
             ((member new-position (list left right))
              (send connection set-switch-position! id new-position)
-             (set! position (send connection get-switch-position id)))
+             (set! position (send connection get-switch-position id))
+             (log-event "Method set-position! called"
+                        (string-append "changed position to '" (symbol->string new-position))))
             (else (error "switch%: wrong message sent: " new-position))))
     ))

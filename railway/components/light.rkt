@@ -17,11 +17,12 @@
     ;
     ; This class represents an atomic abstraction of a railroad light
     ;
+    ; @param add-to-log-callback :: function to add a string to the log callback
     ; @param id :: the name of the railroad light
     ; @param connection :: lower-level implementation of railroad light
     ; @param segment :: segment over which the light goes
     ;
-    (init-field id connection segment)
+    (init-field add-to-log id connection segment)
     (init-field (signal (send connection get-signal id)))
 
     ;
@@ -35,6 +36,13 @@
     (define Ks2+Zs3      'Ks2+Zs3)
     (define Sh1          'Sh1)
     (define Ks1+Zs3+Zs3v 'Ks1+Zs3+Zs3v)
+
+    ;
+    ; add-to-log :: add a message of type string to the log
+    ;
+    ; @param string :: the string to be added to the log
+    ;
+    (define log-event (add-to-log (string-append "Light '" (symbol->string id)))) ; curryied
 
     ;
     ; get-id :: get the id of the railway light
@@ -69,6 +77,8 @@
             ((member new-signal
                   (list Hp0 Hp1 Hp0+Sh0 Ks1+Zs3 Ks2 Ks2+Zs3 Sh1 Ks1+Zs3+Zs3v))
              (send connection set-sign-code! id new-signal)
-             (set! signal new-signal))
+             (set! signal new-signal)
+             (log-event "Method set-signal! called"
+                        (string-append "changed signal to '" (symbol->string new-signal))))
             (else (error "light%: wrong message sent: " new-signal))))
     ))

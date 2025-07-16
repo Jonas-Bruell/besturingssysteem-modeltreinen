@@ -8,10 +8,10 @@
          "track/simulator/graphics.rkt"
          "track/simulator/simulator.rkt")
 
-(define tab-panels (list (cons " Signals " tab-crossings-lights)
-                         (cons "  Rails  " tab-segments-detection-blocks)
-                         (cons "Switches " tab-switches)
-                         (cons " Trains  " tab-trains)))
+(define tab-panels (list (cons " Trains  " tab-trains%)
+                         (cons "Switches " tab-switches%)
+                         (cons "  Rails  " tab-segments-detection-blocks%)
+                         (cons " Signals " tab-crossings-lights%)))
 (define sim-graphics (cons set-panel window%))
 
 (define infrabel (start-infrabel track% tab-panels sim-graphics))

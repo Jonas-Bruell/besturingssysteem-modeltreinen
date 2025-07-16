@@ -6,13 +6,14 @@
 (define infrabel-server%
   (class object%
     (super-new)
-    (init-field host port)
+    (init-field host port add-to-log add-to-update)
     
     (define infrabel #f)
+    
     (define the-listener (tcp-listen (string->number port) 4 #t host))
 
-    (define/public (init! infrab)
-      (set! infrabel infrab))
+    (define/public (init! i)
+      (set! infrabel i))
 
     (define/public (stop)
       (displayln "stop"))
@@ -25,12 +26,14 @@
       (thread 
        (lambda ()
 
-         (define (print)
-           (displayln (read in)))
+         (define provider "NONE")
      
          (displayln "new client connected")
          (write "welcome" out)
          (flush-output out)
+
+         (set! provider "NMBS")
+         (define log-event (add-to-log provider "TCP")) ; curryied
 
          (let/ec return
            (let loop ()
@@ -42,7 +45,8 @@
                     (write "World!" out) (flush-output out))
                    ((string=? msg "Test")
                     (write "Performing test :)" out) (flush-output out)
-                    (send infrabel set-crossing-position! 'C-1 'closed))
+                    (send infrabel set-crossing-position! 'C-1 'closed)
+                    (log-event "set-crossing-position!"))
                    ((string=? msg "close")
                     (write "closed" out) (flush-output out) (return))
                    (else
