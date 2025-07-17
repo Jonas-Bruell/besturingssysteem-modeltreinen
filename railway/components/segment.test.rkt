@@ -32,8 +32,10 @@
       (set! state new-state))
     (define/public (get-position id) generic)))
 
+(define add-to-log (curry (λ (x y z) (void))))
+
 (define (make-segment-with connection)
-  (make-object segment% id connection in out))
+  (make-object segment% add-to-log id connection in out))
 
 (define make-generic-segment
   (λ () (make-segment-with (make-object connection% generic))))

@@ -33,8 +33,10 @@
       (set! state new-state))
     (define/public (get-position id) generic)))
 
+(define add-to-log (curry (λ (x y z) (void))))
+
 (define (make-detection-block-with connection)
-  (make-object detection-block% id connection in out))
+  (make-object detection-block% add-to-log id connection in out))
 
 (define make-generic-detection-block
   (λ () (make-detection-block-with (make-object connection% generic))))

@@ -39,8 +39,10 @@
 (define make-connection
   (λ () (make-object connection% generic)))
 
+(define add-to-log (curry (λ (x y z) (void))))
+
 (define (make-light-with connection)
-  (make-object light% id connection segment))
+  (make-object light% add-to-log id connection segment))
 
 (define make-generic-light
   (λ () (make-light-with (make-connection))))

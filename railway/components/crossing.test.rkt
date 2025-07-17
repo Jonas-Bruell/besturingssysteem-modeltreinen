@@ -34,8 +34,10 @@
 (define make-connection
   (λ () (make-object connection% generic)))
 
+(define add-to-log (curry (λ (x y z) (void))))
+
 (define (make-crossing-with connection segment-list)
-  (make-object crossing% id connection segment-list))
+  (make-object crossing% add-to-log id connection segment-list))
 
 (define make-generic-crossing
   (λ () (make-crossing-with (make-connection) '())))

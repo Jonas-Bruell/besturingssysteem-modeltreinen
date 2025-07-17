@@ -35,8 +35,10 @@
     (define/public (set-state! id new-state) (set! state new-state))
     (define/public (set-switch-position! id new-pos) (set! pos new-pos))))
 
+(define add-to-log (curry (λ (x y z) (void))))
+
 (define (make-switch-with connection)
-  (make-object switch% id connection in out))
+  (make-object switch% add-to-log id connection in out))
 
 (define make-generic-switch
   (λ () (make-switch-with (make-object connection% generic generic))))
