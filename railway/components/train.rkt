@@ -22,13 +22,13 @@
     ; @param previous :: previous track segment of train
     ; @param current :: current track segment of train
     ;
-    (init-field add-to-log id connection previous current)
+    (init-field add-to-log id railway connection previous current-location)
 
     (define unlocked? #t)
     (define route '())
     
     ; Adding train to track -- Only works on simulator, retuns false on hardware
-    (send connection add-loco id previous current)
+    (send connection add-loco id previous current-location)
 
     ;
     ; add-to-log :: add a message of type string to the log
@@ -41,20 +41,71 @@
                                                    (string-append "locking train")))
     (define/public (unlock!) (set! unlocked? #t) (log-event "Method unlock! called"
                                                             (string-append "unlocking train")))
+    
+    ;; Logic for get-location
+    (define possible-next-locations '())
+    (define (get-possible-next-locations current-dblock)
+      (define next-dblocks-list '())
+      (define (search-rec previous current)
+        (display "new rec ") (display current)
+        (cond ((eq? current 'NIL) (void))
+              ((eq? (car current) 'dblock)
+               (set! next-dblocks-list (append next-dblocks-list (list current))))
+              ((eq? (car current) 'switch)
+               (let* ((curr (cdr current))
+                      (switch-prev (send railway get-switch-prev curr))
+                      (switch-next-left (send railway get-switch-next-left curr))
+                      (switch-next-right (send railway get-switch-next-right curr)))
+                 (when (equal? switch-prev previous)
+                   (search-rec current switch-next-left)
+                   (search-rec current switch-next-right))
+                 (when (equal? switch-next-left previous) (search-rec current switch-prev))
+                 (when (equal? switch-next-right previous) (search-rec current switch-prev))))
+              ((eq? (car current) 'segment)
+               (let* ((curr (cdr current))
+                      (segment-prev (send railway get-segment-prev curr))
+                      (segment-next (send railway get-segment-next curr)))
+                 (when (equal? segment-prev previous) (search-rec current segment-next))
+                 (when (equal? segment-next previous) (search-rec current segment-prev))))))
+      (search-rec (cons 'dblock current-dblock)
+                  (send railway get-detection-block-next current-dblock))
+      (search-rec (cons 'dblock current-dblock)
+                  (send railway get-detection-block-prev current-dblock))
+      (newline) (display "possible locations: ") (displayln next-dblocks-list)
+      next-dblocks-list)
+    
+    (define (on-next-location? occupied-blocks)
+      (display "occupied blocks") (displayln occupied-blocks)
+      (when (null? possible-next-locations)
+        (set! possible-next-locations (get-possible-next-locations current-location)))
+      (ormap (λ (possible-next) (member (cdr possible-next) occupied-blocks))
+             possible-next-locations))
 
     ;
     ; get-location :: get the location on track of the train
     ;
     ; @returns symbol :: location of the train
     ;
-    (define/public (get-location) current)
+    (define/public (get-location)
+      (let* ((occupied-dblocks (send connection get-occupied-detection-blocks))
+             (position-known? (member current-location occupied-dblocks)))
+        (display "''position-known?'': ") (displayln position-known?)
+        (if position-known?
+            (begin
+              (unless (null? possible-next-locations) (set! possible-next-locations '()))
+              current-location)
+            (begin
+              (let ((on-next? (on-next-location? occupied-dblocks)))
+                (display "''on-next-location?'': ") (displayln on-next?)
+                (when on-next? (set! current-location (car on-next?))))
+              current-location))))
 
     ;
     ; get-next-location :: get the next location on track of the train
     ;
     ; @returns symbol :: next location of the train
     ;
-    (define/public (get-next-location) current)
+    (define/public (get-next-location) current-location)
 
     ;
     ; get-train-speed :: get the speed of the train, represented by a number

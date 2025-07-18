@@ -42,22 +42,41 @@
     (define log-event (add-to-log (string-append "D-Block '" (symbol->string id)))) ; curryied
 
     ;
+    ; get-state :: get the state of the railway detection block
+    ;
+    ; @returns symbol :: state-field of detection block
+    ;
+    (define/override (get-state)
+      (let ((occupied-list (send connection get-occupied-detection-blocks)))
+        (if (member id occupied-list)
+            (unless (eq? state occupied)
+              (set! state occupied)
+              occupied)
+            (unless (eq? state reserved)
+              (set! state free)
+              free))
+        state))
+    
+    ;
     ; set-state! :: change the state of the railway crossing only when it is
     ;               not yet in the required state
     ;
     ; @param new-state symbol :: the new state of the detection-block
     ; @returns boolean :: #f when trying to reserve a reserved state
-    ;                        or when trying to occupy a occupied state
-    ;                     #t when trying to free a state
+    ;                        or state = occupied
+    ;                     #t when trying to free a state or reserve a free state
     ;
     (define/override (set-state! new-state)
-      (cond ((or (and (eq? new-state state) (or (eq? reserved state)
-                                                (eq? occupied state)))
-                 (and (eq? state occupied) (eq? new-state reserved)))
+      (cond ((eq? state occupied)
+             (log-event "Method set-state! called" "detection block is OCCUPIED")
+             #f)
+            ((and (eq? new-state state) (eq? reserved state))
+             (log-event "Method set-state! called" "detection block is ALREADY RESERVED")
              #f)
             ((and (eq? new-state state) (eq? free state))
+             (log-event "Method set-state! called" "detection block is ALREADY FREE")
              #t)
-            ((or (and (eq? free new-state) (or (eq? reserved state)
+            ((or (and (eq? free new-state) (or (eq? reserved state)    ; TODO : kan dit eenvoudiger?
                                                (eq? occupied state)))
                  (and (eq? free state) (or (eq? reserved new-state)
                                            (eq? occupied new-state)))

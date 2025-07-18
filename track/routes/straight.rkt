@@ -4,18 +4,18 @@
 
 (define TRACK
   '((detection-block
-    ;(name cl-in cl-out)
-     (D1   NIL   D2    )
-     (D2   D1    T     )
-     (D3   T     D4    )
-     (D4   D3    NIL   )
+    ;(name clockwise-in   clockwise-out )
+     (D1   NIL            (dblock  . D2))
+     (D2   (dblock  . D1) (segment . T ))
+     (D3   (segment . T ) (dblock  . D4))
+     (D4   (dblock  . D3) NIL           )
      )
     (segment
-    ;(name cl-in cl-out)
-     (T    D2    D3    )
+    ;(name clockwise-in  clockwise-out)
+     (T    (dblock . D2) (dblock . D3))
      )
     (switch
-    ;(name in    out1 out2 )
+    ;(name in out1 out2 )
      )
     (switch*
      (threeway

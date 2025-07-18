@@ -26,6 +26,7 @@
     (init-field add-to-log id connection in out)
     (init-field (state (send connection get-state id)))
     (init-field (position (send connection get-position id)))
+    (init-field (log-name "segment"))
 
     ;
     ; add-to-log :: add a message of type string to the log
@@ -46,6 +47,13 @@
     ; @returns symbol :: id-field of segment
     ;
     (define/public (get-id) id)
+
+    ;
+    ; get-states :: get list of possible states of the light
+    ;
+    ; @returns list :: list of possible states
+    ;
+    (define/public (get-states) (list free reserved))
 
     ;
     ; get-state :: get the state of the railway segment
@@ -78,8 +86,12 @@
     ;
     (define/public (set-state! new-state)
       (cond ((and (eq? new-state state) (eq? reserved state))
+             (log-event "Method set-state! called"
+                        (string-append log-name " is ALREADY RESERVED"))
              #f)
             ((and (eq? new-state state) (eq? free state))
+             (log-event "Method set-state! called"
+                        (string-append log-name " is ALREADY FREE"))
              #t)
             ((or (and (eq? free new-state) (eq? reserved state))
                  (and (eq? reserved new-state) (eq? free state)))

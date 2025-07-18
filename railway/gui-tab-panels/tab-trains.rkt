@@ -20,20 +20,22 @@
 
         ))
 |#
-    
+      
     (let* ((horizontal-pane (new horizontal-pane% (parent this)))
            (vertical-pane (new vertical-pane% (parent horizontal-pane)))
            (train-label (new message% (label "Train T-3") (parent vertical-pane)))
+           (location-label (new message% (label "______________") (parent vertical-pane)))
            (route-input (new text-field% (label "Follow Route") (parent vertical-pane)))
            (slider (new slider% (label "Change Speed") (min-value -40) (max-value 40) (init-value 0) (parent vertical-pane) (callback (λ (t e) (send connection set-train-speed! 'T-3 (send t get-value))))))
            (buttons-pane (new vertical-pane% (parent horizontal-pane))))
+      (add-to-update (λ () (send location-label set-label (string-append "location: " (symbol->string (send connection get-train-location 'T-3))))))
       (new button% (label "apply") (parent buttons-pane) (callback (λ (t e) (void))))
       (new button% (label "follow") (parent buttons-pane) (callback (λ (t e) (void))))
       (new button% (label "unlock") (parent buttons-pane) (callback (λ (t e) (send connection unlock! 'T-3))))
       (new button% (label "stop") (parent buttons-pane) (callback (λ (t e) (send connection emergency-stop! 'T-3) (send slider set-value 0)))))
 
 
-    
+    #|
     (let* ((horizontal-pane (new horizontal-pane% (parent this)))
            (message (new message% (label "T-5") (parent horizontal-pane)))
            (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send connection set-train-speed! 'T-5 (send t get-value))))))
@@ -61,7 +63,7 @@
       (new button% (label "apply") (parent buttons-pane) (callback (λ (t e) (void))))
       (new button% (label "unlock") (parent buttons-pane) (callback (λ (t e) (send connection unlock! 'T-9))))
       (new button% (label "stop") (parent buttons-pane) (callback (λ (t e) (send connection emergency-stop! 'T-9) (send slider set-value 0)))))
-
+|#
     
 
     (new button% (label "test route") (parent manage-trains-panel) (callback (λ (t e) (send connection follow-route 'T-3 "1->2->3"))))

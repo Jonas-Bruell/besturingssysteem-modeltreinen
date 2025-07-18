@@ -4,20 +4,20 @@
 
 (define TRACK
   '((detection-block
-    ;(name cl-in cl-out)
-     (D1   T2    D2    )
-     (D2   D1    D3    )
-     (D3   D2    D4    )
-     (D4   D3    D5    )
-     (D5   D4    T1    )
-     (D6   T1    D7    )
-     (D7   D6    D8    )
-     (D8   D7    T2    )
+    ;(name cl-in          cl-out        )
+     (D1   (segment . T2) (dblock  . D2))
+     (D2   (dblock  . D1) (dblock  . D3))
+     (D3   (dblock  . D2) (dblock  . D4))
+     (D4   (dblock  . D3) (dblock  . D5))
+     (D5   (dblock  . D4) (segment . T1))
+     (D6   (segment . T1) (dblock  . D7))
+     (D7   (dblock  . D6) (dblock  . D8))
+     (D8   (dblock  . D7) (segment . T2))
      )
     (segment
-    ;(name cl-in cl-out)
-     (T1   D5    D6    )
-     (T2   D8    D1    )
+    ;(name cl-in         cl-out       )
+     (T1   (dblock . D5) (dblock . D6))
+     (T2   (dblock . D8) (dblock . D1))
      )
     (switch
     ;(name in    out1 out2 )

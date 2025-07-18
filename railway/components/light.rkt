@@ -52,6 +52,13 @@
     (define/public (get-id) id)
 
     ;
+    ; get-signals :: get list of possible signals of the light
+    ;
+    ; @returns list :: list of possible signals
+    ;
+    (define/public (get-signals) (list Hp0 Hp1 Hp0+Sh0 Ks1+Zs3 Ks2 Ks2+Zs3 Sh1 Ks1+Zs3+Zs3v))
+
+    ;
     ; get-signal :: get the signal of the railway light
     ;
     ; @returns symbol :: signal-field of light

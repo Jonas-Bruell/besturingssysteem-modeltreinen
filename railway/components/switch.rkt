@@ -29,8 +29,9 @@
     ;               of this segment (clockwise)
     ;
     (inherit-field add-to-log id connection in out)
-    (inherit-field state)
-    (inherit-field position)
+    (inherit-field state position)
+    (inherit-field log-name)
+    (set! log-name "switch")
 
     ;
     ; add-to-log :: add a message of type string to the log
@@ -38,6 +39,13 @@
     ; @param string :: the string to be added to the log
     ;
     (define log-event (add-to-log (string-append "Switch '" (symbol->string id)))) ; currying
+
+    ;
+    ; get-positions :: get list of possible positions of the switch
+    ;
+    ; @returns list :: list of possible positions
+    ;
+    (define/public (get-positions) (list left right))
 
     ;
     ; get-next-left :: get the next railway element, in the direction of the

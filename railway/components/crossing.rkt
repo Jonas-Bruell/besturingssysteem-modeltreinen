@@ -47,6 +47,13 @@
     (define/public (get-id) id)
 
     ;
+    ; get-positions :: get list of possible positions of the crossing
+    ;
+    ; @returns list :: list of possible positions
+    ;
+    (define/public (get-positions) (list open closed))
+
+    ;
     ; get-position :: get the position of the railway crossing
     ;
     ; @returns symbol :: position-field of crossing

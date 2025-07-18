@@ -15,26 +15,26 @@
 
     (define switches-container
       (new horizontal-panel% (parent this)))
-    (define switches-panel%
+    (define switches-column%
       (class vertical-panel% (super-new (parent switches-container) (alignment '(left top)))))
-    (define switches-panel-0 (new switches-panel%))
-    (define switches-panel-1 (new switches-panel%))
-    (define switches-panel-2 (new switches-panel%))
-    (define switches-panel-3 (new switches-panel%))
+    (define switches-column-0 (new switches-column%))
+    (define switches-column-1 (new switches-column%))
+    (define switches-column-2 (new switches-column%))
+    (define switches-column-3 (new switches-column%))
 
-    (define panel-counter 0) ; initialise with las
+    (define panel-counter 0)
     (define (which-panel)
       (define (inc) (set! panel-counter (modulo (+ panel-counter 1) 4)))
-      (cond ((= panel-counter 0) (inc) switches-panel-0)
-            ((= panel-counter 1) (inc) switches-panel-1)
-            ((= panel-counter 2) (inc) switches-panel-2)
-            ((= panel-counter 3) (inc) switches-panel-3)))
+      (cond ((= panel-counter 0) (inc) switches-column-0)
+            ((= panel-counter 1) (inc) switches-column-1)
+            ((= panel-counter 2) (inc) switches-column-2)
+            ((= panel-counter 3) (inc) switches-column-3)))
 
     ; Initialise switches
     (for-each
-     (λ (switch-id)
+     (λ (id)
        (let* ((gbp
-               (new group-box-panel% (label (symbol->string switch-id)) (vert-margin 20)
+               (new group-box-panel% (label (symbol->string id)) (vert-margin 20)
                     (parent (which-panel)) (stretchable-width #f) (stretchable-height #f)))
               (hzp
                (new horizontal-panel% (parent gbp)))
@@ -46,13 +46,13 @@
                (new vertical-pane% (parent hzp) (alignment '(center center))))
               (in-label
                (new message% (parent in-pane) (horiz-margin 10)
-                    (label (symbol->string (send connection get-switch-prev switch-id)))))
+                    (label (symbol->string (cdr (send connection get-switch-prev id))))))
               (out-label-left
                (new message% (parent out-pane) (horiz-margin 10)
-                    (label (symbol->string (send connection get-switch-next-left switch-id)))))
+                    (label (symbol->string (cdr (send connection get-switch-next-left id))))))
               (out-label-right
                (new message% (parent out-pane) (horiz-margin 10)
-                    (label (symbol->string (send connection get-switch-next-right switch-id))))))
+                    (label (symbol->string (cdr (send connection get-switch-next-right id)))))))
         
          (define (update-switch-colors switch-id)
            (let ((postion (send connection get-switch-position switch-id)))
@@ -68,15 +68,15 @@
             (new button% (label (symbol->string switch-position)) (parent btn-pane)
                  (callback
                   (λ (t e) (log-event "Switch Button Pressed"
-                                      (string-append* `("change switch '"
-                                                         ,(symbol->string switch-id)
-                                                         " to position '"
-                                                         ,(symbol->string switch-position))))
-                    (send connection set-switch-position! switch-id switch-position)
-                    (update-switch-colors switch-id)))))
+                                      (string-append "change switch '"
+                                                     (symbol->string id)
+                                                     " to position '"
+                                                     (symbol->string switch-position)))
+                    (send connection set-switch-position! id switch-position)
+                    (update-switch-colors id)))))
           (send connection get-switch-positions))
          (send in-label set-color COLOR_FREE)
-         (update-switch-colors switch-id)))
+         (update-switch-colors id)))
      (send connection get-switch-ids)) 
 
     #| </tab-switches%> |#))

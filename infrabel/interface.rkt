@@ -9,13 +9,18 @@
 
 #lang racket
 
-(require "../railway/interface.rkt")
+(require "../railway/interface.rkt"
+         "logic/conductor.rkt")
 (provide infrabel%)
 
 (define infrabel%
   (class railway% ; INHERITED FUNCTIONS!
+    (inherit-field add-to-log add-to-update)
     (init-field server)
     (super-new)
 
+    (define/public (add-conductor-to-train train-object)
+      (void))
+
     
-    ))
+    #| </infrabel%> |#))

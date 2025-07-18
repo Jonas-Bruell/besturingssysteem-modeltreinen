@@ -3,15 +3,9 @@
 (require "config.rkt")
 (provide infrabel-gui%)
 
-(struct counter-panel
-  (top-panel
-   [value-thunk #:mutable] 
-   [inc-callback #:mutable]
-   [dec-callback #:mutable]))
-
 (define infrabel-gui%
   (class frame%
-    (super-new (label (string-append* `(,APPLICATION_NAME " -- Control Panel")))
+    (super-new (label (string-append APPLICATION_NAME "  --  Control Panel"))
                (width APPLICATION_WIDTH)
                (height APPLICATION_HEIGHT))
 
