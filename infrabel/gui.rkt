@@ -34,7 +34,27 @@
       (void))
     
     (define global-panel (new horizontal-panel% (parent this)))
+    (define input-panel (new vertical-panel% (parent global-panel)))
     (define log-event (add-to-log "INFRABEL")) ; curryied
+
+    ;; Status Panel
+    (define status-panel (new group-box-panel% (parent input-panel)
+                              (label "Statussen") (horiz-margin 10)))
+    (define train-status-pane (new vertical-pane% (parent status-panel)))
+    (for-each
+     (λ (id)
+       (let ((label (new message% (label "____") (parent train-status-pane))))
+         (add-to-update (λ () (send label set-label
+                                    (symbol->string (send infrabel get-train-location id)))))))
+     (send infrabel get-train-ids))
+    (define crossing-status-pane (new vertical-pane% (parent status-panel)))
+    (for-each (λ (id)
+                (void))
+              (send infrabel get-crossing-ids))
+    (define lights-status-pane (new vertical-panel% (parent status-panel)))
+    (for-each (λ (id)
+                (void))
+              (send infrabel get-light-ids))
     
     ;; Tab Panel 
     (define tabs (map car railway-tab-panels-list))
@@ -49,13 +69,10 @@
       (when (eq? (send event get-event-type) 'tab-panel)
         (fill-tab tab-panel (send tab-panel get-selection))))
    
-    (define tab-panel (new tab-panel%
-                           (parent global-panel)
-                           (choices tabs)
-                           (style '(can-reorder can-close))
+    (define tab-panel (new tab-panel% (parent input-panel)
+                           (choices tabs) (style '(can-reorder can-close))
                            (min-width (- APPLICATION_WIDTH TRACK_WIDTH))
-                           (vert-margin 7) (horiz-margin 10)
-                           (callback change-tab)))
+                           (vert-margin 7) (horiz-margin 10) (callback change-tab)))
     (for-each
      (λ (tab-pane)
        (set! tab-panes-list
