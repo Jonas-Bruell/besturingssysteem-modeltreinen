@@ -5,7 +5,7 @@
 (define tab-states%
   (class vertical-panel%
     (init-field parent connection add-to-log add-to-update)
-    (super-new (parent parent))
+    (super-new (parent parent) )
 
     (define log-event (add-to-log "Rails Tab")) ; curryied
 
@@ -20,7 +20,7 @@
     ;; DETECTION BLOCKS
     ;;
     (define dblocks-panel (new group-box-panel% (label "Detection Blocks") (parent this)
-                               (stretchable-height #f) (horiz-margin 20) (vert-margin 20)))
+                               (stretchable-height #f) (horiz-margin 20) (vert-margin 10)))
     (define dblocks-container (new horizontal-panel% (parent dblocks-panel)))
     
     (define dblocks-column%
@@ -43,8 +43,9 @@
        (let* ((gbp (new group-box-panel% (label (symbol->string dblock-id)) (horiz-margin 9)
                         (parent (which-dblock-column))
                         (stretchable-width #f) (stretchable-height #f)))
-              (msg (new message% (label "__________") (parent gbp)))
-              (hzp (new horizontal-panel% (parent gbp))))
+              (hgph (new horizontal-pane% (parent gbp)))
+              (msg (new message% (label "__________") (parent hgph)))
+              (hzp (new vertical-pane% (parent hgph))))
          (add-to-update
           (λ () (send msg set-label (symbol->string
                                      (send connection get-detection-block-state dblock-id)))
@@ -66,7 +67,7 @@
     ;; SWITCHES
     ;;
     (define switches-panel (new group-box-panel% (label "Switches") (parent this)
-                                (stretchable-height #f) (horiz-margin 20) (vert-margin 20)))
+                                (stretchable-height #f) (horiz-margin 20) (vert-margin 0)))
     (define switches-container (new horizontal-panel% (parent switches-panel)))
     
     (define switches-column%
@@ -112,7 +113,7 @@
     ;; SEGMENTS
     ;;
     (define segments-panel (new group-box-panel% (label "Segments") (parent this)
-                                (stretchable-height #f) (horiz-margin 20) (vert-margin 20)))
+                                (stretchable-height #f) (horiz-margin 20) (vert-margin 10)))
     (define segments-container (new horizontal-panel% (parent segments-panel)))
     
     (define segments-column%

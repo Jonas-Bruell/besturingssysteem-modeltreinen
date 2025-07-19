@@ -148,9 +148,9 @@
 
     ; trains
     (define trains-list
-      (let* ((train-ids   '(T-3)); train-info)
-             (train-prevs '(U-2)); 1-7 1-4 1-5))
-             (train-currs '(1-3))); 1-6 1-5 1-4)))
+      (let* ((train-ids   #|'(T-3));|# train-info)
+             (train-prevs #|'(U-2));|# '(U-2 1-7 1-4 1-5))
+             (train-currs #|'(1-3)));|# '(1-3 1-6 1-5 1-4)))
         (map (λ (id prev curr)
                (cons id (make-object train% log-event id this connection prev curr)))
              train-ids train-prevs train-currs)))

@@ -38,23 +38,43 @@
     (define log-event (add-to-log "INFRABEL")) ; curryied
 
     ;; Status Panel
-    (define status-panel (new group-box-panel% (parent input-panel)
+    (define status-panel (new group-box-panel% (parent input-panel) (min-height 25)
                               (label "Statussen") (horiz-margin 10)))
-    (define train-status-pane (new vertical-pane% (parent status-panel)))
+    (define hgbp (new horizontal-pane% (parent status-panel)))
+    (define train-status-pane (new vertical-pane% (parent hgbp)))
     (for-each
      (λ (id)
-       (let ((label (new message% (label "____") (parent train-status-pane))))
-         (add-to-update (λ () (send label set-label
-                                    (symbol->string (send infrabel get-train-location id)))))))
+       (let* ((tr-str "Train '")
+              (id-str (symbol->string id))
+              (lc-str " on location : ")
+              (get-tr (λ () (symbol->string (send infrabel get-train-location id))))
+              (msg (new message% (parent train-status-pane)
+                        (label (string-append tr-str id-str lc-str "____")))))
+         (add-to-update
+          (λ () (send msg set-label (string-append tr-str id-str lc-str (get-tr)))))))
      (send infrabel get-train-ids))
-    (define crossing-status-pane (new vertical-pane% (parent status-panel)))
-    (for-each (λ (id)
-                (void))
-              (send infrabel get-crossing-ids))
-    (define lights-status-pane (new vertical-panel% (parent status-panel)))
-    (for-each (λ (id)
-                (void))
-              (send infrabel get-light-ids))
+    (define crossing-status-pane (new vertical-pane% (parent hgbp)))
+    (for-each
+     (λ (id)
+       (let* ((cr-str "Crossing '")
+              (id-str (symbol->string id))
+              (ps-str " has position : ")
+              (get-cr (λ () (symbol->string (send infrabel get-crossing-position id))))
+              (msg (new message% (parent crossing-status-pane)
+                        (label (string-append cr-str id-str ps-str "_______")))))
+         (add-to-update (λ () (send msg set-label (string-append cr-str id-str ps-str (get-cr)))))))
+     (send infrabel get-crossing-ids))
+    (define light-status-pane (new vertical-panel% (parent hgbp)))
+    (for-each
+     (λ (id)
+       (let* ((lg-str "Light '")
+              (id-str (symbol->string id))
+              (sg-str " has signal : ")
+              (get-lg (λ () (symbol->string (send infrabel get-light-signal id))))
+              (msg (new message% (parent light-status-pane)
+                        (label (string-append lg-str id-str sg-str "___________")))))
+         (add-to-update (λ () (send msg set-label (string-append lg-str id-str sg-str (get-lg)))))))
+     (send infrabel get-light-ids))
     
     ;; Tab Panel 
     (define tabs (map car railway-tab-panels-list))
@@ -69,7 +89,7 @@
       (when (eq? (send event get-event-type) 'tab-panel)
         (fill-tab tab-panel (send tab-panel get-selection))))
    
-    (define tab-panel (new tab-panel% (parent input-panel)
+    (define tab-panel (new tab-panel% (parent input-panel) (min-height 880)
                            (choices tabs) (style '(can-reorder can-close))
                            (min-width (- APPLICATION_WIDTH TRACK_WIDTH))
                            (vert-margin 7) (horiz-margin 10) (callback change-tab)))
