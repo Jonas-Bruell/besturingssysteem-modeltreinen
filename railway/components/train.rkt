@@ -8,6 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #lang racket
+(require "../algorithms/search-track.rkt")
 (provide train%)
 
 (define train%
@@ -66,7 +67,8 @@
                       (segment-prev (send railway get-segment-prev curr))
                       (segment-next (send railway get-segment-next curr)))
                  (when (equal? segment-prev previous) (search-rec current segment-next))
-                 (when (equal? segment-next previous) (search-rec current segment-prev))))))
+                 (when (equal? segment-next previous) (search-rec current segment-prev))))
+              (else (error "train > railway element does not exist" current))))
       (search-rec (cons 'dblock current-dblock)
                   (send railway get-detection-block-next current-dblock))
       (search-rec (cons 'dblock current-dblock)
@@ -77,7 +79,7 @@
     (define (on-next-location? occupied-blocks)
       (display "occupied blocks") (displayln occupied-blocks)
       (when (null? possible-next-locations)
-        (set! possible-next-locations (get-possible-next-locations current-location)))
+        (set! possible-next-locations (search-reachable-dblocks railway current-location (λ (x) (void)) (λ (x) (void)) (λ (x) (void)))))
       (ormap (λ (possible-next) (member (cdr possible-next) occupied-blocks))
              possible-next-locations))
 
@@ -92,7 +94,8 @@
         (display "''position-known?'': ") (displayln position-known?)
         (if position-known?
             (begin
-              (unless (null? possible-next-locations) (set! possible-next-locations '()))
+              (unless (null? possible-next-locations)
+                (set! possible-next-locations '()))
               current-location)
             (begin
               (let ((on-next? (on-next-location? occupied-dblocks)))

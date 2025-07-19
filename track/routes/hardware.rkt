@@ -51,7 +51,7 @@
      (S-23 (dblock  . 2-4 ) (switch  . S-24) (segment . U-4 ))
      (S-24 (switch  . S-23) (segment . U-3 ) (segment . U-2 ))
      (S-25 (dblock  . 1-8 ) (segment . U-5 ) (switch  . S-1 ))
-     (S-26 (dblock  . 1-4 ) (segemnt . U-1 ) (switch  . S-27))
+     (S-26 (dblock  . 1-4 ) (segment . U-1 ) (switch  . S-27))
      (S-27 (switch  . S-26) (dblock  . 1-3 ) (dblock  . 1-2 ))
      (S-28 (dblock  . 1-1 ) (dblock  . 1-7 ) (segment . U-1 ))
      )
