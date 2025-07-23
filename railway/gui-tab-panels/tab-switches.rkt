@@ -1,20 +1,30 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                         >>> railway/gui-tab-panels/tab-switches.rkt <<<                        ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket/gui
 
 (provide tab-switches%)
 
-(define COLOR_FREE "green")
-(define COLOR_RESERVED "blue")
-(define COLOR_OCCUPIED "red")
-
 (define tab-switches%
-  (class vertical-panel%
+  (class panel%
     (init-field parent connection add-to-log add-to-update)
-    (super-new (parent parent))
+    (super-new (parent parent)
+               (style '(auto-vscroll)))
+    (define tab-panel (new vertical-panel% (parent this)))
 
     (define log-event (add-to-log "Switches Tab")) ; curryied
 
+    (define COLOR_FREE "green")
+    (define COLOR_RESERVED "blue")
+    (define COLOR_OCCUPIED "red")
+
     (define switches-container
-      (new horizontal-panel% (parent this)))
+      (new horizontal-panel% (parent tab-panel)))
     (define switches-column%
       (class vertical-panel% (super-new (parent switches-container) (alignment '(left top)))))
     (define switches-column-0 (new switches-column%))

@@ -1,15 +1,25 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                          >>> railway/gui-tab-panels/tab-trains.rkt <<<                         ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket/gui
 
 (provide tab-trains%)
 
 (define tab-trains%
-  (class vertical-panel%
+  (class panel%
     (init-field parent connection add-to-log add-to-update)
-    (super-new (parent parent))
+    (super-new (parent parent)
+               (style '(auto-vscroll)))
+    (define tab-panel (new vertical-panel% (parent this)))
 
     (define log-event (add-to-log "Trains Tab")) ; curryied
 
-    (define manage-trains-panel (new group-box-panel% (parent this) (label "Manage Trains")))
+    (define manage-trains-panel (new group-box-panel% (parent tab-panel) (label "Manage Trains")))
     (define train-panels '())
     
     ;(define (remove-train ) )
@@ -21,7 +31,7 @@
         ))
 |#
       
-    (let* ((horizontal-pane (new horizontal-pane% (parent this)))
+    (let* ((horizontal-pane (new horizontal-pane% (parent tab-panel)))
            (vertical-pane (new vertical-pane% (parent horizontal-pane)))
            (train-label (new message% (label "Train T-3") (parent vertical-pane)))
            (location-label (new message% (label "______________") (parent vertical-pane)))
@@ -36,7 +46,7 @@
 
 
     #|
-    (let* ((horizontal-pane (new horizontal-pane% (parent this)))
+    (let* ((horizontal-pane (new horizontal-pane% (parent tab-panel)))
            (message (new message% (label "T-5") (parent horizontal-pane)))
            (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send connection set-train-speed! 'T-5 (send t get-value))))))
            (buttons-pane (new vertical-pane% (parent horizontal-pane))))
@@ -46,7 +56,7 @@
 
 
     
-    (let* ((horizontal-pane (new horizontal-pane% (parent this)))
+    (let* ((horizontal-pane (new horizontal-pane% (parent tab-panel)))
            (message (new message% (label "T-7") (parent horizontal-pane)))
            (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send connection set-train-speed! 'T-7 (send t get-value))))))
            (buttons-pane (new vertical-pane% (parent horizontal-pane))))
@@ -56,7 +66,7 @@
 
 
     
-    (let* ((horizontal-pane (new horizontal-pane% (parent this)))
+    (let* ((horizontal-pane (new horizontal-pane% (parent tab-panel)))
            (message (new message% (label "T-9") (parent horizontal-pane)))
            (slider (new slider% (label "") (min-value -40) (max-value 40) (init-value 0) (parent horizontal-pane) (callback (λ (t e) (send connection set-train-speed! 'T-9 (send t get-value))))))
            (buttons-pane (new vertical-pane% (parent horizontal-pane))))

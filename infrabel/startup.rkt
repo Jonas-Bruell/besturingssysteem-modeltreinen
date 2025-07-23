@@ -1,17 +1,14 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                                                            ;;
-;;                        >>> infrabel/startup.rkt <<<                        ;;
-;;                      programmeerproject 2,  2023-2025                      ;;
-;;                      written by: Jonas Brüll, 0587194                      ;;
-;;                                > version 6 <                               ;;
-;;                                                                            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                  >>> infrabel/startup.rkt <<<                                  ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#lang racket
 
-#lang racket/gui
-
-(require try-catch
-         racket/exn
-         racket/date
+(require try-catch racket/gui racket/exn racket/date
          "config.rkt"
          "interface.rkt"
          "server.rkt"
@@ -19,6 +16,7 @@
          )
 
 (provide start-infrabel)
+(define infrabel #f)
 
 ;;
 ;; Logging
@@ -43,47 +41,42 @@
 ;; startup-callback
 ;;
 (define status-callback (λ (callback) (set! status-callback callback)))
-(define infrabel #f)
 (define (startup-callback track tab-panels sim-graphics)
+  (define (print-new-setup s) (send status-callback insert (string-append s " ... : ")))
+  (define (print-succes) (send status-callback insert "SUCCES\n"))
+  (define (print-error e i)
+    (send status-callback insert (string-append "\n\n>>> ERROR: " i "\n"))
+    (send status-callback insert (string-append (exn->string e) "\n\n")))
   (λ (architecture version host port control-panel?)
     (let/cc return
       (let ((server #f)
             (gui #f))
 
         ;; starting message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert
-              (string-append* `("\nStartup of the " ,APPLICATION_NAME ".\n\n")))
+        (send status-callback insert (string-append "\nStartup of the " APPLICATION_NAME ".\n\n"))
 
         ;; connect to track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert "Setting up modal railway ... : ")
+        (print-new-setup "Setting up modal railway")
         (try
          ((send track config! architecture version))
-         (catch (exn:fail?
-                 (send status-callback insert
-                       "\n\n>>> ERROR: could not connect to modal railway\n")
-                 (send status-callback insert (string-append* `(,(exn->string e) "\n\n")))
-                 (return #f) e)))
-        (send status-callback insert "SUCCES\n")
+         (catch (exn:fail? (print-error e "could not connect to modal railway")
+                           (return #f) e)))
+        (print-succes)
 
         ;; connect to server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert "Setting up INFRABEL server ... : ")
+        (print-new-setup "Setting up INFRABEL server")
         (try
          ((set! server (new infrabel-server%
                             (host host)
                             (port port)
                             (add-to-log add-to-log)
                             (add-to-update add-to-update))))
-         (catch (exn:fail?     
-                 (send status-callback insert
-                       (string-append*
-                        `("\n\n>>> ERROR: could not setup server on " ,host ":" ,port "\n")))
-                 (send status-callback insert (string-append* `(,(exn->string e) "\n\n")))
-                 (send track stop)
-                 (return #f) e)))
-        (send status-callback insert "SUCCES\n")
+         (catch (exn:fail? (print-error e (string-append "could not setup on " host ":" port))
+                           (send track stop) (return #f) e)))
+        (print-succes)
 
         ;; startup INFRABEL with track & server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert "Initialising INFRABEL Control Software ... : ")
+        (print-new-setup "Initialising INFRABEL Control Software")
         (try
          ((set! infrabel (new infrabel%
                               (connection track)
@@ -91,18 +84,13 @@
                               (add-to-log add-to-log)
                               (add-to-update add-to-update)))
           (send server init! infrabel))
-         (catch (exn:fail?     
-                 (send status-callback insert
-                       "\n\n>>> ERROR: could not initialise INFRABEL Control Software\n")
-                 (send status-callback insert (string-append* `(,(exn->string e) "\n\n")))
-                 (send server stop)
-                 (send track stop)
-                 (return #f) e)))
-        (send status-callback insert "SUCCES\n")
+         (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Software")
+                           (send server stop) (send track stop) (return #f) e)))
+        (print-succes)
 
         ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (when control-panel?
-          (send status-callback insert "Initialising INFRABEL Control Panel ... : ")
+          (print-new-setup "Initialising INFRABEL Control Panel")
           (try
            ((set! gui (new infrabel-gui%
                            (infrabel infrabel)
@@ -113,32 +101,21 @@
                            (set-simulator-panel (car sim-graphics))
                            (simulator-panel (cdr sim-graphics))))
             (send gui show #t))
-           (catch (exn:fail?
-                   (send status-callback insert
-                         "\n\n>>> ERROR: could not initialise INFRABEL Control Panel\n")
-                   (send status-callback insert (string-append* `(,(exn->string e) "\n\n")))
-                   (send server stop)
-                   (send track stop)
-                   (return #f) e)))
-          (send status-callback insert "SUCCES\n"))
+           (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Panel")
+                             (send server stop) (send track stop) (return #f) e)))
+          (print-succes))
 
         ;; start track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert "Starting modal railway ... : ")
+        (print-new-setup "Starting modal railway")
         (try
          ((send track start))
-         (catch (exn:fail?
-                 (send status-callback insert
-                       "\n\n>>> ERROR: could not start the modal railway\n")
-                 (send status-callback insert (string-append* `(,(exn->string e) "\n\n")))
-                 (send server stop)
-                 (send track stop)
-                 (return #f) e)))
-        (send status-callback insert "SUCCES\n")
+         (catch (exn:fail? (print-error e "could not start the modal railway")
+                           (send server stop) (send track stop) (return #f) e)))
+        (print-succes)
    
         ;; ending message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         (send status-callback insert
-              (string-append*
-               `("\nStartup succesful, server on  >>> " ,host ":" ,port " <<<")))
+              (string-append "\nStartup succesful, server on  >>> " host ":" port " <<<"))
         (send status-callback insert "\nYou may close this window now.\n\n")
 
         #| </startup-callback> |#))))
@@ -257,32 +234,24 @@
           ))
 
       ;; checkbox and start button
-      (let ((vertical-pane
-             (new vertical-pane%
-                  (parent config-pane)
-                  (alignment '(center center)))))
+      (let ((vertical-pane (new vertical-pane% (parent config-pane) (alignment '(center center)))))
         (new check-box%
              (label "   Start with Control Panel ")
              (parent vertical-pane)
              (callback (λ (t e) (set! control-panel? (send t get-value))))
              (value DEFAULT_CONTROL_PANEL_CHECKBOX)
              (vert-margin 8))
-        (new button%
-             (label "start")
-             (parent vertical-pane)
-             (callback (λ (t e) (start)))
-             ))
+        (new button% (label "start") (parent vertical-pane) (callback (λ (t e) (start)))))
 
       ;; status panel
       (let* ((text (new text%))
-             (editor 
-              (new editor-canvas%
-                   (parent status-pane)
-                   (editor text)
-                   (style '(transparent no-focus))
-                   (vert-margin 9)
-                   (horiz-margin 5)
-                   (min-width 400))))
+             (editor (new editor-canvas%
+                          (parent status-pane)
+                          (editor text)
+                          (style '(transparent no-focus))
+                          (vert-margin 9)
+                          (horiz-margin 5)
+                          (min-width 400))))
         (status-callback text))
       
       #| </gui%>|#)))

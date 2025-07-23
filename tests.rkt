@@ -1,12 +1,12 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                                                            ;;
-;;                              >>> tests.rkt <<<                             ;;
-;;                      programmeerproject 2,  2024-2025                      ;;
-;;                      written by: Jonas Brüll, 0587194                      ;;
-;;                                > version 4 <                               ;;
-;;                                                                            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#lang racket/gui
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                        >>> tests.rkt <<<                                       ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#lang racket
 
 ;
 ; TO DO IN SWITCH-3WAY & SWITCH-CROSS
@@ -22,7 +22,7 @@
 ;; "infrabel niveau", tezamen met bv. lights en crossings die gekoppeld zijn aan
 ;; segments & detectionblocks + switches die dit alles verbinden.
 
-(require racket/cmdline rackunit rackunit/gui rackunit/text-ui
+(require racket/gui rackunit rackunit/gui rackunit/text-ui
          ;; TRACK
          "track/interface.rkt"
          "track/interface.test.rkt"

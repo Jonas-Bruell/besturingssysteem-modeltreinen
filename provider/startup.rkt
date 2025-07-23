@@ -1,59 +1,94 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                                                            ;;
-;;                        >>> infrabel/startup.rkt <<<                        ;;
-;;                      programmeerproject 2,  2023-2025                      ;;
-;;                      written by: Jonas Brüll, 0587194                      ;;
-;;                                > version 6 <                               ;;
-;;                                                                            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                  >>> provider/startup.rkt <<<                                  ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket/gui
 
 (require try-catch
+         racket/exn
          "config.rkt"
          "interface.rkt"
          "client.rkt"
+         "gui.rkt"
          )
 
 (provide start-provider)
 
-(define client (void))
-(define nmbs 'dummy)
-(define gui 'dummy)
+(define provider #f)
 
+;;
+;; startup-callback
+;;
 (define status-callback (λ (callback) (set! status-callback callback)))
-
-(define (startup-callback)
-  (λ (provider-name)
+(define (startup-callback provider-name tab-panels)
+  (define (print-new-setup s) (send status-callback insert (string-append s " ... : ")))
+  (define (print-succes) (send status-callback insert "SUCCES\n"))
+  (define (print-error e str1 str2)
+    (send status-callback insert (string-append "\n\n>>> ERROR: " str1 provider-name str2 "\n"))
+    (send status-callback insert (string-append (exn->string e) "\n\n")))
+  (λ ()
     (let/cc return
+      (let ((client #f)
+            (gui #f))
 
-      (send status-callback insert (string-append "Startup of the "
-                                                  provider-name
-                                                  " control software for modal railways.\n\n"))
+        ;; starting Message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (send status-callback insert
+              (string-append "\nStartup of the " provider-name APPLICATION_NAME ".\n\n"))
 
-      ; Connection to infrabel
-      (send status-callback insert "Connecting to infrabel ... : ")
-      (try
-       ((void))
-       (catch (exn:fail?
-               (send status-callback insert
-                     ("\nERROR: could not connect to infrabel.\n\n")
-                     (return #f)
-                     e))))
-      (send status-callback insert "SUCCESS\n")
+        ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        (print-new-setup (string-append "Initialising " provider-name " Command & Control."))
+        (try
+         ((set! gui (new provider-gui%
+                         (provider-name provider-name)))
+          (send gui show #t))
+         (catch (exn:fail? (print-error e "could not start " " Command & Control.")
+                           (return #f) e)))
+        (print-succes)
 
-      ; ending message
-      (send status-callback insert
-            (string-append* `("\nStartup succesful")))
-      (send status-callback insert "\nYou may close this window now.\n\n"))))
 
-;
-; GUI
-;
+
+
+        
+
+        #|
+        ; Connection to infrabel
+        (send status-callback insert "Connecting to infrabel ... : ")
+        (try
+         ((void))
+         (catch (exn:fail?
+                 (send status-callback insert
+                       ("\nERROR: could not connect to infrabel.\n\n")
+                       (return #f)
+                       e))))
+        (send status-callback insert "SUCCESS\n")
+
+        ; ending message
+        (send status-callback insert
+              (string-append* `("\nStartup succesful")))
+        (send status-callback insert "\nYou may close this window now.\n\n")
+      |#
+
+
+
+
+
+
+
+        
+        #| </startup-callback> |#))))
+
+;;
+;; gui%
+;;
 (define gui%
   (class frame%
-    (init-field provider startup-callback status-callback)
+    (init-field provider-name startup-callback status-callback)
     (super-new
-     (label (string-append provider " startup manager"))
+     (label (string-append provider-name " startup manager"))
      (width 0)
      (height 0)
      (style '(no-resize-border)))
@@ -66,7 +101,12 @@
            (hostname "")
            (port 0)
            (portnumber ""))
-            ;; hostname
+
+      ;; start server
+      (define (start)
+        (startup-callback))
+      
+      ;; hostname
       (let ((group-box-panel
              (new group-box-panel%
                   (label "Hostname")
@@ -109,14 +149,31 @@
                (parent horizontal-pane)
                (callback (λ (t e) (set! portnumber (send t get-value)))))
           ))
-      )))
 
-;
-; start-provider
-;
-(define (start-provider)
+      ;; checkbox and start button
+      (let ((vertical-pane (new vertical-pane% (parent config-pane) (alignment '(center center)))))
+        (new button% (label "start") (parent vertical-pane) (callback (λ (t e) (start)))))
+
+      ;; status panel
+      (let* ((text (new text%))
+             (editor (new editor-canvas%
+                          (parent status-pane)
+                          (editor text)
+                          (style '(transparent no-focus))
+                          (vert-margin 9)
+                          (horiz-margin 5)
+                          (min-width 400))))
+        (status-callback text))
+      
+      #| </gui%> |#)))
+
+;;
+;; start-provider
+;;
+(define (start-provider name tab-panels)
   (send (make-object gui%
-          "NMBS"
-          (startup-callback)
+          name
+          (startup-callback name tab-panels)
           status-callback
-          ) show #t))
+          ) show #t)
+  (λ () provider))

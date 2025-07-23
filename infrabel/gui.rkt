@@ -1,37 +1,38 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                    >>> infrabel/gui.rkt <<<                                    ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket/gui
 
 (require "config.rkt")
+
 (provide infrabel-gui%)
 
 (define infrabel-gui%
   (class frame%
+    (init-field infrabel railway-tab-panels-list)
+    (init-field logs-callback add-to-log add-to-update)
+    (init-field set-simulator-panel simulator-panel)
     (super-new (label (string-append APPLICATION_NAME "  --  Control Panel"))
                (width APPLICATION_WIDTH)
                (height APPLICATION_HEIGHT))
 
-    (init-field infrabel railway-tab-panels-list)
-    (init-field logs-callback add-to-log add-to-update)
-    (init-field set-simulator-panel simulator-panel)
-
-    ;; Menu bar
+    ;; Menu Bar
     (define menu-bar (new menu-bar% (parent this)))
-    (let* ((menu-bar-menu
-            (new menu% (label "Menu") (parent menu-bar)))
-           (menu-bar-menu-stop
-            (new menu-item% (label "Stop") (parent menu-bar-menu)
-                 (callback (λ (t e) (void)))))
-           (menu-bar-view
-            (new menu% (label "View") (parent menu-bar)))
-           (menu-bar-view-simulator
-            (new menu-item% (label "Simulator") (parent menu-bar-view)
-                 (callback (λ (t e) (send this toggle-sim) (send global-panel reflow-container)))))
-           (menu-bar-view-logs
-            (new menu-item% (label "Logs") (parent menu-bar-view)
-                 (callback (λ (t e) (send this toggle-log) (send global-panel reflow-container)))))
-           (menu-bar-help
-            (new menu% (label "Help") (parent menu-bar)))
-           )
-      (void))
+    (let* ((menu-bar-menu (new menu% (label "Menu") (parent menu-bar)))
+           (menu-bar-view (new menu% (label "View") (parent menu-bar)))
+           (menu-bar-help (new menu% (label "Help") (parent menu-bar))))
+      (new menu-item% (label "Stop") (parent menu-bar-menu)
+           (callback (λ (t e) (void))))
+      (new menu-item% (label "Simulator") (parent menu-bar-view)
+           (callback (λ (t e) (send this toggle-sim) (send global-panel reflow-container))))
+      (new menu-item% (label "Logs") (parent menu-bar-view)
+           (callback (λ (t e) (send this toggle-log) (send global-panel reflow-container))))
+      )
     
     (define global-panel (new horizontal-panel% (parent this)))
     (define input-panel (new vertical-panel% (parent global-panel)))
@@ -61,7 +62,7 @@
               (ps-str " has position : ")
               (get-cr (λ () (symbol->string (send infrabel get-crossing-position id))))
               (msg (new message% (parent crossing-status-pane)
-                        (label (string-append cr-str id-str ps-str "_______")))))
+                        (label (string-append cr-str id-str ps-str "_________")))))
          (add-to-update (λ () (send msg set-label (string-append cr-str id-str ps-str (get-cr)))))))
      (send infrabel get-crossing-ids))
     (define light-status-pane (new vertical-panel% (parent hgbp)))
@@ -72,7 +73,7 @@
               (sg-str " has signal : ")
               (get-lg (λ () (symbol->string (send infrabel get-light-signal id))))
               (msg (new message% (parent light-status-pane)
-                        (label (string-append lg-str id-str sg-str "___________")))))
+                        (label (string-append lg-str id-str sg-str "________________")))))
          (add-to-update (λ () (send msg set-label (string-append lg-str id-str sg-str (get-lg)))))))
      (send infrabel get-light-ids))
     

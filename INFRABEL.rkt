@@ -1,4 +1,13 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                      >>> INFRABEL.rkt <<<                                      ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
+
 (require "infrabel/startup.rkt"
          "railway/gui-tab-panels/tab-signals.rkt"
          "railway/gui-tab-panels/tab-states.rkt"
@@ -6,7 +15,8 @@
          "railway/gui-tab-panels/tab-trains.rkt"
          "track/interface.rkt"
          "track/simulator/graphics.rkt"
-         "track/simulator/simulator.rkt")
+         "track/simulator/simulator.rkt"
+         )
 
 (define tab-panels (list (cons " Trains  " tab-trains%)
                          (cons "Switches " tab-switches%)

@@ -1,11 +1,21 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                          >>> railway/gui-tab-panels/tab-states.rkt <<<                         ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket/gui
 
 (provide tab-states%)
 
 (define tab-states%
-  (class vertical-panel%
+  (class panel%
     (init-field parent connection add-to-log add-to-update)
-    (super-new (parent parent) )
+    (super-new (parent parent)
+               (style '(auto-vscroll)))
+    (define tab-panel (new vertical-panel% (parent this)))
 
     (define log-event (add-to-log "Rails Tab")) ; curryied
 
@@ -19,7 +29,7 @@
     ;;
     ;; DETECTION BLOCKS
     ;;
-    (define dblocks-panel (new group-box-panel% (label "Detection Blocks") (parent this)
+    (define dblocks-panel (new group-box-panel% (label "Detection Blocks") (parent tab-panel)
                                (stretchable-height #f) (horiz-margin 20) (vert-margin 10)))
     (define dblocks-container (new horizontal-panel% (parent dblocks-panel)))
     
@@ -40,8 +50,8 @@
     
     (for-each
      (λ (dblock-id)
-       (let* ((gbp (new group-box-panel% (label (symbol->string dblock-id)) (horiz-margin 9)
-                        (parent (which-dblock-column))
+       (let* ((gbp (new group-box-panel% (parent (which-dblock-column))  (horiz-margin 9)
+                        (label (symbol->string dblock-id))
                         (stretchable-width #f) (stretchable-height #f)))
               (hgph (new horizontal-pane% (parent gbp)))
               (msg (new message% (label "__________") (parent hgph)))
@@ -66,7 +76,7 @@
     ;;
     ;; SWITCHES
     ;;
-    (define switches-panel (new group-box-panel% (label "Switches") (parent this)
+    (define switches-panel (new group-box-panel% (label "Switches") (parent tab-panel)
                                 (stretchable-height #f) (horiz-margin 20) (vert-margin 0)))
     (define switches-container (new horizontal-panel% (parent switches-panel)))
     
@@ -112,7 +122,7 @@
     ;;
     ;; SEGMENTS
     ;;
-    (define segments-panel (new group-box-panel% (label "Segments") (parent this)
+    (define segments-panel (new group-box-panel% (label "Segments") (parent tab-panel)
                                 (stretchable-height #f) (horiz-margin 20) (vert-margin 10)))
     (define segments-container (new horizontal-panel% (parent segments-panel)))
     
@@ -154,7 +164,6 @@
                     (send connection set-segment-state! segment-id segment-state)))))
           (send connection get-segment-states))))
      (send connection get-segment-ids))
-
 
 
 

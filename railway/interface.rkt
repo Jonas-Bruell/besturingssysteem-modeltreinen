@@ -1,19 +1,20 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                                                            ;;
-;;                        >>> railway/interface.rkt <<<                       ;;
-;;                      programmeerproject 2,  2024-2025                      ;;
-;;                      written by: Jonas Brüll, 0587194                      ;;
-;;                                > version 5 <                               ;;
-;;                                                                            ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                  >>> railway/interface.rkt <<<                                 ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
+
 (require "components/segment.rkt"
          "components/detection-block.rkt"
          "components/switch.rkt"
          "components/crossing.rkt"
          "components/light.rkt"
          "components/train.rkt")
+
 (provide railway%)
 
 (define railway%
@@ -148,9 +149,9 @@
 
     ; trains
     (define trains-list
-      (let* ((train-ids   #|'(T-3));|# train-info)
-             (train-prevs #|'(U-2));|# '(U-2 1-7 1-4 1-5))
-             (train-currs #|'(1-3)));|# '(1-3 1-6 1-5 1-4)))
+      (let* ((train-ids   '(T-3)); train-info)
+             (train-prevs '(U-2)); '(U-2 1-7 1-4 1-5))
+             (train-currs '(1-3))); '(1-3 1-6 1-5 1-4)))
         (map (λ (id prev curr)
                (cons id (make-object train% log-event id this connection prev curr)))
              train-ids train-prevs train-currs)))

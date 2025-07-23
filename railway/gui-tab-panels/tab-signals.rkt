@@ -1,19 +1,26 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                         >>> railway/gui-tab-panels/tab-signals.rkt <<<                         ;;
+;;                                programmeerproject 2,  2023-2025                                ;;
+;;                                written by: Jonas Brüll, 0587194                                ;;
+;;                                          > version 8 <                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket/gui
 
 (provide tab-signals%)
 
 (define tab-signals%
-  (class vertical-panel%
+  (class panel%
     (init-field parent connection add-to-log add-to-update)
     (super-new (parent parent)
-               (border 30))
+               (style '(auto-vscroll)))
+    (define tab-panel (new vertical-panel% (parent this)))
 
     (define log-event (add-to-log "Signals Tab")) ; curryied
 
-    (new panel% (parent this)) ; filler
-
     ;; CROSSINGS
-    (define crossing-panel (new vertical-panel% (parent this) (alignment '(left top))))
+    (define crossing-panel (new vertical-panel% (parent tab-panel) (alignment '(left top))))
     (define cgbp (new group-box-panel% (label "Crossings") (parent crossing-panel)
                       (stretchable-width #f) (stretchable-height #f) (border 3)))
     (for-each
@@ -35,7 +42,7 @@
      (send connection get-crossing-ids))
 
     ;; LIGHTS
-    (define lights-panel (new vertical-panel% (parent this) (alignment '(left top))))
+    (define lights-panel (new vertical-panel% (parent tab-panel) (alignment '(left top))))
     (define lgbp (new group-box-panel% (label "Lights") (parent lights-panel)
                       (stretchable-width #f) (stretchable-height #f) (border 3)))
     (for-each
@@ -55,7 +62,5 @@
                     (send connection set-light-signal! light-id light-signals)))))
           (send connection get-light-signals))))
      (send connection get-light-ids))
-
-    (new panel% (parent this)) ; filler
 
     #| </tab-crossings-lights > |#))
