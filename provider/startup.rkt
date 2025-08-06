@@ -8,8 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket/gui
 
-(require try-catch
-         racket/exn
+(require try-catch racket/exn racket/date
          "config.rkt"
          "interface.rkt"
          "client.rkt"
@@ -19,6 +18,25 @@
 (provide start-provider)
 
 (define provider #f)
+
+;;
+;; Logging
+;;
+(date-display-format 'rfc2822)
+(define (date) (date->string (current-date) #t))
+(define log-file-path (string-append "provider/logs/"
+                                     (string-replace (string-replace (date) "T" ", ") ":" "-")
+                                     ".log.txt"))
+(define (save-to-log-file log-string)
+  (call-with-output-file* log-file-path (λ (out) (writeln log-string out)) #:exists 'append))
+(define logs-callback
+  (λ (callback) (set! logs-callback callback)))
+(define add-to-log
+  (curry (λ (service origin action event)
+           (let ((log-line (string-append (date) "  ---  "
+                                          service " > " origin " > " action " : " event)))
+             (save-to-log-file log-line)
+             (send logs-callback insert (string-append log-line "\n"))))))
 
 ;;
 ;; startup-callback

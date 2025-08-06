@@ -20,3 +20,6 @@ compiled
 
 # Other
 .DS_Store
+
+# Application specific
+*.log.txt

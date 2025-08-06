@@ -20,14 +20,23 @@
 
 ;;
 ;; Logging
-;;
+;
+(date-display-format 'iso-8601)
+(define (date) (date->string (current-date) #t))
+(define log-file-path (string-append "infrabel/logs/"
+                                     (string-replace (string-replace (date) "T" ", ") ":" "-")
+                                     ".log.txt"))
 (date-display-format 'rfc2822)
-(define logs-callback (λ (callback) (set! logs-callback callback)))
+(define (save-to-log-file log-string)
+  (call-with-output-file* log-file-path (λ (out) (writeln log-string out)) #:exists 'append))
+(define logs-callback
+  (λ (callback) (set! logs-callback callback)))
 (define add-to-log
   (curry (λ (service origin action event)
-           (send logs-callback insert
-                 (string-append (date->string (current-date) #t)
-                                "  ---  " service " > " origin " > " action " : " event "\n")))))
+           (let ((log-line (string-append (date) "  ---  "
+                                          service " > " origin " > " action " : " event)))
+             (save-to-log-file log-line)
+             (send logs-callback insert (string-append log-line "\n"))))))
 
 ;;
 ;; Automatic Updating
