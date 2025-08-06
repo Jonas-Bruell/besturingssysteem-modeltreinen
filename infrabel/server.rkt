@@ -13,8 +13,8 @@
 ;; SERVER (listens for request)
 (define infrabel-server%
   (class object%
-    (super-new)
     (init-field host port add-to-log add-to-update)
+    (super-new)
     
     (define infrabel #f)
     

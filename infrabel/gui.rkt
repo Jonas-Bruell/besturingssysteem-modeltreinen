@@ -15,11 +15,12 @@
 (define infrabel-gui%
   (class frame%
     (init-field infrabel railway-tab-panels-list)
-    (init-field logs-callback add-to-log add-to-update)
+    (init-field logs-callback add-to-log add-to-update stop-infrabel)
     (init-field set-simulator-panel simulator-panel)
     (super-new (label (string-append APPLICATION_NAME "  --  Control Panel"))
                (width APPLICATION_WIDTH)
                (height APPLICATION_HEIGHT))
+    (define/augment (on-close) (stop-infrabel))
 
     ;; Menu Bar
     (define menu-bar (new menu-bar% (parent this)))

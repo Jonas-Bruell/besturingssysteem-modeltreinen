@@ -6,9 +6,9 @@
 ;;                                          > version 8 <                                         ;;
 ;;                                                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-#lang racket/gui
+#lang racket
 
-(require try-catch racket/exn racket/date
+(require try-catch racket/gui racket/exn racket/date
          "config.rkt"
          "interface.rkt"
          "client.rkt"
@@ -18,15 +18,18 @@
 (provide start-provider)
 
 (define provider #f)
+(define client #f)
+(define gui #f)
 
 ;;
 ;; Logging
 ;;
-(date-display-format 'rfc2822)
+(date-display-format 'iso-8601)
 (define (date) (date->string (current-date) #t))
 (define log-file-path (string-append "provider/logs/"
                                      (string-replace (string-replace (date) "T" ", ") ":" "-")
                                      ".log.txt"))
+(date-display-format 'rfc2822)
 (define (save-to-log-file log-string)
   (call-with-output-file* log-file-path (λ (out) (writeln log-string out)) #:exists 'append))
 (define logs-callback
@@ -39,65 +42,74 @@
              (send logs-callback insert (string-append log-line "\n"))))))
 
 ;;
+;; Automatic Updating
+;;
+(define to-update-list '())
+(define (add-to-update lambda-wrapped-function)
+  (set! to-update-list (append to-update-list (list lambda-wrapped-function))))
+(define auto-update-loop
+  (thread (λ () (let loop () (for-each (λ (x) (x)) to-update-list) (sleep 1) (loop)))))
+
+;;
+;; Stop Provider
+;;
+(define (stop-provider)
+  (kill-thread auto-update-loop)
+  (send gui show #f))
+
+;;
 ;; startup-callback
 ;;
 (define status-callback (λ (callback) (set! status-callback callback)))
 (define (startup-callback provider-name tab-panels)
   (define (print-new-setup s) (send status-callback insert (string-append s " ... : ")))
   (define (print-succes) (send status-callback insert "SUCCES\n"))
-  (define (print-error e str1 str2)
-    (send status-callback insert (string-append "\n\n>>> ERROR: " str1 provider-name str2 "\n"))
+  (define (print-error e s1 s2)
+    (send status-callback insert (string-append "\n>>> ERROR: " s1 " " provider-name " " s2 "\n"))
     (send status-callback insert (string-append (exn->string e) "\n\n")))
-  (λ ()
+  (λ (host port)
     (let/cc return
-      (let ((client #f)
-            (gui #f))
 
-        ;; starting Message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert
-              (string-append "\nStartup of the " provider-name APPLICATION_NAME ".\n\n"))
+      ;; starting Message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (send status-callback insert
+            (string-append "\nStartup of the " provider-name APPLICATION_NAME ".\n\n"))
 
-        ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (print-new-setup (string-append "Initialising " provider-name " Command & Control."))
-        (try
-         ((set! gui (new provider-gui%
-                         (provider-name provider-name)))
-          (send gui show #t))
-         (catch (exn:fail? (print-error e "could not start " " Command & Control.")
-                           (return #f) e)))
-        (print-succes)
-
-
-
-
+      ;; connect to infrabel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print-new-setup "Making Client and connecting to Infrabel server")
+      (try
+       ((set! client (new provider-client%
+                          (host host)
+                          (port port)
+                          (add-to-log add-to-log)
+                          (add-to-update add-to-update))))
+       (catch (exn:fail? (print-error e "could not connect" (string-append "to " host ":" port))
+                         (return #f) e)))
+      (print-succes)
         
+      ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print-new-setup (string-append "Initialising " provider-name " Command & Control."))
+      (try
+       ((set! gui (new provider-gui%
+                       (provider-name provider-name)
+                       (stop-provider stop-provider)))
+        (send gui show #t))
+       (catch (exn:fail? (print-error e "could not start" "Command & Control.")
+                         (return #f) e)))
+      (print-succes)
 
-        #|
-        ; Connection to infrabel
-        (send status-callback insert "Connecting to infrabel ... : ")
-        (try
-         ((void))
-         (catch (exn:fail?
-                 (send status-callback insert
-                       ("\nERROR: could not connect to infrabel.\n\n")
-                       (return #f)
-                       e))))
-        (send status-callback insert "SUCCESS\n")
-
-        ; ending message
-        (send status-callback insert
-              (string-append* `("\nStartup succesful")))
-        (send status-callback insert "\nYou may close this window now.\n\n")
-      |#
-
-
-
-
-
-
-
+      ;; starting application
+      (print-new-setup (string-append "Starting " provider-name))
+      (try
+       ((set! provider (new provider%
+                            (client client)
+                            (add-to-log add-to-log)
+                            (add-to-update add-to-update)
+                            (stop-provider stop-provider))))
+       (catch (exn:fail? (print-error e "could not start" "")
+                         (send client stop) (return #f) e)))
+      (print-succes)
         
-        #| </startup-callback> |#))))
+      #| </startup-callback> |#)))
 
 ;;
 ;; gui%
@@ -122,7 +134,9 @@
 
       ;; start server
       (define (start)
-        (startup-callback))
+        (startup-callback
+        (if (zero? host) DEFAULT_HOST hostname)
+        (if (zero? port) DEFAULT_PORT portnumber)))
       
       ;; hostname
       (let ((group-box-panel
@@ -189,9 +203,10 @@
 ;; start-provider
 ;;
 (define (start-provider name tab-panels)
+  ;background-color
+  ;text-color
   (send (make-object gui%
           name
           (startup-callback name tab-panels)
-          status-callback
-          ) show #t)
+          status-callback ) show #t)
   (λ () provider))

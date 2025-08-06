@@ -13,10 +13,14 @@
 ;; Client: sends request
 (define provider-client%
   (class object%
+    (init-field host port add-to-log add-to-update)
     (super-new)
 
     (define-values (in out) (tcp-connect "localhost" 2020))
     (define connected? #t)
+
+    (define/public (stop)
+      (displayln "stop"))
 
     (define/public (ping)
       (write "Ping" out)

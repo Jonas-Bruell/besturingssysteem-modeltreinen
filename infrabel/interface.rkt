@@ -8,15 +8,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
 
-(require "../railway/interface.rkt"
-         "logic/conductor.rkt")
+(require "../railway/interface.rkt" "logic/conductor.rkt")
 (provide infrabel%)
 
 (define infrabel%
   (class railway% ; INHERITED FUNCTIONS!
     (inherit-field add-to-log add-to-update)
-    (init-field server)
+    (init-field stop-infrabel server)
     (super-new)
+
+    (define/override (stop)
+      (super stop)
+      (stop-infrabel))
+
+    (define/public (send-server x)
+      (send server x))
 
     (define conductors '())
 
@@ -30,6 +36,5 @@
 
     (define/public (instruct-conductor-follow-route conductor-name route)
       (send (get-conductor conductor-name) follow-route route))
-
     
-    #| </infrabel%> |#))
+    #|infrabel%|#))

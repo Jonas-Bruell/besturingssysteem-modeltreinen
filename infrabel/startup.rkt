@@ -16,7 +16,10 @@
          )
 
 (provide start-infrabel)
+
 (define infrabel #f)
+(define server #f)
+(define gui #f)
 
 ;;
 ;; Logging
@@ -44,7 +47,15 @@
 (define to-update-list '())
 (define (add-to-update lambda-wrapped-function)
   (set! to-update-list (append to-update-list (list lambda-wrapped-function))))
-(thread (λ () (let loop () (for-each (λ (x) (x)) to-update-list) (sleep 1) (loop))))
+(define auto-update-loop
+  (thread (λ () (let loop () (for-each (λ (x) (x)) to-update-list) (sleep 1) (loop)))))
+
+;;
+;; Stop Infrabel
+;;
+(define (stop-infrabel)
+  (kill-thread auto-update-loop)
+  (send gui show #f))
 
 ;;
 ;; startup-callback
@@ -54,80 +65,81 @@
   (define (print-new-setup s) (send status-callback insert (string-append s " ... : ")))
   (define (print-succes) (send status-callback insert "SUCCES\n"))
   (define (print-error e i)
-    (send status-callback insert (string-append "\n\n>>> ERROR: " i "\n"))
+    (send status-callback insert (string-append "\n>>> ERROR: " i "\n"))
     (send status-callback insert (string-append (exn->string e) "\n\n")))
   (λ (architecture version host port control-panel?)
     (let/cc return
-      (let ((server #f)
-            (gui #f))
 
-        ;; starting message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert (string-append "\nStartup of the " APPLICATION_NAME ".\n\n"))
+      ;; starting message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (send status-callback insert
+            (string-append "\nStartup of the " APPLICATION_NAME ".\n\n"))
 
-        ;; connect to track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (print-new-setup "Setting up modal railway")
-        (try
-         ((send track config! architecture version))
-         (catch (exn:fail? (print-error e "could not connect to modal railway")
-                           (return #f) e)))
-        (print-succes)
+      ;; connect to track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print-new-setup "Setting up modal railway")
+      (try
+       ((send track config! architecture version))
+       (catch (exn:fail? (print-error e "could not connect to modal railway")
+                         (return #f) e)))
+      (print-succes)
 
-        ;; connect to server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (print-new-setup "Setting up INFRABEL server")
-        (try
-         ((set! server (new infrabel-server%
-                            (host host)
-                            (port port)
+      ;; connect to server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print-new-setup "Setting up INFRABEL server")
+      (try
+       ((set! server (new infrabel-server%
+                          (host host)
+                          (port port)
+                          (add-to-log add-to-log)
+                          (add-to-update add-to-update))))
+       (catch (exn:fail? (print-error e (string-append "could not setup on " host ":" port))
+                         (send track stop) (return #f) e)))
+      (print-succes)
+
+      ;; startup INFRABEL with track & server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print-new-setup "Initialising INFRABEL Control Software")
+      (try
+       ((set! infrabel (new infrabel%
+                            (connection track)
+                            (server server)
                             (add-to-log add-to-log)
-                            (add-to-update add-to-update))))
-         (catch (exn:fail? (print-error e (string-append "could not setup on " host ":" port))
-                           (send track stop) (return #f) e)))
-        (print-succes)
+                            (add-to-update add-to-update)
+                            (stop-infrabel stop-infrabel)))
+        (send server init! infrabel))
+       (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Software")
+                         (send server stop) (send track stop) (return #f) e)))
+      (print-succes)
 
-        ;; startup INFRABEL with track & server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (print-new-setup "Initialising INFRABEL Control Software")
+      ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (when control-panel?
+        (print-new-setup "Initialising INFRABEL Control Panel")
         (try
-         ((set! infrabel (new infrabel%
-                              (connection track)
-                              (server server)
-                              (add-to-log add-to-log)
-                              (add-to-update add-to-update)))
-          (send server init! infrabel))
-         (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Software")
+         ((set! gui (new infrabel-gui%
+                         (infrabel infrabel)
+                         (railway-tab-panels-list tab-panels)
+                         (logs-callback logs-callback)
+                         (stop-infrabel stop-infrabel)
+                         (add-to-log add-to-log)
+                         (add-to-update add-to-update)
+                         (set-simulator-panel (car sim-graphics))
+                         (simulator-panel (cdr sim-graphics))))
+          (send gui show #t))
+         (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Panel")
                            (send server stop) (send track stop) (return #f) e)))
-        (print-succes)
+        (print-succes))
 
-        ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (when control-panel?
-          (print-new-setup "Initialising INFRABEL Control Panel")
-          (try
-           ((set! gui (new infrabel-gui%
-                           (infrabel infrabel)
-                           (railway-tab-panels-list tab-panels)
-                           (logs-callback logs-callback)
-                           (add-to-log add-to-log)
-                           (add-to-update add-to-update)
-                           (set-simulator-panel (car sim-graphics))
-                           (simulator-panel (cdr sim-graphics))))
-            (send gui show #t))
-           (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Panel")
-                             (send server stop) (send track stop) (return #f) e)))
-          (print-succes))
-
-        ;; start track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (print-new-setup "Starting modal railway")
-        (try
-         ((send track start))
-         (catch (exn:fail? (print-error e "could not start the modal railway")
-                           (send server stop) (send track stop) (return #f) e)))
-        (print-succes)
+      ;; start track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print-new-setup "Starting modal railway")
+      (try
+       ((send track start))
+       (catch (exn:fail? (print-error e "could not start the modal railway")
+                         (send server stop) (send track stop) (return #f) e)))
+      (print-succes)
    
-        ;; ending message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        (send status-callback insert
-              (string-append "\nStartup succesful, server on  >>> " host ":" port " <<<"))
-        (send status-callback insert "\nYou may close this window now.\n\n")
+      ;; ending message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (send status-callback insert
+            (string-append "\nStartup succesful, server on  >>> " host ":" port " <<<"))
+      (send status-callback insert "\nYou may close this window now.\n\n")
 
-        #| </startup-callback> |#))))
+      #| </startup-callback> |#)))
 
 ;;
 ;; gui%

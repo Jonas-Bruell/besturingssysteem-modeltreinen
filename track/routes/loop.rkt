@@ -4,7 +4,7 @@
 
 (define TRACK
   '((detection-block
-    ;(name cl-in          cl-out        )
+    ;(name clockwise-in   clockwise-out )
      (D1   (segment . T2) (dblock  . D2))
      (D2   (dblock  . D1) (dblock  . D3))
      (D3   (dblock  . D2) (dblock  . D4))
@@ -15,9 +15,9 @@
      (D8   (dblock  . D7) (segment . T2))
      )
     (segment
-    ;(name cl-in         cl-out       )
-     (T1   (dblock . D5) (dblock . D6))
-     (T2   (dblock . D8) (dblock . D1))
+    ;(name clockwise-in   clockwise-out )
+     (T1   (dblock .  D5) (dblock .  D6))
+     (T2   (dblock .  D8) (dblock .  D1))
      )
     (switch
     ;(name in    out1 out2 )
