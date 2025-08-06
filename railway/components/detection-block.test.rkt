@@ -33,6 +33,7 @@
     (define/public (get-state id) state)
     (define/public (set-state! id new-state)
       (set! state new-state))
+    (define/public (get-occupied-detection-blocks) '())
     (define/public (get-position id) generic)))
 
 (define add-to-log (curry (λ (x y z) (void))))
@@ -107,8 +108,9 @@
     "check if 'get-state' doesn't error"
     (check-not-exn (λ () (send (make-generic-detection-block) get-state))))
    (test-case
-    "check if 'get-state' returns 'generic"
-    (check-eq? (send (make-generic-detection-block) get-state) generic))
+    "check if 'get-state' returns 'free"
+    ;detection-blocks automatically get set to 'free
+    (check-eq? (send (make-generic-detection-block) get-state) free))
    ))
 
 ;
@@ -200,7 +202,7 @@
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
         (check-eq? (send connection get-state id) free)))
-     )
+     #| test-suite |#)
     
     ;
     ; (test-set-state! 'free) on reserved detection-block test suites
@@ -228,35 +230,8 @@
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! free)
         (check-eq? (send connection get-state id) free)))
-     )
-
-    ;
-    ; (test-set-state! 'free) on occupied detection-block test suites
-    ;
-    (test-suite
-     "check with original state 'occupied"
-
-     (test-case
-      "check if (set-state! 'free) doesn't error"
-      (check-not-exn
-       (λ () (send (make-occupied-detection-block) set-state! free))))
-    
-     (test-case
-      "check if occupied detection-block frees"
-      (let* ((detection-block (make-occupied-detection-block)))
-        (send detection-block set-state! free)
-        (check-eq? (send detection-block get-state) free)))
-     (test-case
-      "check if occupied detection-block returns true after freed"
-      (let* ((detection-block (make-occupied-detection-block)))
-        (check-true (send detection-block set-state! free))))
-     (test-case
-      "check if occupied connection frees"
-      (let* ((connection (make-object connection% occupied))
-             (detection-block (make-detection-block-with connection)))
-        (send detection-block set-state! free)
-        (check-eq? (send connection get-state id) free)))
-     ))
+     #| test-suite |#)
+    #| FREE SUITE |#)
 
    ;
    ; RESERVED SUITE :: (test-set-state! 'reserved) test suites
@@ -290,7 +265,7 @@
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
         (check-eq? (send connection get-state id) reserved)))
-     )
+     #| test-suite |#)
 
     ;
     ; (test-set-state! 'reserved) on reserved detection-block test suites
@@ -318,125 +293,9 @@
              (detection-block (make-detection-block-with connection)))
         (send detection-block set-state! reserved)
         (check-eq? (send connection get-state id) reserved)))
-     )
-
-    ;
-    ; (test-set-state! 'reserved) on occupied detection-block test suites
-    ;
-    (test-suite
-     "check with original state 'occupied"
-
-     (test-case
-      "check if (set-state! 'reserved) doesn't error"
-      (check-not-exn
-       (λ () (send (make-occupied-detection-block) set-state! reserved))))
-     
-     (test-case
-      "check if occupied detection-block stays occupied"
-      (let* ((detection-block (make-occupied-detection-block)))
-        (send detection-block set-state! reserved)
-        (check-eq? (send detection-block get-state) occupied)))
-     (test-case
-      "check if occupied detection-block returns false after reserved"
-      (let* ((detection-block (make-occupied-detection-block)))
-        (check-false (send detection-block set-state! reserved))))
-     (test-case
-      "check if occupied connection stays occupied"
-      (let* ((connection (make-object connection% occupied))
-             (detection-block (make-detection-block-with connection)))
-        (send detection-block set-state! reserved)
-        (check-eq? (send connection get-state id) occupied)))
-     ))
-
-   ;
-   ; OCCUPIED SUITE :: (test-set-state! 'reserved) test suites
-   ;
-   (test-suite
-    "check 'set-state!' with argemunt 'occupied"
-
-    ;
-    ; (test-set-state! 'occupied) on free detection-block test suites
-    ;
-    (test-suite
-     "check with original state 'free"
-     
-     (test-case
-      "check if (set-state! 'occupied) doesn't error"
-      (check-not-exn
-       (λ () (send (make-free-detection-block) set-state! occupied))))
-    
-     (test-case
-      "check if free detection-block occupies"
-      (let* ((detection-block (make-free-detection-block)))
-        (send detection-block set-state! occupied)
-        (check-eq? (send detection-block get-state) occupied)))
-     (test-case
-      "check if free detection-block returns true after occupied"
-      (let* ((detection-block (make-free-detection-block)))
-        (check-true (send detection-block set-state! occupied))))
-     (test-case
-      "check if free connection occupies"
-      (let* ((connection (make-object connection% free))
-             (detection-block (make-detection-block-with connection)))
-        (send detection-block set-state! occupied)
-        (check-eq? (send connection get-state id) occupied)))
-     )
-
-    ;
-    ; (test-set-state! 'occupied) on reserved detection-block test suites
-    ;
-    (test-suite
-     "check with original state 'reserved"
-
-     (test-case
-      "check if (set-state! 'occupied) doesn't error"
-      (check-not-exn
-       (λ () (send (make-reserved-detection-block) set-state! occupied))))
-    
-     (test-case
-      "check if reserved detection-block occupies"
-      (let* ((detection-block (make-reserved-detection-block)))
-        (send detection-block set-state! occupied)
-        (check-eq? (send detection-block get-state) occupied)))
-     (test-case
-      "check if reserved detection-block returns true after occupied"
-      (let* ((detection-block (make-reserved-detection-block)))
-        (check-true (send detection-block set-state! occupied))))
-     (test-case
-      "check if reserved connection occupies"
-      (let* ((connection (make-object connection% reserved))
-             (detection-block (make-detection-block-with connection)))
-        (send detection-block set-state! occupied)
-        (check-eq? (send connection get-state id) occupied)))
-     )
-
-    ;
-    ; (test-set-state! 'occupied) on occupied detection-block test suites
-    ;
-    (test-suite
-     "check with original state 'occupied"
-
-     (test-case
-      "check if (set-state! 'occupied) doesn't error"
-      (check-not-exn
-       (λ () (send (make-occupied-detection-block) set-state! occupied))))
-     
-     (test-case
-      "check if occupied detection-block stays occupied"
-      (let* ((detection-block (make-occupied-detection-block)))
-        (send detection-block set-state! occupied)
-        (check-eq? (send detection-block get-state) occupied)))
-     (test-case
-      "check if occupied detection-block returns false after occupied"
-      (let* ((detection-block (make-occupied-detection-block)))
-        (check-false (send detection-block set-state! occupied))))
-     (test-case
-      "check if occupied connection stays occupied"
-      (let* ((connection (make-object connection% occupied))
-             (detection-block (make-detection-block-with connection)))
-        (send detection-block set-state! occupied)
-        (check-eq? (send connection get-state id) occupied)))
-     ))))
+     #| test-suite |#)
+    #| RESERVED SUITE |#)
+   #| test-set-state! test-suite |#))
 
 ;
 ; running all test suites
