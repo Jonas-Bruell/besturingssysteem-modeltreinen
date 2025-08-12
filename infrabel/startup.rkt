@@ -17,8 +17,10 @@
 
 (provide start-infrabel)
 
+(define logs-callback (new text%))
 (define infrabel #f)
 (define server #f)
+(define startup-gui #f)
 (define gui #f)
 
 ;;
@@ -32,8 +34,6 @@
 (date-display-format 'rfc2822)
 (define (save-to-log-file log-string)
   (call-with-output-file* log-file-path (λ (out) (writeln log-string out)) #:exists 'append))
-(define logs-callback
-  (λ (callback) (set! logs-callback callback)))
 (define add-to-log
   (curry (λ (service origin action event)
            (let ((log-line (string-append (date) "  ---  "
@@ -60,19 +60,17 @@
 ;;
 ;; startup-callback
 ;;
-(define status-callback (λ (callback) (set! status-callback callback)))
 (define (startup-callback track tab-panels sim-graphics)
-  (define (print-new-setup s) (send status-callback insert (string-append s " ... : ")))
-  (define (print-succes) (send status-callback insert "SUCCES\n"))
+  (define log-event (add-to-log "INFRABEL" "Startup" "Startup Manager"))
+  (define (print-new-setup s) (log-event (string-append s " ... : ")))
+  (define (print-succes) (log-event "SUCCES"))
   (define (print-error e i)
-    (send status-callback insert (string-append "\n>>> ERROR: " i "\n"))
-    (send status-callback insert (string-append (exn->string e) "\n\n")))
+    (log-event (string-append "ERROR: " i ", internal error: " (exn->string e))))
   (λ (architecture version host port control-panel?)
     (let/cc return
 
       ;; starting message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      (send status-callback insert
-            (string-append "\nStartup of the " APPLICATION_NAME ".\n\n"))
+      (log-event (string-append "Startup of the " APPLICATION_NAME))
 
       ;; connect to track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (print-new-setup "Setting up modal railway")
@@ -121,7 +119,8 @@
                          (add-to-update add-to-update)
                          (set-simulator-panel (car sim-graphics))
                          (simulator-panel (cdr sim-graphics))))
-          (send gui show #t))
+          (send gui show #t)
+          (send startup-gui show #f))
          (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Panel")
                            (send server stop) (send track stop) (return #f) e)))
         (print-succes))
@@ -131,22 +130,28 @@
       (try
        ((send track start))
        (catch (exn:fail? (print-error e "could not start the modal railway")
-                         (send server stop) (send track stop) (return #f) e)))
+                         (send server stop) (send track stop) (send gui show #f)
+                         (send startup-gui show #t) (return #f) e)))
       (print-succes)
    
       ;; ending message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      (send status-callback insert
-            (string-append "\nStartup succesful, server on  >>> " host ":" port " <<<"))
-      (send status-callback insert "\nYou may close this window now.\n\n")
+      (log-event (string-append "Startup succesful, server on  >>> " host ":" port " <<<"))
 
       #| </startup-callback> |#)))
 
-;;
-;; gui%
-;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                           GUI                                                  ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
 (define gui%
   (class frame%
-    (init-field simulator-versions startup-callback status-callback)
+    (init-field simulator-versions startup-callback)
     (super-new
      (label "INFRABEL startup manager")
      (width 0)
@@ -265,26 +270,31 @@
         (new button% (label "start") (parent vertical-pane) (callback (λ (t e) (start)))))
 
       ;; status panel
-      (let* ((text (new text%))
-             (editor (new editor-canvas%
-                          (parent status-pane)
-                          (editor text)
-                          (style '(transparent no-focus))
-                          (vert-margin 9)
-                          (horiz-margin 5)
-                          (min-width 400))))
-        (status-callback text))
+      (new editor-canvas%
+           (parent status-pane)
+           (editor logs-callback)
+           (style '(transparent no-focus))
+           (vert-margin 9)
+           (horiz-margin 5)
+           (min-width 600))
       
       #| </gui%>|#)))
 
-;;
-;; start-infrabel
-;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                         START-INFRABEL                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
 (define (start-infrabel track% tab-panels sim-graphics)
   (define track (new track%))
   (define sim-versions (send track get-versions))
-  (send (make-object gui%
-          sim-versions
-          (startup-callback track tab-panels sim-graphics)
-          status-callback) show #t)
+  (set! startup-gui (make-object gui%
+                      sim-versions
+                      (startup-callback track tab-panels sim-graphics)))
+  (send startup-gui show #t)
   (λ () infrabel))

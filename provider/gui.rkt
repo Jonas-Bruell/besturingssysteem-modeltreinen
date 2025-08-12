@@ -14,7 +14,7 @@
 
 (define provider-gui%
   (class frame%
-    (init-field provider-name stop-provider)
+    (init-field provider-name logs-callback stop-provider)
     (super-new (label (string-append provider-name APPLICATION_NAME))
                (width APPLICATION_WIDTH)
                (height APPLICATION_HEIGHT))

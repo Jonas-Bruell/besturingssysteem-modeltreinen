@@ -122,16 +122,13 @@
     ;; Log Panel
     (define log-panel
       (new panel% (parent info-panel) (min-height (- APPLICATION_HEIGHT TRACK_HEIGHT))))
-    (let* ((text (new text%))
-           (editor 
-            (new editor-canvas%
-                 (parent log-panel)
-                 (editor text)
-                 (style '(transparent no-focus))
-                 (vert-margin 9)
-                 (horiz-margin 5)
-                 )))
-      (logs-callback text))
+    (new editor-canvas%
+         (parent log-panel)
+         (editor logs-callback)
+         (style '(transparent no-focus))
+         (vert-margin 9)
+         (horiz-margin 5)
+         )
     (define/public (toggle-log)
       (send log-panel show (not (send log-panel is-shown?))))
 

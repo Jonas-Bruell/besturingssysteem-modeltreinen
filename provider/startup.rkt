@@ -17,8 +17,10 @@
 
 (provide start-provider)
 
+(define logs-callback (new text%))
 (define provider #f)
 (define client #f)
+(define startup-gui #f)
 (define gui #f)
 
 ;;
@@ -32,8 +34,6 @@
 (date-display-format 'rfc2822)
 (define (save-to-log-file log-string)
   (call-with-output-file* log-file-path (λ (out) (writeln log-string out)) #:exists 'append))
-(define logs-callback
-  (λ (callback) (set! logs-callback callback)))
 (define add-to-log
   (curry (λ (service origin action event)
            (let ((log-line (string-append (date) "  ---  "
@@ -60,24 +60,24 @@
 ;;
 ;; startup-callback
 ;;
-(define status-callback (λ (callback) (set! status-callback callback)))
 (define (startup-callback provider-name tab-panels)
-  (define (print-new-setup s) (send status-callback insert (string-append s " ... : ")))
-  (define (print-succes) (send status-callback insert "SUCCES\n"))
+  (define log-event (add-to-log provider-name "Startup" "Startup Manager"))
+  (define (print-new-setup s) (log-event (string-append s " ... : ")))
+  (define (print-succes) (log-event "SUCCES"))
   (define (print-error e s1 s2)
-    (send status-callback insert (string-append "\n>>> ERROR: " s1 " " provider-name " " s2 "\n"))
-    (send status-callback insert (string-append (exn->string e) "\n\n")))
+    (log-event (string-append "ERROR: " s1 " " provider-name " " s2
+                              ", internal error: "(exn->string e))))
   (λ (host port)
     (let/cc return
 
       ;; starting Message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      (send status-callback insert
-            (string-append "\nStartup of the " provider-name APPLICATION_NAME ".\n\n"))
+      (log-event (string-append "Startup of the " provider-name APPLICATION_NAME))
 
       ;; connect to infrabel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (print-new-setup "Making Client and connecting to Infrabel server")
       (try
        ((set! client (new provider-client%
+                          (name provider-name)
                           (host host)
                           (port port)
                           (add-to-log add-to-log)
@@ -91,6 +91,7 @@
       (try
        ((set! gui (new provider-gui%
                        (provider-name provider-name)
+                       (logs-callback logs-callback)
                        (stop-provider stop-provider)))
         (send gui show #t))
        (catch (exn:fail? (print-error e "could not start" "Command & Control.")
@@ -101,22 +102,30 @@
       (print-new-setup (string-append "Starting " provider-name))
       (try
        ((set! provider (new provider%
-                            (client client)
+                            (connection client)
                             (add-to-log add-to-log)
                             (add-to-update add-to-update)
-                            (stop-provider stop-provider))))
+                            (stop-provider stop-provider)))
+        (send client init! provider))
        (catch (exn:fail? (print-error e "could not start" "")
                          (send client stop) (return #f) e)))
       (print-succes)
         
       #| </startup-callback> |#)))
 
-;;
-;; gui%
-;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                           GUI                                                  ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
 (define gui%
   (class frame%
-    (init-field provider-name startup-callback status-callback)
+    (init-field provider-name startup-callback)
     (super-new
      (label (string-append provider-name " startup manager"))
      (width 0)
@@ -135,8 +144,8 @@
       ;; start server
       (define (start)
         (startup-callback
-        (if (zero? host) DEFAULT_HOST hostname)
-        (if (zero? port) DEFAULT_PORT portnumber)))
+         (if (zero? host) DEFAULT_HOST hostname)
+         (if (zero? port) DEFAULT_PORT portnumber)))
       
       ;; hostname
       (let ((group-box-panel
@@ -187,26 +196,31 @@
         (new button% (label "start") (parent vertical-pane) (callback (λ (t e) (start)))))
 
       ;; status panel
-      (let* ((text (new text%))
-             (editor (new editor-canvas%
-                          (parent status-pane)
-                          (editor text)
-                          (style '(transparent no-focus))
-                          (vert-margin 9)
-                          (horiz-margin 5)
-                          (min-width 400))))
-        (status-callback text))
+      (new editor-canvas%
+           (parent status-pane)
+           (editor logs-callback)
+           (style '(transparent no-focus))
+           (vert-margin 9)
+           (horiz-margin 5)
+           (min-width 600))
       
       #| </gui%> |#)))
 
-;;
-;; start-provider
-;;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                                                                                ;;
+;;                                         START-PROVIDER                                         ;;
+;;                                                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
 (define (start-provider name tab-panels)
   ;background-color
   ;text-color
-  (send (make-object gui%
-          name
-          (startup-callback name tab-panels)
-          status-callback ) show #t)
+  (set! startup-gui (make-object gui%
+                      name
+                      (startup-callback name tab-panels)))
+  (send startup-gui show #t)
   (λ () provider))

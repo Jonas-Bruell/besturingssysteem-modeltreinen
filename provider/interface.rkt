@@ -12,16 +12,16 @@
 (provide provider%)
 
 (define provider%
-  (class railway% ; INHERITED FUNCTION!
-    (inherit-field add-to-log add-to-update)
-    (init-field stop-provider client)
+  (class railway% ; INHERITED FUNCTIONS!
+    (inherit-field connection add-to-log add-to-update)
+    (init-field stop-provider)
     (super-new)
 
     (define/override (stop)
       (super stop)
       (stop-provider))
 
-    (define/public (send-client x)
-      (send client x))
+    (define/public (send-infrabel x)
+      (send connection send-infrabel x))
 
     #|provider%|#))

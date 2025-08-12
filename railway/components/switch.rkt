@@ -83,7 +83,7 @@
              (void))
             ((member new-position (list left right))
              (send connection set-switch-position! id new-position)
-             (set! position (send connection get-switch-position id))
+             (set! position new-position)
              (log-event "Method set-position! called"
                         (string-append "changed position to '" (symbol->string new-position))))
             (else (error "switch%: wrong message sent: " new-position))))

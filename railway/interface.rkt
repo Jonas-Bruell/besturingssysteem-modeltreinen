@@ -17,12 +17,26 @@
 
 (provide railway%)
 
+(define (get-track-info-loop connection)
+  (let try-to-get-track-info ((track-info? (send connection get-track-info)))
+    (sleep .25)
+    (if track-info?
+        track-info?
+        (try-to-get-track-info (send connection get-track-info)))))
+
+(define (get-train-info-loop connection)
+  (sleep .25)
+  (let try-to-get-train-info ((train-info? (send connection get-train-info)))
+    (if train-info?
+        train-info?
+        (try-to-get-train-info (send connection get-train-info)))))
+
 (define railway%
   (class object%
     (super-new)
     (init-field connection add-to-log add-to-update)
-    (init-field (track-info (send connection get-track-info)))
-    (init-field (train-info (send connection get-train-info)))
+    (init-field (track-info (get-track-info-loop connection)))
+    (init-field (train-info (get-train-info-loop connection)))
     (field (control-panel (new (class object% (super-new)
                                  (define/public (update-control-panel id)
                                    (void))))))
@@ -30,11 +44,16 @@
     (define (search id object-list) (cdr (assoc id object-list)))
     (define log-event (add-to-log "RAILWAY")) ; curryied
 
+    (define/public (get-track-info) track-info)
+    (define/public (get-train-info) train-info)
+
     ; stop simulator
     (define/public (stop)
       (send connection stop))
 
-    ; segments
+    ;;
+    ;; segments
+    ;;
     (define segments-list
       (let* ((segments (cdr (assoc 'segment track-info)))
              (segment-ids  (map car segments))
@@ -55,7 +74,9 @@
     (define/public (set-segment-state! segment new-state)
       (send (search segment segments-list) set-state! new-state))
 
-    ; detection-blocks
+    ;;
+    ;; detection-blocks
+    ;;
     (define detects-list
       (let* ((detects (cdr (assoc 'detection-block track-info)))
              (detect-ids  (map car detects))
@@ -77,7 +98,9 @@
     (define/public (set-detection-block-state! detection-block new-state)
       (send (search detection-block detects-list) set-state! new-state))
 
-    ; switches
+    ;;
+    ;; switches
+    ;;
     (define switches-list
       (let* ((switches (cdr (assoc 'switch track-info)))
              (switch-ids  (map car switches))
@@ -111,7 +134,9 @@
     (define/public (set-switch-position! switch new-position)
       (send (search switch switches-list) set-position! new-position))
 
-    ; crossings
+    ;;
+    ;; crossings
+    ;;
     (define crossings-list
       (let* ((crossings (cdr (assoc 'crossing track-info)))
              (crossing-ids (map car crossings))
@@ -129,7 +154,9 @@
     (define/public (set-crossing-position! crossing new-position)
       (send (search crossing crossings-list) set-position! new-position))
 
-    ; lights
+    ;;
+    ;; lights
+    ;;
     (define lights-list
       (let* ((lights (cdr (assoc 'light track-info)))
              (light-ids (map car lights))
@@ -147,7 +174,9 @@
     (define/public (set-light-signal! light new-signal)
       (send (search light lights-list) set-signal! new-signal))
 
-    ; trains
+    ;;
+    ;; trains
+    ;;
     (define trains-list
       (let* ((train-ids   '(T-3)); train-info)
              (train-prevs '(U-2)); '(U-2 1-7 1-4 1-5))

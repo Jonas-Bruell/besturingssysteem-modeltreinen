@@ -21,8 +21,39 @@
       (super stop)
       (stop-infrabel))
 
-    (define/public (send-server x)
-      (send server x))
+    (define/public (send-all-providers x . l)
+      (send server send-all-providers x l))
+
+    ;;
+    ;; switches
+    ;;
+    (define/override (set-switch-position! switch new-position)
+      (let ((old-position (send this get-switch-position switch)))
+        (unless (eq? new-position old-position)
+          (super set-switch-position! switch new-position)
+          (send-all-providers "set-switch-position!" switch new-position))))
+
+    ;;
+    ;; crossings
+    ;;
+    (define/override (set-crossing-position! crossing new-position)
+      (let ((old-position (send this get-crossing-position crossing)))
+        (unless (eq? new-position old-position)
+          (super set-crossing-position! crossing new-position)
+          (send-all-providers "set-crossing-position!" crossing new-position))))
+
+    ;;
+    ;; lights
+    ;;
+    (define/override (set-light-signal! light new-signal)
+      (let ((old-signal (send this get-light-signal light)))
+        (unless (eq? new-signal old-signal) 
+          (super set-light-signal! light new-signal)
+          (send-all-providers "set-light-signal!" light new-signal))))
+
+    ;;
+    ;; trains
+    ;;
 
     (define conductors '())
 
