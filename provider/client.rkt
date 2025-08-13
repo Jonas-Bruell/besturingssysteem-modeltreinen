@@ -16,12 +16,10 @@
     (super-new)
 
     (define provider #f)
-    (define track-info #f)
-    (define train-info #f)
     (define-values (input-port output-port) (tcp-connect host (string->number port)))
-    
-    (define log-event (add-to-log name "Client"))
 
+    (define log-event (add-to-log name "Client"))
+    
     ;;
     ;; init! :: initialises the server
     ;;
@@ -30,6 +28,30 @@
     (define/public (init! p)
       (log-event "Client initialisation requested" "the client is initialising")
       (set! provider p))
+    
+    ;;
+    ;; get-train-info
+    ;;
+    ;; @returns list
+    ;;
+    (define track-info #f)
+    (define/public (get-track-info) track-info)
+
+    ;;
+    ;; get-train-info
+    ;;
+    ;; @returns list
+    ;;
+    (define train-info #f)
+    (define/public (get-train-info) train-info)
+
+    ;;
+    ;; get-occupied-detection-blocks
+    ;;
+    ;; @returns list
+    ;;
+    (define occupied-detection-blocks #f)
+    (define/public (get-occupied-detection-blocks) occupied-detection-blocks)
     
     ;;
     ;; stop :: stops the server
@@ -49,19 +71,6 @@
     (define/public (send-infrabel header . body)
       (write (append (list header) body) output-port) (flush-output output-port))
 
-    ;;
-    ;; get-train-info
-    ;;
-    ;; @returns list
-    ;;
-    (define/public (get-track-info) track-info)
-
-    ;;
-    ;; get-train-info
-    ;;
-    ;; @returns list
-    ;;
-    (define/public (get-train-info) train-info)
 
     
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -78,7 +87,6 @@
     (define/public (get-position id) (void))
     (define/public (add-loco id prev curr) (void))
     
-
     ;;
     ;; ping :: pings infrabel
     ;;
@@ -87,50 +95,22 @@
     ;;
     ;; segments
     ;;
-    (define/public (get-segment-ids)
-      (send-infrabel "get-segment-ids"))
-    (define/public (get-segment-states)
-      (send-infrabel "get-segment-states"))
-    (define/public (get-segment-next segment)
-      (send-infrabel "get-segment-next" segment))
-    (define/public (get-segment-prev segment)
-      (send-infrabel "get-segment-prev" segment))
     (define/public (get-segment-state segment)
       (send-infrabel "get-segment-state" segment))
     (define/public (set-segment-state! segment new-state)
       (send-infrabel "set-segment-state!" (list segment new-state)))
+
     ;;
     ;; detection-blocks
     ;;
-    (define/public (get-detection-block-ids)
-      (send-infrabel "get-detection-block-ids"))
-    (define/public (get-detection-block-states)
-      (send-infrabel "get-detection-block-states"))
-    (define/public (get-detection-block-next detection-block)
-      (send-infrabel "get-detection-block-next" detection-block))
-    (define/public (get-detection-block-prev detection-block)
-      (send-infrabel "get-detection-block-prev" detection-block))
     (define/public (get-detection-block-state detection-block)
       (send-infrabel "get-detection-block-state" detection-block))
     (define/public (set-detection-block-state! detection-block new-state)
       (send-infrabel "set-detection-block-state!" (list detection-block new-state)))
+
     ;;
     ;; switches
     ;;
-    (define/public (get-switch-ids)
-      (send-infrabel "get-switch-ids"))
-    (define/public (get-switch-positions)
-      (send-infrabel "get-switch-positions"))
-    (define/public (get-switch-states)
-      (send-infrabel "get-switch-states"))
-    (define/public (get-switch-next switch)
-      (send-infrabel "get-switch-next" switch))
-    (define/public (get-switch-next-left switch)
-      (send-infrabel "get-switch-next-left" switch))
-    (define/public (get-switch-next-right switch)
-      (send-infrabel "get-switch-next-right" switch))
-    (define/public (get-switch-prev switch)
-      (send-infrabel "get-switch-prev" switch))
     (define/public (get-switch-state switch)
       (send-infrabel "get-switch-state" switch))
     (define/public (set-switch-state! switch new-state)
@@ -139,32 +119,23 @@
       (send-infrabel "get-switch-position" switch))
     (define/public (set-switch-position! switch new-position)
       (send-infrabel "set-switch-position!" (list switch new-position)))
+
     ;;
     ;; crossings
     ;;
-    (define/public (get-crossing-ids)
-      (send-infrabel "get-crossing-ids"))
-    (define/public (get-crossing-positions)
-      (send-infrabel "get-crossing-positions"))
-    (define/public (get-crossing-segments crossing)
-      (send-infrabel "get-crossing-segments" crossing))
     (define/public (get-crossing-position crossing)
       (send-infrabel "get-crossing-position" crossing))
     (define/public (set-crossing-position! crossing new-position)
       (send-infrabel "set-crossing-position!" (list crossing new-position)))
+
     ;;
     ;; lights
     ;;
-    (define/public (get-light-ids)
-      (send-infrabel "get-light-ids"))
-    (define/public (get-light-signals)
-      (send-infrabel "get-light-signals"))
-    (define/public (get-light-segment light)
-      (send-infrabel "get-light-segment" light))
     (define/public (get-light-signal light)
       (send-infrabel "get-light-signal" light))
     (define/public (set-light-signal! light new-signal)
       (send-infrabel "set-light-signal!" (list light new-signal)))
+
     ;;
     ;; trains
     ;;
@@ -205,13 +176,22 @@
             ;; setup
             ((header=? m "track-info") (set! track-info bdy))
             ((header=? m "train-info") (set! train-info bdy))
+            ((header=? m "occupied-detection-blocks") (set! occupied-detection-blocks bdy))
+            ;; segments
+            ((header=? m "segment-state") void) #|TODO|#
+            ;; detection-blocks
+            ((header=? m "detection-block-state") void) #|TODO|#
             ;; switches
+            ((header=? m "switch-state") void) #|TODO|#
+            ((header=? m "switch-position") void) #|TODO|#
             ((header=? m "set-switch-position!")
              (send provider set-switch-position! (first bdy) (second bdy)))
             ;; crossings
+            ((header=? m "crossing-position") void) #|TODO|#
             ((header=? m "set-crossing-position!")
              (send provider set-crossing-position! (first bdy) (second bdy)))
             ;; lights
+            ((header=? m "light-signal") void) #|TODO|#
             ((header=? m "set-light-signal!")
              (send provider set-light-signal! (first bdy) (second bdy)))
             ;; trains
@@ -227,5 +207,6 @@
     (send-infrabel name)
     (send-infrabel "get-track-info")
     (send-infrabel "get-train-info")
+    (send-infrabel "get-occupied-detection-blocks")
     
     #|provider-client£|#))

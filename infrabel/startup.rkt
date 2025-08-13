@@ -75,9 +75,10 @@
       ;; connect to track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (print-new-setup "Setting up modal railway")
       (try
-       ((send track config! architecture version))
+       ((send track config! architecture version)
+        (send track start))
        (catch (exn:fail? (print-error e "could not connect to modal railway")
-                         (return #f) e)))
+                        (send track stop) (return #f) e)))
       (print-succes)
 
       ;; connect to server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -124,15 +125,6 @@
          (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Panel")
                            (send server stop) (send track stop) (return #f) e)))
         (print-succes))
-
-      ;; start track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      (print-new-setup "Starting modal railway")
-      (try
-       ((send track start))
-       (catch (exn:fail? (print-error e "could not start the modal railway")
-                         (send server stop) (send track stop) (send gui show #f)
-                         (send startup-gui show #t) (return #f) e)))
-      (print-succes)
    
       ;; ending message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (log-event (string-append "Startup succesful, server on  >>> " host ":" port " <<<"))
@@ -163,7 +155,7 @@
            (status-pane (new vertical-pane% (parent global-pane)))
            (choice-pane (new object%))
            ; Choosable elements in gui
-           (architecture 0)
+           (architecture DEFAULT_ARCHITECTURE_RADIO_BOX)
            (sim 0)
            (host 0)
            (hostname "")
@@ -190,6 +182,7 @@
              (label " ")
              (choices '("   simulator        " "    hardware"))
              (parent group-box-panel)
+             (selection DEFAULT_ARCHITECTURE_RADIO_BOX)
              (callback
               (λ (t e)
                 (set! architecture (send t get-selection))
@@ -214,6 +207,13 @@
                    (stretchable-width #t)
                    (callback (λ (t e) (set! sim (send t get-selection))))
                    )))
+
+      ;; resolve startup side effect from default simulator/hardware radio box
+      (if (zero? architecture)
+          (send choice-pane enable #t)
+          (begin (send choice-pane enable #f)
+                 (set! sim 0)
+                 (send choice-pane set-selection 0)))
 
       ;; hostname
       (let ((group-box-panel

@@ -62,14 +62,14 @@
       ((λ (method) method)
        (case architecture
          ('sim (sim:start))
-         ('hw  (hw:start))
+         ('hw  (hw:start) (displayln "hardware started"))
          )))
 
     (define/public (stop)
       ((λ (method) method)
        (case architecture
          ('sim (sim:stop))
-         ('hw  (hw:stop))
+         ('hw  (hw:stop) (displayln "hardware stopped"))
          )))
 
     ; train
@@ -95,7 +95,9 @@
          ('hw (hw:set-loco-speed! train-id speed))
          )))
 
-    ; detection blocks
+    ;;
+    ;; detection blocks
+    ;;
     (define/public (get-detection-block-ids)
       ((λ (method) method)
        (case architecture
@@ -110,7 +112,9 @@
          ('hw (hw:get-occupied-detection-blocks))
          )))
 
-    ; switches
+    ;;
+    ;; switches
+    ;;
     (define (railway->track position)
       (case position
         ('left 1)
@@ -144,7 +148,9 @@
            ('hw (hw:set-switch-position! switch-id pos))
            ))))
 
-    ; crossings
+    ;;
+    ;; crossings
+    ;;
     (define/public (set-crossing-position! crossing-id position)
       ((λ (method) method)
        (case position
@@ -156,7 +162,9 @@
                     ('hw (hw:close-crossing! crossing-id))))
          )))
 
-    ; lights
+    ;;
+    ;; lights
+    ;;
     (define/public (set-sign-code! sign-id code)
       ((λ (method) method)
        (case architecture

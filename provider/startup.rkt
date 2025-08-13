@@ -85,18 +85,6 @@
        (catch (exn:fail? (print-error e "could not connect" (string-append "to " host ":" port))
                          (return #f) e)))
       (print-succes)
-        
-      ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-      (print-new-setup (string-append "Initialising " provider-name " Command & Control."))
-      (try
-       ((set! gui (new provider-gui%
-                       (provider-name provider-name)
-                       (logs-callback logs-callback)
-                       (stop-provider stop-provider)))
-        (send gui show #t))
-       (catch (exn:fail? (print-error e "could not start" "Command & Control.")
-                         (return #f) e)))
-      (print-succes)
 
       ;; starting application
       (print-new-setup (string-append "Starting " provider-name))
@@ -109,6 +97,22 @@
         (send client init! provider))
        (catch (exn:fail? (print-error e "could not start" "")
                          (send client stop) (return #f) e)))
+      (print-succes)
+        
+      ;; starting control-panel ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (print-new-setup (string-append "Initialising " provider-name " Command & Control."))
+      (try
+       ((set! gui (new provider-gui%
+                       (provider-name provider-name)
+                       (provider provider)
+                       (railway-tab-panels-list tab-panels)
+                       (add-to-log add-to-log)
+                       (add-to-update add-to-update)
+                       (logs-callback logs-callback)
+                       (stop-provider stop-provider)))
+        (send gui show #t))
+       (catch (exn:fail? (print-error e "could not start" "Command & Control.")
+                         (return #f) e)))
       (print-succes)
         
       #| </startup-callback> |#)))

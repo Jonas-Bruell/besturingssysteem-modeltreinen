@@ -25,6 +25,9 @@
     (init-field add-to-log id connection segment)
     (init-field (signal (send connection get-signal id)))
 
+    ; set connection signal to same signal as this signal
+    (send connection set-sign-code! id signal)
+
     ;
     ; Possible railway light signals
     ;

@@ -19,13 +19,11 @@
 
 (define (get-track-info-loop connection)
   (let try-to-get-track-info ((track-info? (send connection get-track-info)))
-    (sleep .25)
     (if track-info?
         track-info?
         (try-to-get-track-info (send connection get-track-info)))))
 
 (define (get-train-info-loop connection)
-  (sleep .25)
   (let try-to-get-train-info ((train-info? (send connection get-train-info)))
     (if train-info?
         train-info?
@@ -110,7 +108,8 @@
                                (map cadddr switches))))
         (map (λ (id in outs)
                (cons id
-                     (make-object switch% log-event id connection in outs 'free 'left)))
+                     (make-object switch% log-event id connection in outs 'free
+                       (send connection get-switch-position id))))
              switch-ids switch-ins switch-outs)))
     (define/public (get-switch-ids) (map car switches-list))
     (define/public (get-switch-positions)
@@ -137,12 +136,13 @@
     ;;
     ;; crossings
     ;;
+    (define init-position 'open)
     (define crossings-list
       (let* ((crossings (cdr (assoc 'crossing track-info)))
              (crossing-ids (map car crossings))
              (crossing-segments-lists (map cadr crossings)))
         (map (λ (id segments)
-               (cons id (make-object crossing% log-event id connection segments 'open)))
+               (cons id (make-object crossing% log-event id connection segments init-position)))
              crossing-ids crossing-segments-lists)))
     (define/public (get-crossing-ids) (map car crossings-list))
     (define/public (get-crossing-positions)
@@ -157,12 +157,13 @@
     ;;
     ;; lights
     ;;
+    (define init-signal 'Hp1)
     (define lights-list
       (let* ((lights (cdr (assoc 'light track-info)))
              (light-ids (map car lights))
              (light-segments (map cadr lights)))
         (map (λ (id segment)
-               (cons id (make-object light% log-event id connection segment 'Hp1)))
+               (cons id (make-object light% log-event id connection segment init-signal)))
              light-ids light-segments)))
     (define/public (get-light-ids) (map car lights-list))
     (define/public (get-light-signals)
@@ -178,7 +179,7 @@
     ;; trains
     ;;
     (define trains-list
-      (let* ((train-ids   '(T-3)); train-info)
+      (let* ((train-ids   '(T-7)); train-info)
              (train-prevs '(U-2)); '(U-2 1-7 1-4 1-5))
              (train-currs '(1-3))); '(1-3 1-6 1-5 1-4)))
         (map (λ (id prev curr)

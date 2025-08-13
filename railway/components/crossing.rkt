@@ -25,6 +25,9 @@
     (init-field add-to-log id connection segment-list)
     (init-field (position (send connection get-position id)))
 
+    ; set connection crossing to same position as this crossing
+    (send connection set-crossing-position! id position)
+
     ;
     ; Possible railway crossing positions
     ;

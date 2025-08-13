@@ -15,6 +15,10 @@
 (define APPLICATION_HEIGHT 1000)
 (define APPLICATION_NAME "Command and Control")
 
+;; TRACK WINDOW
+(define TRACK_WIDTH 1150)
+(define TRACK_HEIGHT 600)
+
 ;; CLIENT STARTUP
 (define DEFAULT_HOST "localhost")
 (define DEFAULT_PORT "2020")

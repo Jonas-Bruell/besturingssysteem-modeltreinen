@@ -28,7 +28,7 @@
            (menu-bar-view (new menu% (label "View") (parent menu-bar)))
            (menu-bar-help (new menu% (label "Help") (parent menu-bar))))
       (new menu-item% (label "Stop") (parent menu-bar-menu)
-           (callback (λ (t e) (void))))
+           (callback (λ (t e) (send infrabel stop))))
       (new menu-item% (label "Simulator") (parent menu-bar-view)
            (callback (λ (t e) (send this toggle-sim) (send global-panel reflow-container))))
       (new menu-item% (label "Logs") (parent menu-bar-view)

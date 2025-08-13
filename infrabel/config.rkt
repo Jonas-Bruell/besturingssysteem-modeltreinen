@@ -22,6 +22,7 @@
 ;; SERVER STARTUP
 (define DEFAULT_HOST "localhost")
 (define DEFAULT_PORT "2020")
-(define DEFAULT_CONTROL_PANEL_CHECKBOX #t)
+(define DEFAULT_ARCHITECTURE_RADIO_BOX 1) ; 0 = simulator, 1 = hardware
+(define DEFAULT_CONTROL_PANEL_CHECKBOX #t) ; #t = with gui, #f = no gui
 
 (define PROVIDERS '("DB" "NMBS" "NS" "SNCF"))

@@ -14,7 +14,8 @@
 
 (define provider-gui%
   (class frame%
-    (init-field provider-name logs-callback stop-provider)
+    (init-field provider-name provider railway-tab-panels-list logs-callback stop-provider)
+    (init-field add-to-log add-to-update)
     (super-new (label (string-append provider-name APPLICATION_NAME))
                (width APPLICATION_WIDTH)
                (height APPLICATION_HEIGHT))
@@ -38,6 +39,38 @@
         (define global-pane (new horizontal-pane% (parent this)))
         (new button% (label "button") (parent global-pane) (callback (λ (t e) (send menu-bar-view set-label "View - live"))))
         ))
+    
+    (define global-panel (new horizontal-panel% (parent this)))
+    (define input-panel (new vertical-panel% (parent global-panel)))
+    (define log-event (add-to-log provider-name)) ; curryied
+
+    ;; Tab Panel 
+    (define tabs (map car railway-tab-panels-list))
+    (define tab-panes-list '())
+    
+    (define (fill-tab tab-panel nr)
+      (send tab-panel change-children
+            (lambda (c*)
+              (list (list-ref tab-panes-list nr)))))
+    
+    (define (change-tab tab-panel event)
+      (when (eq? (send event get-event-type) 'tab-panel)
+        (fill-tab tab-panel (send tab-panel get-selection))))
+   
+    (define tab-panel (new tab-panel% (parent input-panel) (min-height 880)
+                           (choices tabs) (style '(can-reorder can-close))
+                           (min-width (- APPLICATION_WIDTH TRACK_WIDTH))
+                           (vert-margin 7) (horiz-margin 10) (callback change-tab)))
+    (for-each
+     (λ (tab-pane)
+       (set! tab-panes-list
+             (append tab-panes-list (list (new tab-pane
+                                               (parent tab-panel)
+                                               (connection provider)
+                                               (add-to-log log-event)
+                                               (add-to-update add-to-update))))))
+     (map cdr railway-tab-panels-list))
+    (fill-tab tab-panel 0)
 
     
 

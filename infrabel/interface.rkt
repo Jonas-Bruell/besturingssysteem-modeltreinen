@@ -25,6 +25,11 @@
       (send server send-all-providers x l))
 
     ;;
+    ;; detection-blocks
+    ;;
+    ;(define/public (get-occupied-detection-blocks)
+
+    ;;
     ;; switches
     ;;
     (define/override (set-switch-position! switch new-position)
