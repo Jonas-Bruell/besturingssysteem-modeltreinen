@@ -9,13 +9,15 @@
 #lang racket
 
 (provide search-reachable-dblocks
+         search-reachable-dblocks-only-next
+         search-reachable-dblocks-only-prev
          search-reachable-dblocks*)
 
 (define get-element-type car)
 (define get-element-name cdr)
 
 ;
-; search-reachable-dblocks :: get list of reachable detection blocks.
+; search-reachable-dblocks :: get list of all reachable detection blocks.
 ;
 ; @param railway :: railway-object
 ; @param dblock-id :: id of the "current" detectionblock, from which the search should start.
@@ -26,6 +28,32 @@
   (append (search-reachable-dblocks*
            railway dblock-id (send railway get-detection-block-next dblock-id) void void void)
           (search-reachable-dblocks*
+           railway dblock-id (send railway get-detection-block-prev dblock-id) void void void)))
+
+;
+; search-reachable-dblocks-only-next :: get list of all reachable detection blocks when only
+;                                       following the 'next' path of the first detection block.
+;
+; @param railway :: railway-object
+; @param dblock-id :: id of the "current" detectionblock, from which the search should start.
+;
+; @returns pair :: list of all reachable detection blocks from dblock-id without changing direction.
+;
+(define (search-reachable-dblocks-only-next railway dblock-id)
+  (append (search-reachable-dblocks*
+           railway dblock-id (send railway get-detection-block-next dblock-id) void void void)))
+
+;
+; search-reachable-dblocks-only-prev :: get list of all reachable detection blocks when only
+;                                       following the 'prev' path of the verst detection block.
+;
+; @param railway :: railway-object
+; @param dblock-id :: id of the "current" detectionblock, from which the search should start.
+;
+; @returns pair :: list of all reachable detection blocks from dblock-id without changing direction.
+;
+(define (search-reachable-dblocks-only-prev railway dblock-id)
+  (append (search-reachable-dblocks*
            railway dblock-id (send railway get-detection-block-prev dblock-id) void void void)))
 
 ;

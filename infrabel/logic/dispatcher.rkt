@@ -21,10 +21,10 @@
 
     (define log-event (add-to-log "Dispatcher"))
 
-    (define/public (for-each-track-element elements-list dblock-λ switch-λ segment-λ)
+    (define/public (for-each-railway-element dblock-λ switch-λ segment-λ elements-list)
       (for-each
        (λ (element)
-         (let ((type (car element)) (id   (cdr element)))
+         (let ((type (car element)) (id (cdr element)))
            (cond ((eq? type 'dblock) (dblock-λ id))
                  ((eq? type 'switch) (switch-λ id))
                  ((eq? type 'segment) (segment-λ id))
@@ -38,28 +38,28 @@
         (caddr (findf (λ (x) (and (eq? (car x) curr) (eq? (cadr x) next))) reservation-blocks)))
       (let/cc return
         ; check if any elements are already reserved --> return false
-        (for-each-track-element
-         to-be-reserved-list
+        (for-each-railway-element
          (λ (id) (when (eq? (send infrabel get-detection-block-state id) reserved) (return #f)))
          (λ (id) (when (eq? (send infrabel get-switch-state id) reserved) (return #f)))
-         (λ (id) (when (eq? (send infrabel get-segment-state id) reserved) (return #f))))
+         (λ (id) (when (eq? (send infrabel get-segment-state id) reserved) (return #f)))
+         to-be-reserved-list)
         ; if no elements where reserved --> reserve all elements
-        (for-each-track-element
-         to-be-reserved-list
+        (for-each-railway-element
          (λ (id) (send infrabel set-detection-block-state! id reserved))
          (λ (id) (send infrabel set-switch-state! id reserved))
-         (λ (id) (send infrabel set-segment-state! id reserved)))
+         (λ (id) (send infrabel set-segment-state! id reserved))
+         to-be-reserved-list)
         ; return all reserved elements of false
         to-be-reserved-list))
 
     (define/public (free-block elements-list)
       (log-event "Free of block requested" "freeing block")
       (define free 'free)
-      (for-each-track-element
-       elements-list
+      (for-each-railway-element
        (λ (id) (send infrabel set-detection-block-state! id free))
        (λ (id) (send infrabel set-switch-state! id free))
-       (λ (id) (send infrabel set-segment-state! id free))))
+       (λ (id) (send infrabel set-segment-state! id free))
+       elements-list))
 
     ;;
     ;; automatic opening/closing of crossings

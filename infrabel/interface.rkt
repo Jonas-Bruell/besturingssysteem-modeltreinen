@@ -76,13 +76,19 @@
 
     (define conductors '())
 
-    (define/public (add-conductor-to-train train-object provider-name conductor-name)
-      (define conductor-object (new conductor% (train-object train-object)
-                                    (provider-name provider-name) (add-to-update add-to-update)))
-      (set! conductors (append conductors (cons conductor-name conductor-object))))
+    (define/public (get-conductors) conductors)
 
-    (define (get-conductor conductor-name)
-      (cdr (assoc conductors conductor-name)))
+    (define/public (add-conductor-to-train provider-name train-name)
+      (define conductor (new conductor% (infrabel this)
+                             (provider-name provider-name) (train-name train-name)
+                             (add-to-log add-to-log) (add-to-update add-to-update)))
+      (set! conductors (append conductors (list (cons train-name conductor)))))
+
+    (define/public (get-conductor conductor-name)
+      (cdr (assoc conductor-name conductors)))
+
+    (define/public (instruct-conductor-go-in-direction conductor-name element)
+      (send (get-conductor conductor-name) go-in-direction element))
 
     (define/public (instruct-conductor-follow-route conductor-name route)
       (send (get-conductor conductor-name) follow-route route))
