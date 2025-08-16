@@ -19,15 +19,13 @@
 
 (define (get-track-info-loop connection)
   (let try-to-get-track-info ((track-info? (send connection get-track-info)))
-    (if track-info?
-        track-info?
-        (try-to-get-track-info (send connection get-track-info)))))
+    (unless track-info? (try-to-get-track-info (send connection get-track-info)))
+    track-info?))
 
 (define (get-train-info-loop connection)
   (let try-to-get-train-info ((train-info? (send connection get-train-info)))
-    (if train-info?
-        train-info?
-        (try-to-get-train-info (send connection get-train-info)))))
+    (unless train-info? (try-to-get-train-info (send connection get-train-info)))
+    train-info?))
 
 (define railway%
   (class object%
@@ -35,9 +33,6 @@
     (init-field connection add-to-log add-to-update)
     (init-field (track-info (get-track-info-loop connection)))
     (init-field (train-info (get-train-info-loop connection)))
-    (field (control-panel (new (class object% (super-new)
-                                 (define/public (update-control-panel id)
-                                   (void))))))
     
     (define (search id object-list) (cdr (assoc id object-list)))
     (define log-event (add-to-log "RAILWAY")) ; curryied
@@ -157,13 +152,13 @@
     ;;
     ;; lights
     ;;
-    (define init-signal 'Hp1)
+    (define init-sgnl 'Hp1)
     (define lights-list
       (let* ((lights (cdr (assoc 'light track-info)))
              (light-ids (map car lights))
              (light-segments (map cadr lights)))
         (map (λ (id segment)
-               (cons id (make-object light% log-event id connection segment init-signal)))
+               (cons id (make-object light% log-event id connection segment init-sgnl init-sgnl)))
              light-ids light-segments)))
     (define/public (get-light-ids) (map car lights-list))
     (define/public (get-light-signals)
@@ -172,6 +167,8 @@
       (send (search light lights-list) get-segment))
     (define/public (get-light-signal light)
       (send (search light lights-list) get-signal))
+    (define/public (get-prev-light-signal light)
+      (send (search light lights-list) get-prev-signal))
     (define/public (set-light-signal! light new-signal)
       (send (search light lights-list) set-signal! new-signal))
 
@@ -198,5 +195,5 @@
       (send (search train trains-list) emergency-stop!))
     (define/public (follow-route train route)
       (send (search train trains-list) follow-route route))
-
+    
     ))

@@ -26,7 +26,8 @@
     (init-field (position (send connection get-position id)))
 
     ; set connection crossing to same position as this crossing
-    (send connection set-crossing-position! id position)
+    (define startup-time (+ 2.5 (/ (random 100) 100))) ; crossings can't be opened at the same time
+    (thread (λ () (sleep startup-time) (send connection set-crossing-position! id position)))
 
     ;
     ; Possible railway crossing positions

@@ -28,9 +28,10 @@
 ;;
 (date-display-format 'iso-8601)
 (define (date) (date->string (current-date) #t))
-(define log-file-path (string-append "provider/logs/"
-                                     (string-replace (string-replace (date) "T" ", ") ":" "-")
-                                     ".log.txt"))
+(define log-file-path
+  (string-append "provider/logs/"
+                 (string-replace (string-replace (date) "T" ", ") ":" "-")
+                 ".log.txt"))
 (date-display-format 'rfc2822)
 (define (save-to-log-file log-string)
   (call-with-output-file* log-file-path (λ (out) (writeln log-string out)) #:exists 'append))
@@ -106,16 +107,17 @@
                        (provider-name provider-name)
                        (provider provider)
                        (railway-tab-panels-list tab-panels)
-                       (add-to-log add-to-log)
-                       (add-to-update add-to-update)
                        (logs-callback logs-callback)
-                       (stop-provider stop-provider)))
-        (send gui show #t))
+                       (stop-provider stop-provider)
+                       (add-to-log add-to-log)
+                       (add-to-update add-to-update)))
+        (send gui show #t)
+        (send startup-gui show #f))
        (catch (exn:fail? (print-error e "could not start" "Command & Control.")
                          (return #f) e)))
       (print-succes)
         
-      #| </startup-callback> |#)))
+      #|startup-callback|#)))
 
 
 
@@ -208,7 +210,7 @@
            (horiz-margin 5)
            (min-width 600))
       
-      #| </gui%> |#)))
+      #|gui%|#)))
 
 
 

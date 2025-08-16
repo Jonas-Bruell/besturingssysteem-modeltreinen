@@ -65,10 +65,10 @@
             (new button% (label (symbol->string dblock-state)) (parent hzp)
                  (callback
                   (λ (t e) (log-event "Detection Block Button Pressed"
-                                      (string-append* "change detection block '"
-                                                      (symbol->string dblock-id)
-                                                      " to state '"
-                                                      (symbol->string dblock-state)))
+                                      (string-append "change detection block '"
+                                                     (symbol->string dblock-id)
+                                                     " to state '"
+                                                     (symbol->string dblock-state)))
                     (send connection set-detection-block-state! dblock-id dblock-state)))))
           (send connection get-detection-block-states))))
      (send connection get-detection-block-ids))
@@ -111,7 +111,7 @@
             (new button% (label (symbol->string switch-state)) (parent hzp)
                  (callback
                   (λ (t e) (log-event "Switch Button Pressed"
-                                      (string-append* "change switch '"
+                                      (string-append "change switch '"
                                                       (symbol->string switch-id)
                                                       " to state '"
                                                       (symbol->string switch-state)))
@@ -157,7 +157,7 @@
             (new button% (label (symbol->string segment-state)) (parent hzp)
                  (callback
                   (λ (t e) (log-event "Segment Button Pressed"
-                                      (string-append* "change segment '"
+                                      (string-append "change segment '"
                                                       (symbol->string segment-id)
                                                       " to position '"
                                                       (symbol->string segment-state)))

@@ -19,7 +19,7 @@
 (define open    'open)
 (define closed  'closed)
 (define generic 'generic)
-(define timeout  7)
+(define timeout  7.5)
 
 ;
 ; abstrations

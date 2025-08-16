@@ -27,6 +27,7 @@
          "track/interface.rkt"
          "track/interface.test.rkt"
          ;; RAILWAY
+         "railway/algorithms/search-track.test.rkt"
          "railway/components/crossing.test.rkt"
          "railway/components/light.test.rkt"
          "railway/components/segment.test.rkt"
@@ -73,7 +74,7 @@
   (test-suite
    "Unit testing all modules"
    ;; TRACK
-   (when (and slp? s-eff? gui?) (track-interface-test))
+   (when (and s-eff? gui?) (track-interface-test))
    ;; RAILWAY
    (test-suite
     "Unit testing of all RAILWAY module operations"
@@ -86,6 +87,7 @@
     ;switch-cross-test
     ;train-test
     ;railway-interface-test
+    search-track-test
     )
    ;; INFRABEL
    (test-suite
@@ -111,7 +113,7 @@
            (new vertical-pane% (parent this) (alignment '(left center))))
           (start-pane
            (new pane% (parent this) (alignment '(center center))))
-          (gui? #t) (s-eff? #t) (slp? #f))
+          (gui? #f) (s-eff? #t) (slp? #f))
       (new check-box%
            (label "Include tests with timeouts or sleeps?") (horiz-margin 10)
            (value slp?) (parent config-pane)

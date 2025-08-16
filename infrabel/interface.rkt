@@ -8,7 +8,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
 
-(require "../railway/interface.rkt" "logic/conductor.rkt")
+(require "../railway/interface.rkt"
+         "logic/dispatcher.rkt"
+         "logic/conductor.rkt")
 (provide infrabel%)
 
 (define infrabel%
@@ -17,17 +19,21 @@
     (init-field stop-infrabel server)
     (super-new)
 
+    (define log-event (add-to-log "INFRABEL")) ; curryied
+
     (define/override (stop)
       (super stop)
       (stop-infrabel))
 
+    ;;
+    ;; server
+    ;;
     (define/public (send-all-providers x . l)
       (send server send-all-providers x l))
 
     ;;
     ;; detection-blocks
     ;;
-    ;(define/public (get-occupied-detection-blocks)
 
     ;;
     ;; switches
@@ -46,7 +52,7 @@
         (unless (eq? new-position old-position)
           (super set-crossing-position! crossing new-position)
           (send-all-providers "set-crossing-position!" crossing new-position))))
-
+    
     ;;
     ;; lights
     ;;
@@ -59,12 +65,20 @@
     ;;
     ;; trains
     ;;
+    (define dispatcher (new dispatcher% (infrabel this)
+                            (add-to-log log-event) (add-to-update add-to-update)))
+    
+    (define/public (reserve-block curr next)
+      (send dispatcher reserve-block curr next))
+
+    (define/public (free-block list)
+      (send dispatcher free-block list))
 
     (define conductors '())
 
     (define/public (add-conductor-to-train train-object provider-name conductor-name)
       (define conductor-object (new conductor% (train-object train-object)
-                             (provider-name provider-name) (add-to-update add-to-update)))
+                                    (provider-name provider-name) (add-to-update add-to-update)))
       (set! conductors (append conductors (cons conductor-name conductor-object))))
 
     (define (get-conductor conductor-name)

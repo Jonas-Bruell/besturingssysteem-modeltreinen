@@ -12,9 +12,11 @@
          "railway/gui-tab-panels/tab-signals.rkt"
          "railway/gui-tab-panels/tab-states.rkt"
          "railway/gui-tab-panels/tab-switches.rkt"
-         "railway/gui-tab-panels/tab-trains.rkt")
+         "railway/gui-tab-panels/tab-trains.rkt"
+         "provider/gui-tab-panels/tab-routes.rkt")
 
 (define tab-panels (list (cons " Trains  " tab-trains%)
+                         (cons " Routes  " tab-routes%)
                          (cons "Switches " tab-switches%)
                          (cons "  States  " tab-states%)
                          (cons " Signals " tab-signals%)))

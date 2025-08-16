@@ -24,9 +24,11 @@
     ;
     (init-field add-to-log id connection segment)
     (init-field (signal (send connection get-signal id)))
+    (init-field (prev-signal (send connection get-signal id)))
 
     ; set connection signal to same signal as this signal
-    (send connection set-sign-code! id signal)
+    (define startup-time 1)
+    (thread (λ () (sleep startup-time) (send connection set-sign-code! id signal)))
 
     ;
     ; Possible railway light signals
@@ -69,6 +71,10 @@
     (define/public (get-signal) signal)
 
     ;
+    ; get-prev-signal :: get the previous signal of the railway light, gets updated by set-signal!
+    (define/public (get-prev-signal) prev-signal)
+
+    ;
     ; get-segment :: get the id of the segment on which the light is
     ;
     ; @returns symbol :: id of segment
@@ -87,6 +93,7 @@
             ((member new-signal
                   (list Hp0 Hp1 Hp0+Sh0 Ks1+Zs3 Ks2 Ks2+Zs3 Sh1 Ks1+Zs3+Zs3v))
              (send connection set-sign-code! id new-signal)
+             (set! prev-signal signal)
              (set! signal new-signal)
              (log-event "Method set-signal! called"
                         (string-append "changed signal to '" (symbol->string new-signal))))

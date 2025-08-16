@@ -22,7 +22,6 @@
                          (cons "Switches " tab-switches%)
                          (cons "  States  " tab-states%)
                          (cons " Signals " tab-signals%)))
-
 (define sim-graphics (cons set-panel window%))
 
 (define infrabel (start-infrabel track% tab-panels sim-graphics))

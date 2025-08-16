@@ -14,9 +14,14 @@
 
 (define infrabel-gui%
   (class frame%
-    (init-field infrabel railway-tab-panels-list)
-    (init-field logs-callback add-to-log add-to-update stop-infrabel)
-    (init-field set-simulator-panel simulator-panel)
+    (init-field infrabel
+                railway-tab-panels-list
+                logs-callback
+                add-to-log
+                add-to-update
+                stop-infrabel
+                set-simulator-panel
+                simulator-panel)
     (super-new (label (string-append APPLICATION_NAME "  --  Control Panel"))
                (width APPLICATION_WIDTH)
                (height APPLICATION_HEIGHT))
@@ -25,8 +30,7 @@
     ;; Menu Bar
     (define menu-bar (new menu-bar% (parent this)))
     (let* ((menu-bar-menu (new menu% (label "Menu") (parent menu-bar)))
-           (menu-bar-view (new menu% (label "View") (parent menu-bar)))
-           (menu-bar-help (new menu% (label "Help") (parent menu-bar))))
+           (menu-bar-view (new menu% (label "View") (parent menu-bar))))
       (new menu-item% (label "Stop") (parent menu-bar-menu)
            (callback (λ (t e) (send infrabel stop))))
       (new menu-item% (label "Simulator") (parent menu-bar-view)
@@ -132,4 +136,4 @@
     (define/public (toggle-log)
       (send log-panel show (not (send log-panel is-shown?))))
 
-    #| </infrabel-gui%> |#))
+    #|infrabel-gui%|#))

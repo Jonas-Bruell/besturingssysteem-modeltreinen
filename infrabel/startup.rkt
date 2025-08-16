@@ -28,9 +28,10 @@
 ;
 (date-display-format 'iso-8601)
 (define (date) (date->string (current-date) #t))
-(define log-file-path (string-append "infrabel/logs/"
-                                     (string-replace (string-replace (date) "T" ", ") ":" "-")
-                                     ".log.txt"))
+(define log-file-path
+  (string-append "infrabel/logs/"
+                 (string-replace (string-replace (date) "T" ", ") ":" "-")
+                 ".log.txt"))
 (date-display-format 'rfc2822)
 (define (save-to-log-file log-string)
   (call-with-output-file* log-file-path (λ (out) (writeln log-string out)) #:exists 'append))
@@ -65,7 +66,8 @@
   (define (print-new-setup s) (log-event (string-append s " ... : ")))
   (define (print-succes) (log-event "SUCCES"))
   (define (print-error e i)
-    (log-event (string-append "ERROR: " i ", internal error: " (exn->string e))))
+    (log-event (string-append "ERROR: " i
+                              ", internal error: " (exn->string e))))
   (λ (architecture version host port control-panel?)
     (let/cc return
 
@@ -75,11 +77,19 @@
       ;; connect to track ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (print-new-setup "Setting up modal railway")
       (try
-       ((send track config! architecture version)
-        (send track start))
+       ((send track config! architecture version))
        (catch (exn:fail? (print-error e "could not connect to modal railway")
-                        (send track stop) (return #f) e)))
+                         (send track stop) (return #f) e)))
       (print-succes)
+
+      ;; start track (hardware) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (when (eq? architecture 'hw) 
+        (print-new-setup "Starting modal railway hardware")
+        (try
+         ((send track start))
+         (catch (exn:fail? (print-error e "could not start the modal railway")
+                           (send track stop) (return #f) e)))
+        (print-succes))
 
       ;; connect to server ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (print-new-setup "Setting up INFRABEL server")
@@ -125,11 +135,21 @@
          (catch (exn:fail? (print-error e "could not initialise INFRABEL Control Panel")
                            (send server stop) (send track stop) (return #f) e)))
         (print-succes))
+
+      ;; start track (simulator) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      (when (eq? architecture 'sim) 
+        (print-new-setup "Starting modal railway simulator")
+        (try
+         ((send track start))
+         (catch (exn:fail? (print-error e "could not start the modal railway")
+                           (send server stop) (send track stop) (send gui show #f)
+                           (send startup-gui show #t) (return #f) e)))
+        (print-succes))
    
       ;; ending message ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
       (log-event (string-append "Startup succesful, server on  >>> " host ":" port " <<<"))
 
-      #| </startup-callback> |#)))
+      #|startup-callback|#)))
 
 
 
@@ -278,7 +298,7 @@
            (horiz-margin 5)
            (min-width 600))
       
-      #| </gui%>|#)))
+      #|gui%|#)))
 
 
 

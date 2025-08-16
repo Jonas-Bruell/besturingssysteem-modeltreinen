@@ -1,11 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                                                ;;
-;;                             >>> infrabel/logic/reservation.rkt <<<                             ;;
+;;                >>> railway/algorithms/calculate-reservation-blocks.test.rkt <<<                ;;
 ;;                                programmeerproject 2,  2023-2025                                ;;
 ;;                                written by: Jonas Brüll, 0587194                                ;;
 ;;                                          > version 8 <                                         ;;
 ;;                                                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
-
-(define (reserve-section)

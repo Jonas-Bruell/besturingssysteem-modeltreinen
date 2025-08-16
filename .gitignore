@@ -5,6 +5,7 @@
 compiled
 *.bak
 *.1
+*.2
 
 # LaTeX
 *.aux
@@ -21,5 +22,5 @@ compiled
 # Other
 .DS_Store
 
-# Application specific
+# These Applications specific
 *.log.txt
