@@ -70,7 +70,7 @@ heightrounded,
 \renewcommand{\>}{\scriptsize\textgreater\normalsize}
 
 % Voorblad
-\title{Programmeerproject 2:\\ Specificatie voor Ontwikkelaars - Besturingssysteem Modeltreinen		
+\title{Programmeerproject 2: Besturingssysteem Modeltreinen\\ Specificatie voor Ontwikkelaars		
 	\author{Jonas Br\"ull, 0587194\\ Jonas.Simon.E.Brull@vub.be\\}
 	\date{Academiejaar 2024-2025\\Vrije Universiteit Brussel}
 	\thanks{\texttt{\url{https://github.com/Jonas-Bruell/besturingssysteem-modeltreinen}}}
@@ -114,7 +114,8 @@ Het project bestaat uit drie grote componenten:
 	op je eigen computer en communiceert met Infrabel. Naar het einde van het project toe
 	zal die communicatie via een netwerkverbinding (TCP) dienen te gebeuren.
 \end{itemize}
-Zowel de Infrabel module, als de Provider module zullen steunen op een railway module, deze de fysieke spoorwegopstelling (of diens simulator) modeleert en deze steeds dezelfde staat zal hebben.
+Zowel de Infrabel module, als de Provider module zullen steunen op een railway module, deze de fysieke spoorwegopstelling (of diens simulator) modeleert en deze steeds dezelfde staat zal hebben.\\\\
+
 
 % =================================================================================================
 \newpage
@@ -791,6 +792,23 @@ De \texttt{Timetables} klasse is verantwoordelijk voor het genereren van tijdsta
 \end{table}
 
 \end{comment}
+
+% =================================================================================================
+\newpage
+\section{Verdere uitbreidingen en todo's} % ==============================================================================
+\subsection{TCP communicatie tussen Infrabel en Providers}
+De communicatie tussen Infrabel en Providers staat nog niet op punt. In de huidige opstelling spreekt de Railway van Providers rechtstreeks met een verkeerde insteek met Infrabel, aangezien een TCP verbinding geen "return waarde" heeft, maar de methodes uit Railway deze communiceren met de Infrabel server deze wel verwachten. Hierdoor moet er oftewel een betere interface gemaakt worden hiertussen, deze dit kan opvangen, of moet Railway gerefactored worden.\\\\
+Momenteel is de Railway module een heel uitgebreide module, die soms voor meer omwegen binnen Provider zorgt, dan hij nuttig is. Het zou kunnen zijn dat er te veel verantwoordelijkheden in deze geleelde module geraakt zijn en dat ik hier ofwel met thin interfaces moet werken, of stukken van deze verantwoordelijkheid wegnemen uit Railway.
+\subsection{Automatische Route Calculatie}
+De automatische route calculatie is een onderdeel dat thuis hoort in de Providers logica, deze is nog niet ge\"implementeerd. (problemen met communicatie tussen Providers en Infrabel)
+\subsection{Testing van Infrabel en Provider componenten}
+De Railway component wordt grondig getest, maar de Infrabel en Provider modules worden nog niet voldoende getest.
+\subsection{Betere GUI \& gestandaardiseerde GUI elementen}
+De huidige GUI is nogal "rough around the edges", zoals de Engelsen dat mooi kunnen uitdrukken. Deze heeft nog veel werk nodig om "mooi" te zijn. Een eerste stap hier zou zijn om een grote refactoring te doen van de verschillende stukken en elementen van de GUI en deze op te splitsen in "GUI elements" die hergebruikt kunnen worden.
+\subsection{Infrabel op Raspberry Pi}
+Het project is zodanig gebouwd dat het ook op een Raspberry Pi kan draaien. Hier heb ik vorig jaar het nodige werk voor gedaan en dit heeft toen ook gewerkt. Tijdens het schrijven van het project dit jaar had ik echter geen toegang meer tot een werkende Raspberry Pi, waardoor ik niet kan testen of dit, na vele refactors, nog steeds werkt.\\
+\subsection{Meerdere Providers}
+Het project is zodanig gebouwd dat er meerdere Providers kunnen aansluiten. Echter ben ik hier niet volledig mee klaar geraakt en werkt dit niet volledig.
 
 % =================================================================================================
 \label{lastpage}

@@ -55,6 +55,7 @@ heightrounded,
 \usepackage{gensymb}  % Invoegen van enkele symbolen => ``\degree ; \celcius ; \perthousand ; \ohm ; \micro''
 \usepackage{cancel}   % Voor het beter doorstrepen van zaken => ``\cancel ; \bcancel ; \xcancel''
 \usepackage{esint}    % Meervoudige kringintegralen
+\usepackage{hyperref}
 
 \newcommand{\naar}{\,$\rightarrow$\,}
 \newcommand{\ppp}{\ldots}
@@ -64,7 +65,7 @@ heightrounded,
 \renewcommand{\>}{\scriptsize\textgreater\normalsize}
 
 % Voorblad
-\title{Programmeerproject 2:\\ Handleiding voor Eindgebruikers - Besturingssysteem Modeltreinen}
+\title{Programmeerproject 2: Besturingssysteem Modeltreinen\\ Handleiding voor Eindgebruikers}
 \author{Jonas Br\"ull, 0587194\\ Jonas.Simon.E.Brull@vub.be\\}
 \date{Academiejaar 2024-2025\\Vrije Universiteit Brussel}
 
@@ -91,11 +92,72 @@ Dit document beschrijft de handleiding van mijn implementatie van een Modeltrein
 
 \newpage
 % =================================================================================================
-\section{Nodige Software} % =======================================================================
+\section{Nodige Software en Bestanden} % =======================================================================
+Alle benodigde bestanden zijn gebundeld in het zip-bestand ``besturingssysteem-modeltreinen.zip'' of te vinden op de GitHub repository van het project. De applicatie is geschreven in de programmeertaal Racket, en kan worden uitgevoerd met DrRacket.\\\\
+De applicatie is afhankelijk van de volgende Racket packages:
+\begin{itemize}
+  \item \textbf{racket/gui}:  Voor de gui elementen.
+  \item \textbf{racket/date}: Voor het werken met datum \& tijd tijdens het loggen van gebeurtenissen. 
+  \item \textbf{racket/exn}:  Voor het afhandelen van uitzonderingen.
+  \item \textbf{try-catch}:   Voor het afhandelen van fouten tijdens het opstarten. 
+\end{itemize}
+Buiten try-catch, zijn deze packages standaard geïnstalleerd in DrRacket. DrRacket zal normaal gezien zelf voorstellen om try-catch te installeren.\\
+
+\subsection{Installatie DrRacket} %----------------------------------------------------------------
+DrRacket is te vinden op de website: \url{https://racket-lang.org/} onder "Download". De standaardwaarden bij het installeren van DrRacket zijn voldoende voor dit project.\\\\
+
+\subsection{Opstarten} %---------------------------------------------------------------------------
+Het opstarten van de applicaties gebeurt via het openen van volgende bestanden in DrRacket:
+\begin{itemize}
+  \item \textbf{Infrabel}: INFRABEL.rkt
+  \item \textbf{Providers}: NMBS.rkt, andere geconfigureerde providers.
+\end{itemize}
+De andere bestanden bevatten de applicatie logica en hoeven niet geopend te worden.\\\\
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=.5]{Bestanden/besturingssysteem-modeltreinen-tldir.png}
+		\caption{Top Level Directory van het project}
+	\end{center}
+\end{figure}
 
 \newpage
 % =================================================================================================
 \section{Infrabel} % ==============================================================================
+\subsection{Opstarten} %---------------------------------------------------------------------------
+Om de Infrabel applicatie te starten, moet het bestand INFRABEL.rkt geopend worden in DrRacket. Hierna moet je op het groene pijltje (start-knop) rechts-boven drukken. Het programma zal opstarten en de "Infrabel startup manager" zal openen.
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=.5]{Bestanden/infrabel-rkt.png}
+		\caption{Opstarten van Infrabel via DrRacket}
+	\end{center}
+\end{figure}
+\\In de Startup Manager kan je de instellingen aanpassen:
+\begin{itemize}
+  \item \textbf{Railway Architecture}: Infrabel kan verbinding maken met zowel simulators, als hardware opstellingen. Hier kun je aanpassen met welke opstelling je wilt werken. Let op: voor hardware, moet je eerst verbinding maken met de Z21 Command \& Control centrale van de harware.
+  \item \textbf{Simulator version}: Hier kan je de versie van de simulator kiezen. Deze optie wordt uitgeschakeld als je voor hardware koos als architecture.
+  \item \textbf{Hostname}: Standaard zal de infrabel server op localhost draaien, maar als je Infrabel op een Raspberry Pi wilt draaien, kun je hier het IP-address ingeven.
+  \item \textbf{Port}: Hier kan je de poort van de Infrabel server kiezen. Standaard poort is 2020.
+  \item \textbf{Start with Control Panel}: Indien je een Controle Paneel (GUI) wenst om Infrabel aan te sturen (bijvoorbeeld om fouten op te lossen), kun je deze optie aanvinken.
+\end{itemize}
+De standaard instellingen zijn voldoende om Infrabel te laten werken en gebruik je best ook als je de software voor de eerste keer gebruikt.\\
+Na het aanpassen van de instellingen, kun je op de knop "Start" drukken. Infrabel zal nu opstarten en verbinding maken met de simulator of hardware.\\
+Moest er een fout optreden tijdens het opstarten, kun je deze terugvinden in het "Log Paneel", naast de instellingen. Hier zal ook de log van de opstart verschijnen.\\
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=.5]{Bestanden/infrabel-startup-rkt.png}
+		\caption{Opstarten van Infrabel via de Startup Manager}
+	\end{center}
+\end{figure}
+
+\newpage
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=.35]{Bestanden/infrabel-gui-rkt.png}
+		\caption{Infrabel controle paneel}
+	\end{center}
+\end{figure}
+
 
 \newpage
 % =================================================================================================
