@@ -118,7 +118,9 @@ Zowel de Infrabel module, als de Provider module zullen steunen op een railway m
 
 % =================================================================================================
 \newpage
-\section{globaal afhankelijkheidsdiagram} % =======================================================
+\section{Globaal afhankelijkheidsdiagram} % =======================================================
+Het besturingssysteem bestaat uit twee grote componenten: "infrabel" en "provider".\\De "infrabel" component wordt via INFRABEL tot een object gemaakt en is de centrale server deze de modelspoorlijn aanstuurt. De "provider" component is een template die via "NMBS", "DB", ... verschillende objecten wordt gemaakt, en deze de clients vormen, deze via een TCP verbinding met INFRABEL communiceren.\\
+Zowel "infrabel" als "provider" hebben een gemeenschappelijke abstractielaag, "railway", deze zorgt voor consistentie tussen beide componenten, zonder aan elkaar verbonden te zijn. Beide componenten hebben hun eigen, afzonderlijke "railway".
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[scale=.5]{Afhankelijkheidsdiagrammen/global.png}

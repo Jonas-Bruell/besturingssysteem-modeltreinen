@@ -21,6 +21,7 @@ compiled
 
 # Other
 .DS_Store
+*.pdf
 
 # These Applications specific
 *.log.txt
