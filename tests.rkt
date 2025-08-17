@@ -27,7 +27,7 @@
          "track/interface.rkt"
          "track/interface.test.rkt"
          ;; RAILWAY
-         "railway/algorithms/search-track.test.rkt"
+         "railway/algorithms/search-railway.test.rkt"
          "railway/components/crossing.test.rkt"
          "railway/components/light.test.rkt"
          "railway/components/segment.test.rkt"
@@ -87,7 +87,7 @@
     ;switch-cross-test
     ;train-test
     ;railway-interface-test
-    search-track-test
+    search-railway-test
     )
    ;; INFRABEL
    (test-suite

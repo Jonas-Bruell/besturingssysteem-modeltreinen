@@ -8,7 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
 
-(require "../algorithms/search-track.rkt")
+(require "../algorithms/search-railway.rkt")
 
 (provide train%)
 
@@ -97,12 +97,12 @@
           (log-event "Method set-train-speed! called"
                      (string-append "ACCESS DENIED : train is locked to route"))))
     ;
-    ; emergency-stop! :: always sets the train speed to 0, regardless of locks or modes
+    ; manual-stop! :: always sets the train speed to 0, regardless of locks or modes
     ;
-    (define/public (emergency-stop!)
+    (define/public (manual-stop!)
       (send connection set-loco-speed! id 0)
-      (log-event "Method emergency-stop! called"
-                 (string-append "EMERGENCY STOP PRESSED")))
+      (log-event "Method manual-stop! called"
+                 (string-append "MANUAL STOP")))
 
     ;
     ; follow-route :: change the speed of the train, only when it isn't locked by automatic mode

@@ -8,7 +8,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
 
-(require "search-track.rkt")
+(require "search-railway.rkt")
 
 (provide calculate-reservation-blocks)
 
@@ -16,9 +16,9 @@
 
   (define (calculate-reservation-block-from railway dblock-id next-elem)
     (define elems-reachable-from-dblock '())
-    (define (save-elem! id)
+    (define (save! id)
       (set! elems-reachable-from-dblock (append elems-reachable-from-dblock (list id))))
-    (search-reachable-dblocks* railway dblock-id next-elem save-elem! save-elem! save-elem!)
+    (search-reachable-dblocks* railway dblock-id next-elem save! save! save! save! save!)
     (remove-duplicates elems-reachable-from-dblock))
 
   (define (calculate-reservation-blocks railway)

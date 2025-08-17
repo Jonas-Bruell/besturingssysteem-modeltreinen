@@ -8,7 +8,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
 
-(require "../../railway/algorithms/calculate-reservation-blocks.rkt")
+(require "../../railway/algorithms/calculate-reservation-blocks.rkt"
+         "../../railway/algorithms/for-each-railway.rkt")
 
 (provide dispatcher%)
 
@@ -21,16 +22,6 @@
 
     (define log-event (add-to-log "Dispatcher"))
 
-    (define/public (for-each-railway-element dblock-λ switch-λ segment-λ elements-list)
-      (for-each
-       (λ (element)
-         (let ((type (car element)) (id (cdr element)))
-           (cond ((eq? type 'dblock) (dblock-λ id))
-                 ((eq? type 'switch) (switch-λ id))
-                 ((eq? type 'segment) (segment-λ id))
-                 (else (error "INFRABEL > dispacher > for-each-element - Doesn't exist: " type)))))
-       elements-list))
-
     (define/public (reserve-block curr next)
       (log-event "Reservation of block requested" "reservating block if possible")
       (define reserved 'reserved)
@@ -40,14 +31,18 @@
         ; check if any elements are already reserved --> return false
         (for-each-railway-element
          (λ (id) (when (eq? (send infrabel get-detection-block-state id) reserved) (return #f)))
-         (λ (id) (when (eq? (send infrabel get-switch-state id) reserved) (return #f)))
-         (λ (id) (when (eq? (send infrabel get-segment-state id) reserved) (return #f)))
+         (λ (id) (when (eq? (send infrabel get-switch-state          id) reserved) (return #f)))
+         (λ (id) (when (eq? (send infrabel get-segment-state         id) reserved) (return #f)))
+         (λ (id) (when (eq? (send infrabel get-switch3-state         id) reserved) (return #f)))
+         (λ (id) (when (eq? (send infrabel get-switchX-state         id) reserved) (return #f)))
          to-be-reserved-list)
         ; if no elements where reserved --> reserve all elements
         (for-each-railway-element
          (λ (id) (send infrabel set-detection-block-state! id reserved))
-         (λ (id) (send infrabel set-switch-state! id reserved))
-         (λ (id) (send infrabel set-segment-state! id reserved))
+         (λ (id) (send infrabel set-switch-state!          id reserved))
+         (λ (id) (send infrabel set-segment-state!         id reserved))
+         (λ (id) (send infrabel set-switch3-state!         id reserved))
+         (λ (id) (send infrabel set-switchX-state!         id reserved))
          to-be-reserved-list)
         ; return all reserved elements of false
         to-be-reserved-list))
@@ -57,8 +52,10 @@
       (define free 'free)
       (for-each-railway-element
        (λ (id) (send infrabel set-detection-block-state! id free))
-       (λ (id) (send infrabel set-switch-state! id free))
-       (λ (id) (send infrabel set-segment-state! id free))
+       (λ (id) (send infrabel set-switch-state!          id free))
+       (λ (id) (send infrabel set-segment-state!         id free))
+       (λ (id) (send infrabel set-switch3-state!         id free))
+       (λ (id) (send infrabel set-switchX-state!         id free))
        elements-list))
 
     ;;
@@ -67,24 +64,29 @@
     (let* ((crossing-ids (send infrabel get-crossing-ids))
            (segment-ids-list (map (λ (id) (send infrabel get-crossing-segments id)) crossing-ids))
            (closed 'closed) (open 'open) (pending 'pending) (occupied 'occupied))
+      ; check one or more segments occupied?
       (define (>=1-segment-occupied? segment-ids)
         (not (let/cc return
                (for-each (λ (segment-id)
                            (when (eq? (send infrabel get-detection-block-state segment-id) occupied)
                              (return #f)))
                          segment-ids))))
+      ; check if state is equal to given state
       (define (is-state? state crossing-id)
         (eq? state (send infrabel get-crossing-position crossing-id)))
+      ; close crossing logic
       (define (close-crossing id)
         (unless (is-state? closed id)
           (log-event (string-append "Train on detection-block in crossing '" (symbol->string id))
                      "closing crossing")
           (send infrabel set-crossing-position! id closed)))
+      ; open crossing logic
       (define (open-crossing id)
         (unless (is-state? open id)
           (log-event (string-append "No train on detection-block in crossing '" (symbol->string id))
                      "opening crossing")
           (send infrabel set-crossing-position! id open)))
+      ; add listener to update loop
       (add-to-update
        (λ () (for-each
               (λ (crossing-id segment-ids)
@@ -102,18 +104,22 @@
     (let* ((light-ids (send infrabel get-light-ids))
            (segment-ids (map (λ (light-id) (send infrabel get-light-segment light-id)) light-ids))
            (red 'Hp0) (occupied 'occupied))
-      (define (is-color? state light-id)
-        (eq? state (send infrabel get-light-signal light-id)))
+      ; check if signal is equal to given signal
+      (define (is-signal? signal light-id)
+        (eq? signal (send infrabel get-light-signal light-id)))
+      ; turn light red logic
       (define (turn-light-red id)
-        (unless (is-color? red id)
+        (unless (is-signal? red id)
           (log-event (string-append "Train on detection-block with light '" (symbol->string id))
                      "turning light red")
           (send infrabel set-light-signal! id red)))
+      ; restore light to previous signal (before turn red) logic
       (define (restore-light-previous id)
-        (when (is-color? red id)
+        (when (is-signal? red id)
           (log-event (string-append "No train on detection-block with light '" (symbol->string id))
                      "restoring light to previous signal")
           (send infrabel set-light-signal! id (send infrabel get-prev-light-signal id))))
+      ; add listener to update loop
       (add-to-update
        (λ () (for-each
               (λ (light-id segment-id)
@@ -122,4 +128,4 @@
                     (restore-light-previous light-id)))
               light-ids segment-ids))))
 
-    ))
+    #|dispatcher%|#))

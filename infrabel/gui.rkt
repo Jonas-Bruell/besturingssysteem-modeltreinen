@@ -41,7 +41,8 @@
     
     (define global-panel (new horizontal-panel% (parent this)))
     (define input-panel (new vertical-panel% (parent global-panel)))
-    (define log-event (add-to-log "INFRABEL")) ; curryied
+    (define log-event-callback (add-to-log "INFRABEL")) ; curryied
+    (define log-event (log-event-callback "GUI")) ; curryied
 
     ;; Status Panel
     (define status-panel (new group-box-panel% (parent input-panel) (min-height 25)
@@ -105,7 +106,7 @@
              (append tab-panes-list (list (new tab-pane
                                                (parent tab-panel)
                                                (connection infrabel)
-                                               (add-to-log log-event)
+                                               (add-to-log log-event-callback)
                                                (add-to-update add-to-update))))))
      (map cdr railway-tab-panels-list))
     (fill-tab tab-panel 0)
@@ -115,8 +116,12 @@
     ;; Sim Panel
     (define sim-outer-panel
       (new panel% (parent info-panel) (horiz-margin 5) (style '(border)) (min-height TRACK_HEIGHT)))
-    (new button% (parent sim-outer-panel) (label "Noodstop") (horiz-margin 14)
-         (callback (λ (t e) (displayln "Noodstop"))))
+    (new button% (parent sim-outer-panel) (label "Emergency Stop") (horiz-margin 14)
+         (callback (λ (t e)
+                     (log-event "EMERGENCY STOP PRESSED" "manually stopping all trains")
+                     (for-each
+                      (λ (train-id) (send infrabel manual-stop! train-id)) 
+                      (send infrabel get-train-ids)))))
     (define sim-inner-panel
       (new simulator-panel (embedded? sim-outer-panel)))
     (set-simulator-panel sim-inner-panel) ;; needed for track/simulator/graphics & /simulator

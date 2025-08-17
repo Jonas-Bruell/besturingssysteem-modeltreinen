@@ -39,6 +39,7 @@
   (curry (λ (service origin action event)
            (let ((log-line (string-append (date) "  ---  "
                                           service " > " origin " > " action " : " event)))
+             (sleep (exact->inexact (/ (random 100) 1000))) ; avoid collisions between theads
              (save-to-log-file log-line)
              (send logs-callback insert (string-append log-line "\n"))))))
 

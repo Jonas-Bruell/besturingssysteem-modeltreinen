@@ -176,13 +176,14 @@
     ;; trains
     ;;
     (define trains-list
-      (let* ((train-ids   '(T-7)); train-info)
-             (train-prevs '(U-2)); '(U-2 1-7 1-4 1-5))
-             (train-currs '(1-3))); '(1-3 1-6 1-5 1-4)))
+      (let* ((train-ids   '(T-5 T-7)); train-info)
+             (train-prevs '(S-25 U-2)); '(U-2 1-7 1-4 1-5))
+             (train-currs '(1-8 1-3))); '(1-3 1-6 1-5 1-4)))
         (map (λ (id prev curr)
                (cons id (make-object train% log-event id this connection prev curr)))
              train-ids train-prevs train-currs)))
     (define/public (get-train-ids) (map car trains-list))
+    (define/public (get-train train) (search train trains-list))
     (define/public (unlock! train)
       (send (search train trains-list) unlock!))
     (define/public (get-train-location train)
@@ -191,8 +192,8 @@
       (send (search train trains-list) get-train-speed))
     (define/public (set-train-speed! train new-speed)
       (send (search train trains-list) set-train-speed! new-speed))
-    (define/public (emergency-stop! train)
-      (send (search train trains-list) emergency-stop!))
+    (define/public (manual-stop! train)
+      (send (search train trains-list) manual-stop!))
     (define/public (follow-route train route)
       (send (search train trains-list) follow-route route))
     

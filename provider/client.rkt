@@ -149,8 +149,8 @@
       (send-infrabel "get-train-speed" train))
     (define/public (set-train-speed! train new-speed)
       (send-infrabel "set-train-speed!" (list train new-speed)))
-    (define/public (emergency-stop! train)
-      (send-infrabel "emergency-stop!" train))
+    (define/public (manual-stop! train)
+      (send-infrabel "manual-stop!" train))
     (define/public (follow-route train route)
       (send-infrabel "follow-route" (list train route)))
 

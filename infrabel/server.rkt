@@ -185,7 +185,7 @@
                (send-provider provider "train-speed"
                               (list bdy (send infrabel get-train-speed bdy))))
               ((header=? m "set-train-speed!") void) #|TODO|#
-              ((header=? m "emergency-stop!") void) #|TODO|#
+              ((header=? m "manual-stop!") void) #|TODO|#
               ((header=? m "follow-route") void) #|TODO|#
               ;; closing
               ((header=? m "provider-closed") (return))

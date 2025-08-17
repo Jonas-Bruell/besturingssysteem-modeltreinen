@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                                                                                ;;
-;;                        >>> railway/algorithms/search-track.test.rkt <<<                        ;;
+;;                       >>> railway/algorithms/search-railway.test.rkt <<<                       ;;
 ;;                                programmeerproject 2,  2023-2025                                ;;
 ;;                                written by: Jonas Brüll, 0587194                                ;;
 ;;                                          > version 8 <                                         ;;
@@ -8,8 +8,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #lang racket
 
-(require rackunit "search-track.rkt")
-(provide search-track-test)
+(require rackunit "search-railway.rkt")
+(provide search-railway-test)
 
 ;
 ; abstractions
@@ -44,7 +44,7 @@
 ;
 ; testing all test-suites
 ;
-(define search-track-test
+(define search-railway-test
   (test-suite
-   "All search-track algorithms test"
+   "All search-railway algorithms test"
    test-search-reachable-dblocks))
