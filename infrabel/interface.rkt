@@ -80,7 +80,7 @@
     (define (get-conductor conductor-name) (cdr (assoc conductor-name conductors)))
 
     (define/public (add-conductor-to-train provider-name train-name)
-      (define conductor (new conductor% (infrabel this) (train (send this get-train train-name))
+      (define conductor (new conductor% (infrabel this)
                              (provider-name provider-name) (train-name train-name)
                              (add-to-log log-event) (add-to-update add-to-update)))
       (set! conductors (append conductors (list (cons train-name conductor)))))
@@ -95,7 +95,8 @@
       (send (get-conductor conductor-name) follow-route route))
 
     (define/override (manual-stop! train)
-      (send (get-conductor train) stop!)
+      (when (assoc train conductors)
+        (send (get-conductor train) stop!))
       (super manual-stop! train))
     
     #|infrabel%|#))

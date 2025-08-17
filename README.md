@@ -1,42 +1,48 @@
 # Besturingssysteem modeltreinen
 
+Documentatie:
+- [Specificatie voor Ontwikkelaars](docs/specificatie%20voor%20ontwikkelaars/specificatie-voor-ontwikkelaars.pdf)
+- [Handleiding voor Eindgebruikers](docs/handleiding%20voor%20eindgebruikers/handleiding-voor-eindgebruikers.pdf)
+
 ## Project Structure:
 ```
 /
-├── hardware-library/
-|   └── interface.rkt
 ├── infrabel/
-|   └── gui/
-|   |   ├── gui-infrabel.rkt
-|   |   └── gui-startup.rkt
-|   ├── main.rkt
-|   └── udp.rkt
+|   ├── logic/
+|   ├── logs/
+|   ├── gui.rkt
+|   ├── interface.rkt
+|   ├── server.rkt
+|   └── startup.rkt
 ├── provider/
-|   └── gui/
-|       └── main.rkt
+|   ├── gui-tab-panels/
+|   ├── logs/
+|   ├── gui.rkt
+|   ├── interface.rkt
+|   ├── client.rkt
+|   └── startup.rkt
 ├── railway/
-|   ├── crossing.rkt
-|   ├── detection-block.rkt
-|   ├── light.rkt
-|   ├── main.rkt
-|   ├── segment.rkt
-|   ├── switch.rkt
-|   ├── track.rkt
-|   └── train.rkt
-├── simulator/
+|   ├── algorithms/
+|   ├── gui-tab-panels/
+|   ├── components/
+|   |   ├── crossing.rkt
+|   |   ├── detection-block.rkt
+|   |   ├── light.rkt
+|   |   ├── segment.rkt
+|   |   ├── switch.rkt
+|   |   └── train.rkt
 |   └── interface.rkt
+├── track/
+|   ├── hardware-library/
+|   |   └── interface.rkt
+|   ├── routes/
+|   └── simulator/
+|       └── interface.rkt
 ├── DB.rkt
 ├── INFRABEL.rkt
 └── NMBS.rkt
 ```
 
-## Project Control Flow:
-### Railway
-
-### Infrabel
-
-### Provider
-
 ## Startup
-0. Start INFRABEL.rkt, when server online, providers can connect.
+1. Start INFRABEL.rkt, when server online, providers can connect.
 0. Connect providers to server (DB.rkt / NMBS.rkt).

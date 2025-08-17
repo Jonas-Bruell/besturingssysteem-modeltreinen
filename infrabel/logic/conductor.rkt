@@ -14,17 +14,13 @@
 
 (define conductor%
   (class object%
-    (init-field infrabel train provider-name train-name add-to-log add-to-update)
+    (init-field infrabel provider-name train-name add-to-log add-to-update)
     (super-new)
 
     (define log-event (add-to-log (string-append "Conductor '" (symbol->string train-name))))
 
     (define active-threads '())
     (define/public (stop!) (map kill-thread active-threads))
-
-    ; de dispatcher regelt momenteel het reserveren/freeen van "blocken"
-    ; de conductor moet dus met de dispatcher afspreken om blocken te reserveren, alvorens hier te
-    ; rijden wanneer de conductor geen block kan reserveren, moet de trein dus stoppen
 
     (define (auto-start-train speed)
       (log-event "Auto Start Train called"

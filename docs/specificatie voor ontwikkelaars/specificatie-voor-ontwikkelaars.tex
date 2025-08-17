@@ -187,9 +187,7 @@ De \texttt{Track} klasse is een interface die kan worden opgeroepen vanuit ander
 \section{Railway} % ===============================================================================
 De railway-module houdt ten allen tijden de staat van de fysieke modelspoorweg bij. Deze module bestaat uit verschillende atomaire abstracties van de verschillende hardware-componenten, die de modelspoorweg bezit, deze allemaal aangestuurd worden vanuit de railway-klasse.
 \newline\\
-De railway-module is niet afhankelijk van de track-module, maar abstraheert deze door zijn oproepen te doen naar een "connection". Deze connection kan de track-interface zijn, maar bijvoorbeeld ook een client voor een provider, op op deze manier messages naar infrabel te sturen.
-\newline\\
-De railway-module bevat ook een "controle-panel", een heel basic gui, waarmee de wissels, lichten, overwegen, treinen en detectieblokken kunnen worden aangestuurd of uitgelezen. Deze gui is enkel bedoeld voor testdoeleinden en zal niet worden gebruikt in de uiteindelijke software.
+De railway-module is niet afhankelijk van de track-module, maar abstraheert deze door zijn oproepen te doen naar een "connection". Deze connection kan de track-interface zijn, maar bijvoorbeeld ook een client voor een provider, om op deze manier messages naar infrabel te sturen.
 
 % =================================================================================================
 \subsection{afhankelijkheidsdiagram} % ============================================================
@@ -478,8 +476,6 @@ De \texttt{Train} klasse is de atomaire abstractie van een trein.
 \section{Infrabel} % ==============================================================================
 De Infrabel-module is verantwoordelijk voor het beheren van het treinnetwerk, moet ervoor zorgen dat het volledige netwerk aangestuurt kan worden en dat dit veilig gebeurt.\\\\
 
-\noindent \textbf{*** De infrabel module is nog niet ge\"implementeerd ***}\\
-
 % =================================================================================================
 \subsection{afhankelijkheidsdiagram} % ============================================================
 \begin{center}
@@ -639,8 +635,6 @@ De \texttt{Concurrency} klasse is verantwoordelijk voor het opstaan en inladen v
 \newpage
 \section{Provider} % ==============================================================================
 De Provider-module is een abstractie van de software die gebruikt kan worden door clienten (bijvoorbeeld NMBS). Deze module is verantwoordelijk voor het beheren van routes op het treinnetwerk, moet ervoor zorgen dat klanten correcte timetables hebben en het moet mogelijk zijn om na een crash de huidige staat van de fysieke spoorweg terug te krijgen.\\\\
-
-\noindent \textbf{*** De provider module is nog niet ge\"implementeerd ***}\\
 
 % =================================================================================================
 \subsection{afhankelijkheidsdiagram} % ============================================================
@@ -803,6 +797,8 @@ Momenteel is de Railway module een heel uitgebreide module, die soms voor meer o
 De automatische route calculatie is een onderdeel dat thuis hoort in de Providers logica, deze is nog niet ge\"implementeerd. (problemen met communicatie tussen Providers en Infrabel)
 \subsection{Testing van Infrabel en Provider componenten}
 De Railway component wordt grondig getest, maar de Infrabel en Provider modules worden nog niet voldoende getest.
+\subsection{Bijzondere wissels}
+De 3-wegs wissel en kruis-wissel zijn voorzien en bestaan al grotendeels, maar zijn niet volledig.
 \subsection{Betere GUI \& gestandaardiseerde GUI elementen}
 De huidige GUI is nogal "rough around the edges", zoals de Engelsen dat mooi kunnen uitdrukken. Deze heeft nog veel werk nodig om "mooi" te zijn. Een eerste stap hier zou zijn om een grote refactoring te doen van de verschillende stukken en elementen van de GUI en deze op te splitsen in "GUI elements" die hergebruikt kunnen worden.
 \subsection{Infrabel op Raspberry Pi}
